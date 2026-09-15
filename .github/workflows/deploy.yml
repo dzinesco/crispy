@@ -1,0 +1,45 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install (web)
+        run: npm ci
+
+      - name: Install (server)
+        run: npm --prefix server ci
+
+      - name: Build web
+        run: npm run build
+
+      - name: Copy to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: crispygoat.com
+          username: tyler
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: 'dist,server,package.json'
+          target: /home/tyler/crispy
+
+      - name: Restart API
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: crispygoat.com
+          username: tyler
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /home/tyler/crispy
+            pm2 restart crispy-api || pm2 start server/src/index.js --name crispy-api
+            pm2 save
