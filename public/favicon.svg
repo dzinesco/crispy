@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#1B1B1B"/>
-  <text x="32" y="42" text-anchor="middle" font-family="ui-monospace, monospace" font-size="28" font-weight="700" fill="#D4A24C">CG</text>
+  <rect width="64" height="64" fill="#171412"/>
+  <path d="M18 44 L32 14 L46 44" fill="none" stroke="#A67C1A" stroke-width="5" stroke-linejoin="miter"/>
+  <path d="M24 44h16" stroke="#E7E1D4" stroke-width="4"/>
 </svg>

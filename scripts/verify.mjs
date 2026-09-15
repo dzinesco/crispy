@@ -19,6 +19,8 @@ const ROUTES = [
   { name: 'blog', path: '/blog' },
   { name: 'apply', path: '/apply' },
   { name: 'contact', path: '/contact' },
+  { name: 'privacy', path: '/privacy' },
+  { name: 'terms', path: '/terms' },
   { name: 'admin-login', path: '/admin/login' },
   { name: '404', path: '/does-not-exist' },
 ];
@@ -60,11 +62,12 @@ async function main() {
   if (!loginRes.ok) throw new Error(`login failed: ${loginRes.status}`);
   const cookie = loginRes.headers.get('set-cookie').split(';')[0];
 
+  const stamp = Date.now().toString(36);
   await api(apiBase, '/admin/posts', {
     method: 'POST',
     headers: { cookie },
     body: JSON.stringify({
-      slug: 'verify-hello',
+      slug: `verify-hello-${stamp}`,
       title: 'Verify: hello world',
       excerpt: 'Posted by scripts/verify.mjs to prove the API works.',
       body_md: '# Hello\n\nThis post was created by the verify script.',
@@ -72,13 +75,13 @@ async function main() {
       published_at: new Date().toISOString(),
     }),
   });
-  createdSlug = 'verify-hello';
+  createdSlug = `verify-hello-${stamp}`;
 
   await api(apiBase, '/admin/kits', {
     method: 'POST',
     headers: { cookie },
     body: JSON.stringify({
-      slug: 'verify-kit',
+      slug: `verify-kit-${stamp}`,
       title: 'Verify Kit',
       tagline: '$1 — sanity check',
       description_md: '<p>Created by the verify script.</p>',
@@ -87,7 +90,7 @@ async function main() {
       status: 'published',
     }),
   });
-  createdKit = 'verify-kit';
+  createdKit = `verify-kit-${stamp}`;
 
   // Phase 2: visit every route at both viewports
   for (const vp of VIEWPORTS) {

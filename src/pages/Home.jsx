@@ -2,11 +2,19 @@ import { Link } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
 import { useKits, usePosts } from '../lib/api.js';
 
+const steps = [
+  { t: 'You send a brief', d: 'Form, not a call. Facts, not a deck.' },
+  { t: 'We say yes or no', d: 'If it fits, you get a price and a date. If not, silence.' },
+  { t: 'You pay a deposit', d: 'That locks the week. Still no meetings.' },
+  { t: 'We ship', d: 'Working site, on the date we named.' },
+];
+
 export default function Home() {
   const { data: kitsData } = useKits();
   const { data: postsData } = usePosts();
   const kits = kitsData?.kits || [];
   const posts = postsData?.posts || [];
+  const featured = kits.find((k) => k.slug === 'farm-stand') || kits[0];
 
   return (
     <>
@@ -15,46 +23,65 @@ export default function Home() {
         description="Productized site kits you can buy today — plus selective custom builds when the brief is sharp."
       />
 
-      {/* Hero */}
-      <section className="relative isolate overflow-hidden bg-charcoal text-bone">
-        <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal/95 to-charcoal/80" />
-        <div className="absolute -right-32 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-gold/20 blur-3xl" />
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.22em] text-gold">Crispy Goat · {new Date().getFullYear()}</p>
-          <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Ship the site.<br />Skip the agency theater.
+      <section className="border-b border-ink/10 bg-ink text-cream">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+          <p className="mb-6 text-sm text-brass">Anti-agency · site kits · {new Date().getFullYear()}</p>
+          <h1 className="max-w-[14ch] text-[2.75rem] font-extrabold leading-[0.95] tracking-tightish sm:text-6xl lg:text-7xl">
+            Ship the site. Skip the agency theater.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-bone/80 sm:text-xl">
-            Productized kits you can buy today — plus selective custom builds when the brief is sharp.
+          <p className="mt-7 max-w-measure text-lg leading-7 text-cream/70 sm:text-xl">
+            Buy a kit and go live today. Or pitch a custom build if the problem is bigger than a template.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link to="/kits/farm-stand" className="btn-accent">Buy Farm Stand Kit — $49</Link>
-            <Link to="/packages" className="btn-ghost border-bone/30 bg-transparent text-bone hover:border-gold hover:text-gold">
-              See starter packs
+            {featured ? (
+              <Link to={`/kits/${featured.slug}`} className="btn-accent">
+                Buy {featured.title} — ${(featured.price_cents / 100).toFixed(0)}
+              </Link>
+            ) : (
+              <Link to="/packages" className="btn-accent">See starter packs</Link>
+            )}
+            <Link to="/apply" className="btn-ghost border-cream/25 text-cream hover:border-cream hover:bg-cream hover:text-ink">
+              Pitch a build
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Featured kits */}
-      <section className="bg-bone py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 flex items-end justify-between">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Kits ready to ship</h2>
-            <Link to="/packages" className="text-sm font-semibold text-charcoal hover:text-gold">All packs →</Link>
+      <section className="border-b border-ink/10 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-10 flex items-baseline justify-between gap-4">
+            <h2 className="text-3xl font-bold tracking-tightish sm:text-4xl">On the counter</h2>
+            <Link to="/packages" className="text-[15px] text-ink/60 hover:text-ink">All packs</Link>
           </div>
           {kits.length === 0 ? (
-            <div className="card text-center text-charcoal/60">
-              No kits yet — post one via <code className="rounded bg-charcoal/5 px-1 py-0.5 font-mono text-xs">POST /api/kits</code>.
+            <div className="divide-y divide-ink/10 border-y border-ink/10">
+              {[
+                { name: 'Billy Basic', price: '$1,200', note: 'One page. You exist online today.' },
+                { name: 'Grumpy Grazer', price: '$3,800', note: '5–7 pages, a blog, basic SEO.' },
+                { name: 'Alpha Horn', price: 'From $8,500', note: 'Custom. Auth, payments, the works.' },
+              ].map((row) => (
+                <Link key={row.name} to="/packages" className="flex items-baseline justify-between gap-6 py-5 hover:text-brass">
+                  <div>
+                    <p className="text-xl font-semibold tracking-tightish">{row.name}</p>
+                    <p className="mt-1 text-[15px] text-ink/60">{row.note}</p>
+                  </div>
+                  <p className="shrink-0 text-lg text-brass">{row.price}</p>
+                </Link>
+              ))}
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-3">
-              {kits.slice(0, 3).map((kit) => (
-                <Link key={kit.slug} to={`/kits/${kit.slug}`} className="card transition-shadow hover:shadow-md">
-                  <p className="mb-1 font-mono text-xs uppercase tracking-wider text-charcoal/50">Kit</p>
-                  <h3 className="mb-2 text-xl font-bold">{kit.title}</h3>
-                  <p className="mb-4 text-sm text-charcoal/70">{kit.tagline}</p>
-                  <p className="font-mono text-2xl font-bold text-gold">${(kit.price_cents / 100).toFixed(0)}</p>
+            <div className="divide-y divide-ink/10 border-y border-ink/10">
+              {kits.slice(0, 4).map((kit) => (
+                <Link
+                  key={kit.slug}
+                  to={`/kits/${kit.slug}`}
+                  className="flex items-baseline justify-between gap-6 py-5 hover:text-brass"
+                >
+                  <div>
+                    <p className="text-xl font-semibold tracking-tightish">{kit.title}</p>
+                    {kit.tagline && <p className="mt-1 text-[15px] text-ink/60">{kit.tagline}</p>}
+                  </div>
+                  <p className="shrink-0 text-lg text-brass">${(kit.price_cents / 100).toFixed(0)}</p>
                 </Link>
               ))}
             </div>
@@ -62,39 +89,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-charcoal py-20 text-bone">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-12 text-center text-3xl font-bold sm:text-4xl">How it works</h2>
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {[
-              { n: '1', t: 'Submit', d: 'Fill out the pitch form. Be clear, be concise, be compelling.' },
-              { n: '2', t: 'We Review', d: 'If it sparks interest, we’ll send a proposal with pricing and scope.' },
-              { n: '3', t: 'You Approve', d: 'Like the plan? Pay the deposit. We lock the timeline and move.' },
-              { n: '4', t: 'We Ship', d: 'You get working code, design, or whatever else you paid for.' },
-            ].map((s) => (
-              <div key={s.n} className="rounded-lg border border-bone/10 bg-charcoal/80 p-6">
-                <h3 className="mb-2 text-xl font-semibold">{s.n}. {s.t}</h3>
-                <p className="text-sm text-bone/80">{s.d}</p>
-              </div>
+      <section className="border-b border-ink/10 bg-cream py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 className="mb-10 text-3xl font-bold tracking-tightish sm:text-4xl">How a custom job runs</h2>
+          <ol className="grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((s, i) => (
+              <li key={s.t} className="border-t border-ink/10 py-6 sm:border-l sm:border-t-0 sm:px-6 first:sm:border-l-0 first:sm:pl-0">
+                <p className="mb-3 text-sm text-brass">{String(i + 1).padStart(2, '0')}</p>
+                <h3 className="text-xl font-semibold tracking-tightish">{s.t}</h3>
+                <p className="mt-2 text-[15px] leading-6 text-ink/65">{s.d}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      {/* Recent posts */}
       {posts.length > 0 && (
-        <section className="bg-white py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-10 flex items-end justify-between">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">From the blog</h2>
-              <Link to="/blog" className="text-sm font-semibold text-charcoal hover:text-gold">All posts →</Link>
+        <section className="border-b border-ink/10 py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mb-10 flex items-baseline justify-between">
+              <h2 className="text-3xl font-bold tracking-tightish sm:text-4xl">Notes</h2>
+              <Link to="/blog" className="text-[15px] text-ink/60 hover:text-ink">All notes</Link>
             </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {posts.slice(0, 3).map((p) => (
-                <Link key={p.slug} to={`/blog/${p.slug}`} className="card transition-shadow hover:shadow-md">
-                  <h3 className="mb-2 text-lg font-bold leading-snug">{p.title}</h3>
-                  <p className="text-sm text-charcoal/70">{p.excerpt}</p>
+            <div className="divide-y divide-ink/10 border-y border-ink/10">
+              {posts.slice(0, 4).map((p) => (
+                <Link key={p.slug} to={`/blog/${p.slug}`} className="block py-5 hover:text-brass">
+                  <h3 className="text-xl font-semibold tracking-tightish">{p.title}</h3>
+                  {p.excerpt && <p className="mt-1 text-[15px] text-ink/60">{p.excerpt}</p>}
                 </Link>
               ))}
             </div>
@@ -102,15 +123,15 @@ export default function Home() {
         </section>
       )}
 
-      <section className="bg-bone py-20 text-center">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-4 text-3xl font-bold sm:text-4xl">Ready when you are.</h2>
-          <p className="mb-8 text-lg text-charcoal/70">
-            Grab a kit and ship today — or pitch a custom build if your problem is bigger than a template.
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 className="max-w-[16ch] text-3xl font-bold tracking-tightish sm:text-4xl">Ready when you are.</h2>
+          <p className="mt-4 max-w-measure text-lg text-ink/65">
+            Grab a pack, or send a brief. We don’t do kickoff workshops.
           </p>
-          <div className="flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/kits/farm-stand" className="btn-primary">Buy Farm Stand Kit — $49</Link>
-            <Link to="/apply" className="btn-accent">Pitch Your Project</Link>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link to="/packages" className="btn-primary">See starter packs</Link>
+            <Link to="/apply" className="btn-accent">Pitch a build</Link>
           </div>
         </div>
       </section>

@@ -1,45 +1,42 @@
 import { Link } from 'react-router-dom';
+import Mark from './Mark.jsx';
 
 export default function Footer() {
   return (
-    <footer className="bg-charcoal text-bone">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-4">
-          <div className="lg:col-span-2">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="inline-block h-8 w-8 rounded bg-bone text-center font-mono text-xs leading-8 text-gold">CG</span>
-              <div>
-                <h3 className="text-xl font-bold">Crispy Goat</h3>
-                <p className="text-xs text-bone/70">The Anti-Agency Tech Agency</p>
-              </div>
-            </div>
-            <p className="max-w-md text-bone/80">
-              Productized site kits and selective custom builds. We deliver digital solutions with culinary precision —
-              no fluff, no nonsense.
+    <footer className="border-t border-ink/10 bg-ink text-cream">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div className="md:col-span-1">
+            <Link to="/" className="mb-4 inline-flex items-center gap-2.5">
+              <Mark className="h-7 w-7" />
+              <span className="font-semibold tracking-tightish">Crispy Goat</span>
+            </Link>
+            <p className="mt-4 max-w-xs text-[15px] leading-6 text-cream/70">
+              Site kits you can buy today. Custom work when a kit won’t cover it.
             </p>
           </div>
           <div>
-            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-bone/70">Site</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link className="text-bone/80 hover:text-gold" to="/packages">Starter Packs</Link></li>
-              <li><Link className="text-bone/80 hover:text-gold" to="/blog">Blog</Link></li>
-              <li><Link className="text-bone/80 hover:text-gold" to="/apply">Apply</Link></li>
-              <li><Link className="text-bone/80 hover:text-gold" to="/contact">Contact</Link></li>
+            <p className="mb-3 text-sm text-cream/50">Pages</p>
+            <ul className="space-y-2 text-[15px]">
+              <li><Link className="text-cream/80 hover:text-brass" to="/packages">Packs</Link></li>
+              <li><Link className="text-cream/80 hover:text-brass" to="/blog">Notes</Link></li>
+              <li><Link className="text-cream/80 hover:text-brass" to="/apply">Pitch</Link></li>
+              <li><Link className="text-cream/80 hover:text-brass" to="/about">About</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-bone/70">Contact</h4>
-            <ul className="space-y-2 text-sm text-bone/80">
-              <li><a className="hover:text-gold" href="mailto:tm@crispygoat.com">tm@crispygoat.com</a></li>
-              <li>Remote-first,<br />Serving clients worldwide</li>
-            </ul>
+            <p className="mb-3 text-sm text-cream/50">Reach</p>
+            <a className="text-[15px] text-cream/80 hover:text-brass" href="mailto:tm@crispygoat.com">
+              tm@crispygoat.com
+            </a>
+            <p className="mt-3 text-[15px] text-cream/60">Remote. Worldwide.</p>
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-bone/20 pt-6 text-xs text-bone/60 md:flex-row">
-          <p>© {new Date().getFullYear()} Crispy Goat. No rights reserved. Cook up something amazing.</p>
-          <div className="flex gap-4">
-            <Link className="hover:text-gold" to="/privacy">Privacy</Link>
-            <Link className="hover:text-gold" to="/terms">Terms</Link>
+        <div className="mt-12 flex flex-col gap-3 border-t border-cream/10 pt-6 text-sm text-cream/45 sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} Crispy Goat</p>
+          <div className="flex gap-5">
+            <Link className="hover:text-cream" to="/privacy">Privacy</Link>
+            <Link className="hover:text-cream" to="/terms">Terms</Link>
           </div>
         </div>
       </div>

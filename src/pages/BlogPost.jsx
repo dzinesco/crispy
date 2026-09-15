@@ -8,17 +8,13 @@ export default function BlogPost() {
   const { data: post, isLoading, error } = usePost(slug);
 
   if (isLoading) {
-    return (
-      <section className="mx-auto max-w-3xl px-4 py-24 text-center text-charcoal/60 sm:px-6 lg:px-8">
-        Loading…
-      </section>
-    );
+    return <section className="mx-auto max-w-6xl px-4 py-24 text-ink/50 sm:px-6">Loading…</section>;
   }
   if (error || !post?.post) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-24 sm:px-6 lg:px-8">
-        <h1 className="mb-4 text-3xl font-bold">Post not found</h1>
-        <Link to="/blog" className="text-gold hover:underline">← Back to blog</Link>
+      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <h1 className="text-3xl font-bold tracking-tightish">Note not found</h1>
+        <Link to="/blog" className="mt-4 inline-block text-brass hover:text-ink">All notes</Link>
       </section>
     );
   }
@@ -27,21 +23,21 @@ export default function BlogPost() {
   return (
     <>
       <Seo title={post.post.title} description={post.post.excerpt} path={`/blog/${post.post.slug}`} />
-      <article className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-        <Link to="/blog" className="mb-6 inline-block text-sm font-semibold text-charcoal/60 hover:text-gold">
-          ← Back to blog
-        </Link>
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl">{post.post.title}</h1>
+      <article className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <Link to="/blog" className="text-sm text-ink/50 hover:text-ink">All notes</Link>
+        <h1 className="mt-6 max-w-[20ch] text-4xl font-extrabold tracking-tightish sm:text-5xl">
+          {post.post.title}
+        </h1>
         {post.post.published_at && (
-          <p className="mb-10 font-mono text-xs uppercase tracking-wider text-charcoal/50">
+          <p className="mt-3 text-sm text-ink/45">
             {new Date(post.post.published_at).toLocaleDateString()}
           </p>
         )}
         {post.post.excerpt && (
-          <p className="mb-8 text-xl text-charcoal/70">{post.post.excerpt}</p>
+          <p className="mt-8 max-w-measure text-xl leading-8 text-ink/70">{post.post.excerpt}</p>
         )}
         <div
-          className="prose prose-charcoal max-w-none text-charcoal/85"
+          className="prose-cg mt-10"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </article>

@@ -13,6 +13,7 @@ import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
 import Admin from './pages/Admin.jsx';
 import NotFound from './pages/NotFound.jsx';
+import { Privacy, Terms } from './pages/Legal.jsx';
 
 export default function App() {
   return (
@@ -27,6 +28,8 @@ export default function App() {
         <Route path="/demos/:slug" element={<DemoDetail />} />
         <Route path="/apply" element={<Apply />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/admin/login" element={<Login />} />
         <Route
           path="/admin"

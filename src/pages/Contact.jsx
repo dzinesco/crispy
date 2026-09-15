@@ -4,17 +4,17 @@ export default function Contact() {
   return (
     <>
       <Seo title="Contact" description="Reach Crispy Goat." />
-      <section className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Contact</h1>
-        <p className="mb-10 text-lg text-charcoal/70">
-          The fastest way to reach us is email. We answer within one business day.
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <h1 className="text-4xl font-extrabold tracking-tightish sm:text-5xl">Contact</h1>
+        <p className="mt-4 max-w-measure text-lg text-ink/65">
+          Email is fastest. We answer within one business day.
         </p>
-        <div className="card">
-          <p className="mb-1 font-mono text-xs uppercase tracking-wider text-charcoal/50">Email</p>
-          <a href="mailto:tm@crispygoat.com" className="text-2xl font-bold text-gold hover:underline">
-            tm@crispygoat.com
-          </a>
-        </div>
+        <a
+          href="mailto:tm@crispygoat.com"
+          className="mt-10 inline-block text-3xl font-semibold tracking-tightish text-brass hover:text-ink"
+        >
+          tm@crispygoat.com
+        </a>
       </section>
     </>
   );

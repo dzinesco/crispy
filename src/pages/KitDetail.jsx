@@ -10,13 +10,13 @@ export default function KitDetail() {
   const [errMsg, setErrMsg] = useState(null);
 
   if (isLoading) {
-    return <section className="mx-auto max-w-3xl px-4 py-24 text-center text-charcoal/60">Loading…</section>;
+    return <section className="mx-auto max-w-6xl px-4 py-24 text-ink/50 sm:px-6">Loading…</section>;
   }
   if (error || !data?.kit) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-24 sm:px-6 lg:px-8">
-        <h1 className="mb-4 text-3xl font-bold">Kit not found</h1>
-        <Link to="/packages" className="text-gold hover:underline">← See packs</Link>
+      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <h1 className="text-3xl font-bold tracking-tightish">Kit not found</h1>
+        <Link to="/packages" className="mt-4 inline-block text-brass hover:text-ink">See packs</Link>
       </section>
     );
   }
@@ -38,41 +38,44 @@ export default function KitDetail() {
   return (
     <>
       <Seo title={kit.title} description={kit.tagline} path={`/kits/${kit.slug}`} />
-      <section className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <Link to="/packages" className="mb-6 inline-block text-sm font-semibold text-charcoal/60 hover:text-gold">
-          ← All packs
-        </Link>
-        <p className="mb-2 font-mono text-xs uppercase tracking-wider text-charcoal/50">Kit</p>
-        <h1 className="mb-2 text-4xl font-extrabold tracking-tight sm:text-5xl">{kit.title}</h1>
-        <p className="mb-8 text-xl text-charcoal/70">{kit.tagline}</p>
-        <p className="mb-8 font-mono text-4xl font-bold text-gold">${(kit.price_cents / 100).toFixed(0)}</p>
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <Link to="/packages" className="text-sm text-ink/50 hover:text-ink">All packs</Link>
+        <h1 className="mt-6 text-4xl font-extrabold tracking-tightish sm:text-5xl">{kit.title}</h1>
+        {kit.tagline && <p className="mt-3 max-w-measure text-xl text-ink/65">{kit.tagline}</p>}
+        <p className="mt-8 text-4xl text-brass">${(kit.price_cents / 100).toFixed(0)}</p>
         {kit.description_md && (
-          <div className="prose prose-charcoal mb-10 max-w-none text-charcoal/85" dangerouslySetInnerHTML={{ __html: kit.description_md }} />
+          <div className="prose-cg mt-10" dangerouslySetInnerHTML={{ __html: kit.description_md }} />
         )}
         {features.length > 0 && (
-          <ul className="mb-10 space-y-2">
+          <ul className="mt-10 max-w-measure space-y-2 text-[15px]">
             {features.map((f) => (
-              <li key={f} className="flex items-start gap-2">
-                <span className="mt-1 inline-block h-2 w-2 rounded-full bg-gold" />
+              <li key={f} className="flex gap-3">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 bg-brass" />
                 <span>{f}</span>
               </li>
             ))}
           </ul>
         )}
         {kit.demo_slug && (
-          <p className="mb-6">
-            <Link to={`/demos/${kit.demo_slug}`} className="font-semibold text-gold hover:underline">
-              See a live demo →
+          <p className="mt-8">
+            <Link to={`/demos/${kit.demo_slug}`} className="text-brass hover:text-ink">
+              See a live demo
             </Link>
           </p>
         )}
-        <div className="card flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-charcoal/70">Stripe checkout. No sales call required.</p>
-          <button onClick={onBuy} disabled={checkout.isPending} className="btn-accent w-full sm:w-auto">
+        <div className="mt-12 flex flex-col items-start gap-4 border-t border-ink/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[15px] text-ink/65">Stripe checkout. No sales call.</p>
+          <button onClick={onBuy} disabled={checkout.isPending} className="btn-accent">
             {checkout.isPending ? 'Redirecting…' : `Buy ${kit.title}`}
           </button>
         </div>
-        {errMsg && <p className="mt-4 text-sm text-red-600">{errMsg}</p>}
+        {errMsg && (
+          <p className="mt-4 text-sm text-red-800">
+            {errMsg === 'stripe_not_configured'
+              ? 'Checkout isn’t live yet. Email tm@crispygoat.com to buy this kit.'
+              : errMsg}
+          </p>
+        )}
       </section>
     </>
   );

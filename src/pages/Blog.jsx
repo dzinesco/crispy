@@ -8,30 +8,24 @@ export default function Blog() {
 
   return (
     <>
-      <Seo title="Blog" description="Notes on shipping sites, anti-agency ops, and productized work." />
-      <section className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Blog</h1>
-        <p className="mb-12 text-lg text-charcoal/70">
-          Notes on shipping sites, anti-agency ops, and productized work.
+      <Seo title="Notes" description="Notes on shipping sites and productized work." />
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <h1 className="text-4xl font-extrabold tracking-tightish sm:text-5xl">Notes</h1>
+        <p className="mt-4 max-w-measure text-lg text-ink/65">
+          Shipping sites, productized work, and the rest of the shop.
         </p>
-        {isLoading && <p className="text-charcoal/60">Loading…</p>}
-        {error && <p className="text-red-600">Failed to load posts.</p>}
+        {isLoading && <p className="mt-10 text-ink/50">Loading…</p>}
+        {error && <p className="mt-10 text-red-800">Couldn’t load notes.</p>}
         {!isLoading && posts.length === 0 && (
-          <div className="card">
-            <p className="mb-2 text-charcoal/70">No posts yet.</p>
-            <p className="text-sm text-charcoal/50">
-              Post one via{' '}
-              <code className="rounded bg-charcoal/5 px-1 py-0.5 font-mono text-xs">POST /api/posts</code>.
-            </p>
-          </div>
+          <p className="mt-12 max-w-measure text-ink/60">Nothing published yet. Check back.</p>
         )}
-        <div className="space-y-6">
+        <div className="mt-12 divide-y divide-ink/10 border-y border-ink/10">
           {posts.map((p) => (
-            <Link key={p.slug} to={`/blog/${p.slug}`} className="card block transition-shadow hover:shadow-md">
-              <h2 className="mb-2 text-2xl font-bold leading-tight hover:text-gold">{p.title}</h2>
-              <p className="text-charcoal/70">{p.excerpt}</p>
+            <Link key={p.slug} to={`/blog/${p.slug}`} className="block py-6 hover:text-brass">
+              <h2 className="text-2xl font-semibold tracking-tightish">{p.title}</h2>
+              {p.excerpt && <p className="mt-2 text-[15px] text-ink/65">{p.excerpt}</p>}
               {p.published_at && (
-                <p className="mt-3 font-mono text-xs uppercase tracking-wider text-charcoal/50">
+                <p className="mt-2 text-sm text-ink/45">
                   {new Date(p.published_at).toLocaleDateString()}
                 </p>
               )}

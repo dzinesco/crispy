@@ -4,16 +4,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        bone: '#F6F4EF',
-        charcoal: '#1B1B1B',
-        gold: '#D4A24C',
-        amber: {
-          600: '#C28A2C',
-        },
+        ink: '#171412',
+        paper: '#E7E1D4',
+        brass: '#A67C1A',
+        soot: '#2F2A24',
+        cream: '#F7F3EA',
+        bone: '#E7E1D4',
+        charcoal: '#171412',
+        gold: '#A67C1A',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        sans: ['"Bricolage Grotesque"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      letterSpacing: {
+        tightish: '-0.03em',
+      },
+      maxWidth: {
+        measure: '38rem',
       },
     },
   },

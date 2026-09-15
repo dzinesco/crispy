@@ -13,33 +13,94 @@ body,
 }
 
 body {
-  background-color: theme('colors.bone');
+  background-color: #e7e1d4;
+  background-image: radial-gradient(rgba(23, 20, 18, 0.035) 0.6px, transparent 0.6px);
+  background-size: 7px 7px;
 }
 
 a {
   color: inherit;
 }
 
+::selection {
+  background: #a67c1a;
+  color: #f7f3ea;
+}
+
+:focus-visible {
+  outline: 2px solid #a67c1a;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[44px];
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-sm px-5 py-2.5 text-[15px] font-semibold transition-colors duration-150;
+    letter-spacing: -0.03em;
   }
   .btn-primary {
-    @apply btn bg-charcoal text-bone hover:bg-neutral-800 focus:ring-gold focus:ring-offset-bone;
+    @apply btn;
+    background: #171412;
+    color: #f7f3ea;
+  }
+  .btn-primary:hover {
+    background: #2f2a24;
   }
   .btn-accent {
-    @apply btn bg-gold text-charcoal hover:bg-amber-600 focus:ring-charcoal focus:ring-offset-bone;
+    @apply btn;
+    background: #a67c1a;
+    color: #171412;
+  }
+  .btn-accent:hover {
+    background: #8e6914;
   }
   .btn-ghost {
-    @apply btn border border-charcoal/15 bg-white text-charcoal hover:border-gold hover:text-gold;
+    @apply btn border bg-transparent;
+    border-color: rgba(23, 20, 18, 0.2);
+    color: #171412;
+  }
+  .btn-ghost:hover {
+    background: #171412;
+    border-color: #171412;
+    color: #f7f3ea;
   }
   .card {
-    @apply rounded-lg border border-charcoal/10 bg-white p-6 shadow-sm;
+    @apply border p-6;
+    border-color: rgba(23, 20, 18, 0.1);
+    background: #f7f3ea;
   }
   .input {
-    @apply block w-full rounded-md border border-charcoal/15 bg-white px-3 py-2 text-sm shadow-sm focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold;
+    @apply block w-full rounded-sm border px-3 py-2.5 text-[15px] shadow-none focus:outline-none focus:ring-0;
+    border-color: rgba(23, 20, 18, 0.2);
+    background: #f7f3ea;
+  }
+  .input:focus {
+    border-color: #a67c1a;
   }
   .label {
-    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-charcoal/70;
+    @apply mb-1.5 block text-sm font-medium;
+    color: rgba(23, 20, 18, 0.7);
+  }
+  .prose-cg {
+    @apply text-[17px] leading-7;
+    max-width: 38rem;
+    color: rgba(23, 20, 18, 0.8);
+  }
+  .prose-cg h2 {
+    @apply mb-3 mt-10 text-2xl font-semibold;
+    letter-spacing: -0.03em;
+    color: #171412;
+  }
+  .prose-cg p + p {
+    @apply mt-4;
   }
 }

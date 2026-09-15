@@ -5,13 +5,13 @@ export default function NotFound() {
   return (
     <>
       <Seo title="404" description="Page not found." />
-      <section className="mx-auto max-w-2xl px-4 py-32 text-center sm:px-6 lg:px-8">
-        <p className="mb-2 font-mono text-sm uppercase tracking-widest text-gold">404</p>
-        <h1 className="mb-4 text-5xl font-extrabold tracking-tight">Nothing cooking.</h1>
-        <p className="mb-10 text-lg text-charcoal/70">
-          That page doesn't exist. The link may be old, or we may have moved it.
+      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+        <p className="text-sm text-brass">404</p>
+        <h1 className="mt-3 text-5xl font-extrabold tracking-tightish">Nothing cooking.</h1>
+        <p className="mt-4 max-w-measure text-lg text-ink/65">
+          That page isn’t here. The link may be old, or we moved it.
         </p>
-        <Link to="/" className="btn-primary">Back to home</Link>
+        <Link to="/" className="btn-primary mt-10">Back to home</Link>
       </section>
     </>
   );
