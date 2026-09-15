@@ -123,8 +123,8 @@ export default function Home() {
         <section className="border-b border-ink/10 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="mb-10 flex items-baseline justify-between">
-              <h2 className="text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">Notes</h2>
-              <Link to="/blog" className="min-h-[44px] text-[15px] text-ink/60 hover:text-ink">All notes</Link>
+              <h2 className="text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">Blog</h2>
+              <Link to="/blog" className="min-h-[44px] text-[15px] text-ink/60 hover:text-ink">All posts</Link>
             </div>
             <div className="divide-y divide-ink/10 border-y border-ink/10">
               {posts.slice(0, 4).map((p) => (

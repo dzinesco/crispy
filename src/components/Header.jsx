@@ -4,7 +4,7 @@ import Mark from './Mark.jsx';
 
 const links = [
   { to: '/packages', label: 'Packs' },
-  { to: '/blog', label: 'Notes' },
+  { to: '/blog', label: 'Blog' },
   { to: '/apply', label: 'Pitch' },
   { to: '/contact', label: 'Contact' },
 ];
@@ -12,7 +12,7 @@ const links = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/70 text-cream backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 text-cream backdrop-blur-xl">
       <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:h-12 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <Mark />

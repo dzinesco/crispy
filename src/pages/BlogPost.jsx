@@ -13,8 +13,8 @@ export default function BlogPost() {
   if (error || !post?.post) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
-        <h1 className="text-3xl font-bold tracking-tightish">Note not found</h1>
-        <Link to="/blog" className="mt-4 inline-block text-brass hover:text-ink">All notes</Link>
+        <h1 className="text-3xl font-semibold tracking-[-0.03em]">Post not found</h1>
+        <Link to="/blog" className="mt-4 inline-block min-h-[44px] text-brass hover:text-ink">All posts</Link>
       </section>
     );
   }
@@ -23,23 +23,24 @@ export default function BlogPost() {
   return (
     <>
       <Seo title={post.post.title} description={post.post.excerpt} path={`/blog/${post.post.slug}`} />
-      <article className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <Link to="/blog" className="text-sm text-ink/50 hover:text-ink">All notes</Link>
-        <h1 className="mt-6 max-w-[20ch] text-4xl font-extrabold tracking-tightish sm:text-5xl">
+      <article className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <Link to="/blog" className="text-[13px] text-ink/50 hover:text-ink">Blog</Link>
+        <h1 className="mt-6 max-w-[22ch] text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
           {post.post.title}
         </h1>
         {post.post.published_at && (
-          <p className="mt-3 text-sm text-ink/45">
-            {new Date(post.post.published_at).toLocaleDateString()}
+          <p className="mt-4 text-[13px] text-ink/45">
+            {new Date(post.post.published_at).toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </p>
         )}
         {post.post.excerpt && (
           <p className="mt-8 max-w-measure text-xl leading-8 text-ink/70">{post.post.excerpt}</p>
         )}
-        <div
-          className="prose-cg mt-10"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <div className="prose-cg mt-12" dangerouslySetInnerHTML={{ __html: html }} />
       </article>
     </>
   );

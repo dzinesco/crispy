@@ -19,7 +19,7 @@ export default function Footer() {
             <p className="mb-3 text-sm text-cream/50">Pages</p>
             <ul className="space-y-2 text-[15px]">
               <li><Link className="text-cream/80 hover:text-brass" to="/packages">Packs</Link></li>
-              <li><Link className="text-cream/80 hover:text-brass" to="/blog">Notes</Link></li>
+              <li><Link className="text-cream/80 hover:text-brass" to="/blog">Blog</Link></li>
               <li><Link className="text-cream/80 hover:text-brass" to="/apply">Pitch</Link></li>
               <li><Link className="text-cream/80 hover:text-brass" to="/about">About</Link></li>
             </ul>

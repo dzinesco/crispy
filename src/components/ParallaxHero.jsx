@@ -6,12 +6,11 @@ export default function ParallaxHero({ featured }) {
   const stageRef = useRef(null);
   const farRef = useRef(null);
   const midRef = useRef(null);
-  const copyRef = useRef(null);
   const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const stage = stageRef.current;
-    if (!stage) return;
+    if (!stage || reduced) return;
 
     let px = 0;
     let py = 0;
@@ -23,20 +22,13 @@ export default function ParallaxHero({ featured }) {
 
     const apply = () => {
       raf = 0;
-      if (reduced) return;
-      px += (tx - px) * 0.08;
-      py += (ty - py) * 0.08;
-      const far = farRef.current;
-      const mid = midRef.current;
-      const copy = copyRef.current;
-      if (far) {
-        far.style.transform = `translate3d(${px * -18}px, ${py * -10 + scroll * 40}px, -240px) scale(1.18)`;
+      px += (tx - px) * 0.1;
+      py += (ty - py) * 0.1;
+      if (farRef.current) {
+        farRef.current.style.transform = `translate3d(${px * -12}px, ${py * -8 + scroll * 28}px, 0) scale(1.08)`;
       }
-      if (mid) {
-        mid.style.transform = `translate3d(${px * 28}px, ${py * 16 + scroll * 70}px, 80px) rotateX(${py * -10}deg) rotateY(${px * 14}deg)`;
-      }
-      if (copy) {
-        copy.style.transform = `translate3d(${px * 8}px, ${py * 6 + scroll * 24}px, 0)`;
+      if (midRef.current) {
+        midRef.current.style.transform = `translate3d(${px * 16}px, ${py * 10}px, 0) rotateX(${py * -6}deg) rotateY(${px * 8}deg)`;
       }
       if (Math.abs(px - tx) > 0.001 || Math.abs(py - ty) > 0.001) {
         raf = requestAnimationFrame(apply);
@@ -57,18 +49,14 @@ export default function ParallaxHero({ featured }) {
 
     const onScroll = () => {
       const r = stage.getBoundingClientRect();
-      const h = r.height || 1;
-      scroll = Math.min(1, Math.max(0, -r.top / h));
+      scroll = Math.min(1, Math.max(0, -r.top / (r.height || 1)));
       kick();
     };
 
-    if (!reduced) {
-      stage.addEventListener('pointermove', onMove);
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-      kick();
-    }
-
+    stage.addEventListener('pointermove', onMove);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    kick();
     return () => {
       stage.removeEventListener('pointermove', onMove);
       window.removeEventListener('scroll', onScroll);
@@ -82,45 +70,46 @@ export default function ParallaxHero({ featured }) {
       className="hero-stage relative isolate overflow-hidden bg-ink text-cream"
       aria-label="Introduction"
     >
-      <div className="hero-world">
-        <img
-          ref={farRef}
-          src="/images/studio-bokeh.jpg"
-          alt=""
-          className="hero-layer hero-far"
-          decoding="async"
-        />
-        <img
-          ref={midRef}
-          src="/images/mark-3d.jpg?v=2"
-          alt="Brass mark"
-          className="hero-layer hero-mid"
-          decoding="async"
-        />
-      </div>
+      <img
+        ref={farRef}
+        src="/images/studio-bokeh.jpg"
+        alt=""
+        className="hero-far"
+        decoding="async"
+      />
 
-      <div ref={copyRef} className="relative z-10 mx-auto max-w-6xl px-4 py-[22vh] sm:px-6 sm:py-[24vh]">
-        <p className="mb-5 text-[13px] font-medium tracking-wide text-brass">Crispy Goat</p>
-        <h1 className="max-w-[13ch] text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-[4.75rem]">
-          Ship the site. Skip the agency theater.
-        </h1>
-        <p className="mt-6 max-w-[34rem] text-[17px] leading-7 text-cream/70 sm:text-[19px] sm:leading-8">
-          Buy a kit and go live today. Or pitch a custom build if the problem is bigger than a template.
-        </p>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          {featured ? (
-            <Link to={`/kits/${featured.slug}`} className="btn-accent">
-              Buy {featured.title} — ${(featured.price_cents / 100).toFixed(0)}
+      <div className="relative z-10 mx-auto grid min-h-[100svh] max-w-6xl items-center gap-8 px-4 py-24 sm:px-6 lg:grid-cols-2 lg:gap-6 lg:py-0">
+        <div>
+          <h1 className="max-w-[12ch] text-[2.75rem] font-semibold leading-[1.05] tracking-[-0.038em] sm:text-6xl lg:text-[4.35rem]">
+            Ship the site. Skip the agency theater.
+          </h1>
+          <p className="mt-6 max-w-[32rem] text-[17px] leading-7 text-cream/70 sm:text-[19px] sm:leading-8">
+            Buy a kit and go live today. Or pitch a custom build if the problem is bigger than a template.
+          </p>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            {featured ? (
+              <Link to={`/kits/${featured.slug}`} className="btn-accent">
+                Buy {featured.title} — ${(featured.price_cents / 100).toFixed(0)}
+              </Link>
+            ) : (
+              <Link to="/packages" className="btn-accent">See starter packs</Link>
+            )}
+            <Link
+              to="/apply"
+              className="btn-ghost border-cream/25 text-cream hover:border-cream hover:bg-cream hover:text-ink"
+            >
+              Pitch a build
             </Link>
-          ) : (
-            <Link to="/packages" className="btn-accent">See starter packs</Link>
-          )}
-          <Link
-            to="/apply"
-            className="btn-ghost border-cream/25 text-cream hover:border-cream hover:bg-cream hover:text-ink"
-          >
-            Pitch a build
-          </Link>
+          </div>
+        </div>
+
+        <div className="hero-product">
+          <img
+            ref={midRef}
+            src="/images/mark-3d.jpg?v=2"
+            alt="Brushed brass mark"
+            decoding="async"
+          />
         </div>
       </div>
     </section>
