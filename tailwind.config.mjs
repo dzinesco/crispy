@@ -14,7 +14,16 @@ export default {
         gold: '#A67C1A',
       },
       fontFamily: {
-        sans: ['"Bricolage Grotesque"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Display"',
+          '"SF Pro Text"',
+          '"Helvetica Neue"',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
       },
       letterSpacing: {
         tightish: '-0.03em',

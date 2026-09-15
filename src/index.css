@@ -14,8 +14,83 @@ body,
 
 body {
   background-color: #e7e1d4;
-  background-image: radial-gradient(rgba(23, 20, 18, 0.035) 0.6px, transparent 0.6px);
-  background-size: 7px 7px;
+}
+
+.hero-stage {
+  min-height: 100svh;
+  perspective: 1400px;
+  perspective-origin: 50% 42%;
+}
+
+.hero-world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.hero-layer {
+  position: absolute;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.hero-far {
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  object-fit: cover;
+  opacity: 0.55;
+  transform: translateZ(-240px) scale(1.18);
+}
+
+.hero-mid {
+  top: 6%;
+  right: -4%;
+  width: min(56vw, 620px);
+  height: auto;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.35));
+  transform: translateZ(80px);
+  -webkit-mask-image: radial-gradient(ellipse 52% 68% at 58% 48%, #000 38%, transparent 72%);
+  mask-image: radial-gradient(ellipse 52% 68% at 58% 48%, #000 38%, transparent 72%);
+}
+
+@media (max-width: 767px) {
+  .hero-mid {
+    top: auto;
+    bottom: -8%;
+    right: -18%;
+    width: 88vw;
+    opacity: 0.7;
+  }
+}
+
+.product-tilt img {
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-tilt {
+    perspective: 1000px;
+  }
+  .product-tilt img {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: rotateY(-8deg) rotateX(4deg);
+  }
+  .product-tilt:hover img {
+    transform: rotateY(0deg) rotateX(0deg) scale(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-far,
+  .hero-mid {
+    transform: none !important;
+  }
+  .product-tilt img {
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 a {
@@ -44,8 +119,8 @@ a {
 
 @layer components {
   .btn {
-    @apply inline-flex min-h-[44px] items-center justify-center rounded-sm px-5 py-2.5 text-[15px] font-semibold transition-colors duration-150;
-    letter-spacing: -0.03em;
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-full px-6 py-2.5 text-[15px] font-medium transition-colors duration-150;
+    letter-spacing: -0.01em;
   }
   .btn-primary {
     @apply btn;

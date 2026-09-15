@@ -12,20 +12,20 @@ const links = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur-sm">
-      <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/70 text-cream backdrop-blur-xl">
+      <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:h-12 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <Mark />
-          <span className="text-[15px] font-semibold tracking-tightish">Crispy Goat</span>
+          <span className="text-[13px] font-medium tracking-tight">Crispy Goat</span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-[15px] md:flex">
+        <nav className="hidden items-center gap-7 text-[13px] md:flex">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                isActive ? 'font-semibold text-ink' : 'text-ink/60 hover:text-ink'
+                isActive ? 'font-medium text-cream' : 'text-cream/60 hover:text-cream'
               }
             >
               {l.label}
@@ -38,7 +38,7 @@ export default function Header() {
           aria-label="Toggle menu"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-10 w-10 items-center justify-center md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center md:hidden"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {open ? (
@@ -51,15 +51,15 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="border-t border-ink/10 bg-paper md:hidden">
-          <div className="flex flex-col px-4 py-3">
+        <nav className="border-t border-white/10 bg-ink md:hidden">
+          <div className="flex flex-col px-4 py-2">
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `py-3 text-base ${isActive ? 'font-semibold' : 'text-ink/70'}`
+                  `min-h-[44px] py-3 text-[15px] ${isActive ? 'font-medium text-cream' : 'text-cream/70'}`
                 }
               >
                 {l.label}
