@@ -4,14 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#171412',
-        paper: '#E7E1D4',
-        brass: '#A67C1A',
-        soot: '#2F2A24',
-        cream: '#F7F3EA',
-        bone: '#E7E1D4',
-        charcoal: '#171412',
-        gold: '#A67C1A',
+        // Signal palette. Names stay so existing utilities recolor together.
+        // ink/charcoal/soot are neutral blacks. cream is white. paper/bone
+        // are a cool gray. brass/gold are the single rose accent — not brass.
+        ink: '#101014',
+        charcoal: '#101014',
+        soot: '#1A1A1F',
+        cream: '#FFFFFF',
+        paper: '#F4F4F5',
+        bone: '#F4F4F5',
+        brass: '#E1064A',
+        gold: '#E1064A',
       },
       fontFamily: {
         sans: [

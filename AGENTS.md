@@ -51,7 +51,7 @@ git push origin main     # runner on the box builds + scps + pm2 restart
 - All slugs are URL-safe (`[a-z0-9-]+`). Server validates and 409s on collision.
 - All `status` fields are `'draft' | 'published'`. Public reads filter to published.
 - Markdown bodies render via `marked` on the client; server stores raw MD.
-- Frontend uses bone/charcoal/gold Tailwind tokens — match existing palette for new components.
+- Frontend tokens in `tailwind.config.mjs` are the Signal palette: neutral black (`ink`), white (`cream`), cool gray (`paper`/`bone`), and one rose accent (`brass`/`gold`). Match those values. Do not bring back brass, cream, or bone as warm colors.
 - No new dependencies without a good reason — keep the bundle small.
 
 ## Things to NOT do

@@ -18,16 +18,16 @@ export default function Footer() {
           <div>
             <p className="mb-3 text-sm text-cream/50">Pages</p>
             <ul className="space-y-2 text-[15px]">
-              <li><Link className="text-cream/80 hover:text-brass" to="/packages">Packs</Link></li>
-              <li><Link className="text-cream/80 hover:text-brass" to="/portfolio">Portfolio</Link></li>
-              <li><Link className="text-cream/80 hover:text-brass" to="/blog">Blog</Link></li>
-              <li><Link className="text-cream/80 hover:text-brass" to="/apply">Pitch</Link></li>
-              <li><Link className="text-cream/80 hover:text-brass" to="/about">About</Link></li>
+              <li><Link className="text-cream/80 hover:text-cream" to="/packages">Packs</Link></li>
+              <li><Link className="text-cream/80 hover:text-cream" to="/portfolio">Portfolio</Link></li>
+              <li><Link className="text-cream/80 hover:text-cream" to="/blog">Blog</Link></li>
+              <li><Link className="text-cream/80 hover:text-cream" to="/apply">Pitch</Link></li>
+              <li><Link className="text-cream/80 hover:text-cream" to="/about">About</Link></li>
             </ul>
           </div>
           <div>
             <p className="mb-3 text-sm text-cream/50">Reach</p>
-            <a className="text-[15px] text-cream/80 hover:text-brass" href="mailto:tm@crispygoat.com">
+            <a className="text-[15px] text-cream/80 hover:text-cream" href="mailto:tm@crispygoat.com">
               tm@crispygoat.com
             </a>
             <p className="mt-3 text-[15px] text-cream/60">Remote. Worldwide.</p>

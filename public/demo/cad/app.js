@@ -10,7 +10,7 @@
   const state = {
     entities: [], // {id, type, layerId, stroke, strokeWidth, fill, fillEnabled, ...}
     layers: [
-      { id: "L0", name: "Layer 0", visible: true, locked: false, color: "#1f2937" },
+      { id: "L0", name: "Layer 0", visible: true, locked: false, color: "#101014" },
     ],
     activeLayerId: "L0",
     camera: { x: 0, y: 0, zoom: 1 }, // world point at center of viewport
@@ -19,7 +19,7 @@
     drawing: null, // in-progress entity
     hover: { x: 0, y: 0, screen: { x: 0, y: 0 } },
     style: {
-      stroke: "#1f2937",
+      stroke: "#101014",
       fill: "#ffffff",
       fillEnabled: false,
       strokeWidth: 1.5,
@@ -188,7 +188,7 @@
     const startY = Math.floor(b.minY / cellWorld) * cellWorld;
     const endY = Math.ceil(b.maxY / cellWorld) * cellWorld;
 
-    ctx.strokeStyle = "#e9edf2";
+    ctx.strokeStyle = "#e4e4e7";
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = startX; x <= endX; x += cellWorld) {
@@ -346,7 +346,7 @@
     }
 
     if (selected) {
-      ctx.strokeStyle = "#A67C1A";
+      ctx.strokeStyle = "#E1064A";
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 3]);
       drawEntityBBox(e);
@@ -849,8 +849,8 @@
       draw();
       const a = dragOp.start;
       const sa = worldToScreen(a);
-      ctx.strokeStyle = "#A67C1A";
-      ctx.fillStyle = "rgba(166, 124, 26, 0.12)";
+      ctx.strokeStyle = "#E1064A";
+      ctx.fillStyle = "rgba(225, 6, 74, 0.12)";
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 3]);
       const x = Math.min(sa.x, screen.x);
@@ -1247,7 +1247,7 @@
       name: "Layer " + state.layers.length,
       visible: true,
       locked: false,
-      color: "#1f2937",
+      color: "#101014",
     });
     state.activeLayerId = id;
     renderLayers();
@@ -1310,7 +1310,7 @@
           const data = JSON.parse(r.result);
           pushHistory();
           state.entities = data.entities || [];
-          state.layers = data.layers || [{ id: "L0", name: "Layer 0", visible: true, locked: false, color: "#1f2937" }];
+          state.layers = data.layers || [{ id: "L0", name: "Layer 0", visible: true, locked: false, color: "#101014" }];
           state.activeLayerId = state.layers[0].id;
           state.selection.clear();
           renderLayers();
@@ -1612,7 +1612,7 @@
       id: nextId(),
       type: "rect",
       layerId: layer.id,
-      stroke: "#2563eb",
+      stroke: "#E1064A",
       strokeWidth: 2,
       fillEnabled: false,
       a: { x: -60, y: -40 },
@@ -1632,7 +1632,7 @@
       id: nextId(),
       type: "line",
       layerId: layer.id,
-      stroke: "#1f2937",
+      stroke: "#101014",
       strokeWidth: 1.5,
       fillEnabled: false,
       a: { x: -100, y: -60 },

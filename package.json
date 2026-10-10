@@ -8,6 +8,7 @@
     "dev:web": "vite",
     "dev:api": "npm --prefix server run dev",
     "build": "vite build",
+    "lint": "node scripts/lint.mjs",
     "preview": "vite preview",
     "install:all": "npm install && npm --prefix server install"
   },

@@ -7,7 +7,7 @@ Stripe checkout. Designed to replace the current Astro deployment.
 ## Stack
 
 - **React 18 + Vite 5** — SPA, static build → `dist/`
-- **Tailwind 3** — utility CSS, charcoal/bone/gold palette
+- **Tailwind 3** — utility CSS, neutral black/white with a rose accent
 - **react-router-dom 6** — client routing
 - **@tanstack/react-query 5** — data fetching
 - **Express 4 + better-sqlite3** — API + embedded DB (single file at `server/data/crispy.db`)
