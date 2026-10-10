@@ -37,6 +37,6 @@ The same patterns are the page background on `/demo/<slug>/`. They live in `publ
 <link rel="stylesheet" href="/demo/_shared/geocities.css" />
 ```
 
-Put `class="geo geo-starfield"` (or `geo-tiles`, `geo-construction`, `geo-space`, `geo-sparkle`) on the element that is the empty page behind the UI. Winamp uses that on `<html>` and `<body>`, and the player windows stay on their own skin.
+Put the classes on `<body>`: `gc-starfield`, `gc-tiles`, `gc-construction`. The iPod and Winamp use `gc-starfield gc-tiles` on the page behind the device. The player itself is not restyled.
 
-A full-bleed app keeps a margin with `geo-inset` on `<html>` as well. Windows 3.11 uses it so only the outside of the desktop changes. Do not put these classes on the app's own windows or canvas.
+A full-bleed app keeps a margin with `gc-inset` on `<html>`, plus `gc-tiles` or `gc-construction` on `<html>` so the pattern stays outside the app. Windows 3.11 uses that so the teal desktop stays put.

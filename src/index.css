@@ -483,9 +483,14 @@ a {
   .folio-card:hover {
     transform: none !important;
   }
-  .geo.geo-starfield,
-  .geo.geo-space,
-  .geo.geo-sparkle,
+  body.gc-starfield::before,
+  body.gc-starfield::after,
+  .folio-bezel.gc-starfield,
+  .gc-showcase.gc-starfield,
+  .folio-bezel.gc-space,
+  .gc-showcase.gc-space,
+  .folio-bezel.gc-sparkle,
+  .gc-showcase.gc-sparkle,
   .gc-marquee span {
     animation: none !important;
   }

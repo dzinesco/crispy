@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/ipod/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="iPod — Web Edition. The classic Click Wheel music player, reborn with Spotify."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f5f5f5'/%3E%3Crect x='3' y='3' width='10' height='6' fill='%23366da4'/%3E%3Ccircle cx='8' cy='11' r='2' fill='%23dcdcdc' stroke='%23888' stroke-width='.5'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Pixelify+Sans:wght@400;600&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <title>iPod — Web Edition</title>
+  </head>
+  <body class="gc-starfield gc-tiles">
+    <!-- ============================================================
+         BACKDROP / DESKTOP
+         ============================================================ -->
+    <div class="desktop">
+      <div class="desktop-hint" id="desktop-hint">
+        <span>Click the iPod to wake it.</span>
+        <span class="kbd-hint">Wheel · drag · click · keyboard ← ↑ ↓ → ⏎ Menu</span>
+      </div>
+
+      <!-- ============================================================
+           iPOD HARDWARE
+           ============================================================ -->
+      <div class="ipod" id="ipod">
+        <!-- Top of device (screen housing) -->
+        <div class="ipod-top">
+          <div class="ipod-bezel">
+            <div class="ipod-screen" id="screen">
+              <!-- Pixel-rendered screen content (drawn via JS) -->
+              <div class="screen-stage" id="screen-stage">
+                <canvas id="screen-canvas" width="320" height="240"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom of device (click wheel housing) -->
+        <div class="ipod-bottom">
+          <div class="ipod-wheel" id="wheel">
+            <button class="wheel-btn wheel-menu" data-action="menu" aria-label="Menu">
+              <span>MENU</span>
+            </button>
+            <button class="wheel-btn wheel-prev" data-action="prev" aria-label="Previous">
+              <span class="glyph">|◀◀</span>
+            </button>
+            <button class="wheel-btn wheel-next" data-action="next" aria-label="Next">
+              <span class="glyph">▶▶|</span>
+            </button>
+            <button class="wheel-btn wheel-play" data-action="play" aria-label="Play / Pause">
+              <span id="play-glyph" class="glyph">▶‖</span>
+            </button>
+            <div class="wheel-ring" id="wheel-ring" aria-hidden="true">
+              <div class="wheel-touch" id="wheel-touch"></div>
+            </div>
+            <button class="wheel-btn wheel-center" data-action="select" aria-label="Select">
+              <span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dock / shadow -->
+      <div class="ipod-shadow"></div>
+    </div>
+
+    <!-- Hidden file input for "Add tracks" via local files -->
+    <input type="file" id="file-input" multiple accept="audio/*,.mp3,.wav,.ogg,.m4a,.flac,.opus" hidden />
+
+    <!-- Spotify SDK (loaded lazily once a Client ID is set) -->
+    <script>window.onSpotifyWebPlaybackSDKReady = window.onSpotifyWebPlaybackSDKReady || function () {};</script>
+    <script src="https://sdk.scdn.co/spotify-player.js" id="spotify-sdk" defer></script>
+
+    <script src="app.js"></script>
+  </body>
+</html>

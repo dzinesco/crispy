@@ -1,112 +1,155 @@
-/* Shared 90s page backgrounds for /demo/<slug>/.
-   Link this after the app stylesheet:
-   <link rel="stylesheet" href="/demo/_shared/geocities.css" />
-   Put `geo` plus one pattern class on the empty page behind the UI.
-   Patterns: geo-starfield, geo-tiles, geo-construction, geo-space, geo-sparkle.
-   Add geo-inset on <html> when a full-bleed app should keep a margin.
-   Do not put these classes on the app's own windows. */
+/* Shared 90s GeoCities-style backgrounds for crispygoat demo pages.
+   Usage: <link rel="stylesheet" href="/demo/_shared/geocities.css">
+   then add classes to <body>: gc-starfield, gc-tiles, gc-construction. */
+.gc-starfield, .gc-tiles, .gc-construction { position: relative; }
 
-.geo {
-  box-shadow:
-    inset 0 0 0 2px #111,
-    inset 0 0 0 4px #fff,
-    inset 0 0 0 6px #111;
+/* Body goes transparent so the html background and star layers show through. */
+body.gc-starfield, body.gc-tiles { background: transparent !important; }
+
+/* Starfield: deep-space base + two twinkling star layers */
+html:has(body.gc-starfield) {
+  background: #05030f radial-gradient(ellipse at 50% 40%, #1a0f3a 0%, #05030f 70%) !important;
 }
-
-.geo.geo-starfield {
-  background-color: #07071f;
-  background-image:
-    radial-gradient(1.6px 1.6px at 6px 8px, #fff 50%, transparent 52%),
-    radial-gradient(2px 2px at 28px 22px, #ffe56a 50%, transparent 52%),
-    radial-gradient(1.4px 1.4px at 40px 10px, #9ecbff 50%, transparent 52%),
-    radial-gradient(1.6px 1.6px at 16px 36px, #fff 50%, transparent 52%),
-    linear-gradient(rgba(170, 205, 255, 0.72) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(170, 205, 255, 0.72) 1px, transparent 1px);
-  background-size: 48px 48px, 48px 48px, 48px 48px, 48px 48px, 32px 32px, 32px 32px;
-  background-repeat: repeat;
-  animation: geo-twinkle 2.4s steps(2, end) infinite;
-}
-
-.geo.geo-tiles {
-  background-color: #071433;
-  background-image:
-    linear-gradient(45deg, #16357a 25%, transparent 25%),
-    linear-gradient(-45deg, #16357a 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #2f62c8 75%),
-    linear-gradient(-45deg, transparent 75%, #2f62c8 75%);
-  background-size: 18px 18px;
-  background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+body.gc-starfield::before, body.gc-starfield::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
   background-repeat: repeat;
 }
+body.gc-starfield::before {
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 90px 120px, #ffe, transparent),
+    radial-gradient(1.5px 1.5px at 160px 60px, #fff, transparent),
+    radial-gradient(1px 1px at 210px 170px, #cff, transparent),
+    radial-gradient(1px 1px at 50px 200px, #fff, transparent);
+  background-size: 240px 240px;
+  animation: gc-twinkle 3.2s ease-in-out infinite alternate;
+}
+body.gc-starfield::after {
+  background-image:
+    radial-gradient(2px 2px at 70px 80px, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 300px 40px, #ffd, transparent),
+    radial-gradient(2px 2px at 230px 260px, #fcf, transparent),
+    radial-gradient(1px 1px at 140px 330px, #fff, transparent);
+  background-size: 380px 380px;
+  animation: gc-twinkle 4.7s ease-in-out 1.3s infinite alternate;
+}
+@keyframes gc-twinkle { from { opacity: .35; } to { opacity: 1; } }
 
-.geo.geo-construction {
+/* Subtle tiled pattern (layered over starfield via an extra class) */
+html:has(body.gc-tiles) {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(120,90,255,.07) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(-45deg, rgba(0,255,200,.05) 0 2px, transparent 2px 24px) !important;
+}
+html:has(body.gc-starfield.gc-tiles) {
+  background:
+    repeating-linear-gradient(45deg, rgba(120,90,255,.07) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(-45deg, rgba(0,255,200,.05) 0 2px, transparent 2px 24px),
+    radial-gradient(ellipse at 50% 40%, #1a0f3a 0%, #05030f 70%) !important;
+}
+
+/* "Under construction" stripe strip along the bottom edge */
+.gc-construction::after {
+  content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 10px; z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(-45deg, #ffd400 0 12px, #111 12px 24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.gc-starfield::before, body.gc-starfield::after { animation: none; opacity: .8; }
+}
+
+/* Portfolio frames use the same class names on a box, not on <body>.
+   The construction stripe stays a page-edge accent, not a card overlay. */
+.folio-bezel.gc-construction::after,
+.gc-showcase.gc-construction::after {
+  content: none;
+}
+
+.folio-bezel.gc-starfield,
+.gc-showcase.gc-starfield {
+  background-color: #05030f;
+  background-image:
+    radial-gradient(1px 1px at 8px 10px, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 22px 18px, #ffe, transparent),
+    radial-gradient(1px 1px at 34px 8px, #cff, transparent),
+    repeating-linear-gradient(45deg, rgba(120, 90, 255, 0.35) 0 2px, transparent 2px 14px),
+    repeating-linear-gradient(-45deg, rgba(0, 255, 200, 0.18) 0 2px, transparent 2px 14px),
+    radial-gradient(ellipse at 50% 40%, #1a0f3a 0%, #05030f 70%);
+  background-size: 40px 40px, 40px 40px, 40px 40px, auto, auto, auto;
+  animation: gc-frame-twinkle 3.2s ease-in-out infinite alternate;
+}
+
+.folio-bezel.gc-tiles,
+.gc-showcase.gc-tiles {
+  background-color: #120a28;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(150, 120, 255, 0.55) 0 2px, transparent 2px 14px),
+    repeating-linear-gradient(-45deg, rgba(0, 255, 200, 0.28) 0 2px, transparent 2px 14px);
+}
+
+.folio-bezel.gc-construction,
+.gc-showcase.gc-construction {
   background-color: #111;
-  background-image: repeating-linear-gradient(-45deg, #111 0 10px, #f5d90a 10px 20px);
-  background-repeat: repeat;
+  background-image: repeating-linear-gradient(-45deg, #ffd400 0 10px, #111 10px 20px);
 }
 
-.geo.geo-space {
+.folio-bezel.gc-space,
+.gc-showcase.gc-space {
   background-color: #2a0654;
   background-image:
-    radial-gradient(1.4px 1.4px at 12px 16px, #fff 50%, transparent 52%),
-    radial-gradient(1.6px 1.6px at 40px 36px, #fff 50%, transparent 52%),
-    radial-gradient(ellipse at 18% 82%, rgba(255, 45, 149, 0.95), transparent 58%),
-    radial-gradient(ellipse at 84% 16%, rgba(61, 126, 255, 0.9), transparent 52%),
+    radial-gradient(1.4px 1.4px at 10px 12px, #fff, transparent),
+    radial-gradient(ellipse at 18% 80%, rgba(255, 45, 149, 0.95), transparent 58%),
     linear-gradient(128deg, #4c1d95 0%, #e1064a 48%, #22d3ee 100%);
-  background-size: 56px 56px, 56px 56px, auto, auto, auto;
-  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
-  animation: geo-drift 16s linear infinite;
+  background-size: 36px 36px, auto, auto;
 }
 
-.geo.geo-sparkle {
+.folio-bezel.gc-sparkle,
+.gc-showcase.gc-sparkle {
   background-color: #14041f;
   background-image:
     linear-gradient(115deg, transparent 0 36%, rgba(255, 255, 255, 0.72) 47%, transparent 58%),
-    radial-gradient(circle at 22% 30%, #ff4fd8 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 74% 62%, #7ecbff 0 1.5px, transparent 2.5px),
     linear-gradient(155deg, #3b0764, #e1064a 58%, #fbbf24);
-  background-size: 240px 240px, 120px 120px, 160px 160px, auto;
-  background-repeat: repeat, repeat, repeat, no-repeat;
-  animation: geo-drift 6s linear infinite;
+  background-size: 180px 180px, auto;
+  animation: gc-frame-twinkle 6s linear infinite;
 }
 
-html.geo-inset {
+/* Full-bleed apps: keep the pattern in the margin. The app body stays opaque. */
+html.gc-inset {
   box-sizing: border-box;
   min-height: 100%;
 }
-
-html.geo-inset body {
+html.gc-inset body {
   position: fixed;
   inset: 16px;
   width: auto;
   height: auto;
   margin: 0;
 }
-
-html.geo-inset .desktop-root {
+html.gc-inset .desktop-root {
   inset: 16px;
 }
-
-@keyframes geo-twinkle {
-  0%,
-  100% {
-    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
-  }
-  50% {
-    background-position: 0 0, 2px -2px, 0 0, -2px 2px, 0 0, 0 0;
-  }
+html.gc-inset.gc-tiles {
+  background-color: #120a28;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(150, 120, 255, 0.55) 0 2px, transparent 2px 14px),
+    repeating-linear-gradient(-45deg, rgba(0, 255, 200, 0.28) 0 2px, transparent 2px 14px);
+}
+html.gc-inset.gc-construction {
+  background-color: #111;
+  background-image: repeating-linear-gradient(-45deg, #ffd400 0 12px, #111 12px 24px);
 }
 
-@keyframes geo-drift {
-  to {
-    background-position: 48px 0, 20px 28px, 0 0, 0 0, 0 0;
-  }
+@keyframes gc-frame-twinkle {
+  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, 3px -2px, -2px 2px, 0 0, 0 0, 0 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .geo.geo-starfield,
-  .geo.geo-space,
-  .geo.geo-sparkle {
+  .folio-bezel.gc-starfield,
+  .gc-showcase.gc-starfield,
+  .folio-bezel.gc-sparkle,
+  .gc-showcase.gc-sparkle {
     animation: none;
   }
 }

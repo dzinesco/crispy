@@ -1,0 +1,496 @@
+/* =============================================================
+   iPod — Web Edition
+   Classic 4th-gen "Click Wheel" iPod aesthetic (pre-color).
+   Monochrome LCD, white plastic body, chrome wheel ring.
+   ============================================================= */
+
+:root {
+  /* Body — classic white plastic */
+  --body-light:   #fdfdfd;
+  --body-mid:     #f4f4f4;
+  --body-dark:    #d8d8d8;
+  --body-shadow:  #8a8a8a;
+  --body-edge:    #9a9a9a;
+
+  /* Chrome accents */
+  --chrome-light: #f4f4f4;
+  --chrome-mid:   #c8c8c8;
+  --chrome-dark:  #6e6e6e;
+  --chrome-edge:  #2a2a2a;
+
+  /* Wheel plastic (slightly cooler than body) */
+  --wheel-light:  #ededed;
+  --wheel-mid:    #dcdcdc;
+  --wheel-dark:   #c0c0c0;
+  --wheel-text:   #6a6a6a;
+
+  /* Backdrop */
+  --bg-top: #2a2f3a;
+  --bg-bot: #15171c;
+
+  /* Monochrome LCD (backlit, classic dark-blue) */
+  --lcd-bg:        #1a3a5e;
+  --lcd-bg-deep:   #0f2540;
+  --lcd-bg-hi:     #2b5586;
+  --lcd-fg:        #f0f0f0;
+  --lcd-fg-dim:    #a9bcd0;
+  --lcd-rule:      #4a6c95;
+  --lcd-rule-soft: #2f507a;
+
+  /* Type */
+  --font-ui:  'Inter', -apple-system, system-ui, sans-serif;
+  --font-lcd: 'Chicago', 'Geneva', 'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 40%, var(--bg-top), var(--bg-bot) 75%);
+  color: #ddd;
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* =============================================================
+   DESKTOP
+   ============================================================= */
+.desktop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.desktop-hint {
+  position: fixed;
+  top: 24px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #aab;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.kbd-hint {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  color: #889;
+}
+
+/* =============================================================
+   iPOD HARDWARE
+   Classic 4th-gen proportions: ~60.9 x 102.4 mm body.
+   ============================================================= */
+.ipod {
+  --w: 300px;
+  width: var(--w);
+  height: 500px;
+  background:
+    linear-gradient(
+      180deg,
+      var(--body-light) 0%,
+      var(--body-mid)   35%,
+      var(--body-mid)   82%,
+      var(--body-dark)  100%
+    );
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+    inset 1px 0 0 rgba(255, 255, 255, 0.5),
+    inset -1px 0 0 rgba(0, 0, 0, 0.05),
+    0 22px 40px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.4);
+  padding: 16px 14px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Subtle vertical seam line down the body sides (plastic mould) */
+.ipod::before,
+.ipod::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.05) 30%,
+    rgba(0,0,0,0.05) 70%,
+    rgba(0,0,0,0) 100%
+  );
+  pointer-events: none;
+}
+.ipod::before { left: 2px; }
+.ipod::after  { right: 2px; }
+
+/* Top half (screen housing) */
+.ipod-top {
+  height: 56%;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+}
+
+.ipod-bezel {
+  width: 92%;
+  height: 90%;
+  background:
+    linear-gradient(
+      180deg,
+      var(--chrome-light) 0%,
+      var(--chrome-mid)  50%,
+      var(--chrome-dark) 100%
+    );
+  border-radius: 4px;
+  padding: 5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+    0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.ipod-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--lcd-bg);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    inset 0 0 14px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.screen-stage {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  /* Subtle scanline overlay for the LCD */
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.06) 0px,
+    rgba(0, 0, 0, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
+
+#screen-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  position: relative;
+  z-index: 1;
+}
+
+/* Bottom half (click wheel) */
+.ipod-bottom {
+  height: 44%;
+  display: grid;
+  place-items: center;
+  padding-top: 6px;
+}
+
+.ipod-wheel {
+  --wheel-size: 210px;
+  position: relative;
+  width: var(--wheel-size);
+  height: var(--wheel-size);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      var(--wheel-light) 0%,
+      var(--wheel-mid)   55%,
+      var(--wheel-dark)  100%
+    );
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.85),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Chrome accent ring around the wheel */
+.ipod-wheel::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    var(--chrome-light) 0%,
+    var(--chrome-mid)  50%,
+    var(--chrome-dark) 100%
+  );
+  z-index: -1;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    0 1px 2px rgba(0,0,0,0.3);
+}
+
+.wheel-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.wheel-ring.dragging { cursor: grabbing; }
+
+.wheel-touch {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+/* Center button */
+.wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 72px;
+  height: 72px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: none;
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      #ffffff 0%,
+      #f0f0f0 40%,
+      #d6d6d6 100%
+    );
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 4;
+}
+
+.wheel-center:active {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.7);
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+/* Wheel quadrant buttons (Menu / Prev / Next / Play) */
+.wheel-btn {
+  position: absolute;
+  border: none;
+  background: transparent;
+  color: var(--wheel-text);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 3;
+  transition: color 0.12s ease;
+  display: grid;
+  place-items: center;
+}
+
+.wheel-btn:active { color: #333; }
+
+.wheel-btn:focus-visible {
+  outline: 2px solid #1a3a5e;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* MENU — top */
+.wheel-menu {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 32px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.wheel-menu:active { transform: translateX(-50%); }
+
+/* PREV — left */
+.wheel-prev {
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 78px;
+  font-size: 17px;
+  border-radius: 4px;
+}
+.wheel-prev:active { transform: translateY(-50%); }
+
+/* NEXT — right */
+.wheel-next {
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 78px;
+  font-size: 17px;
+  border-radius: 4px;
+}
+.wheel-next:active { transform: translateY(-50%); }
+
+/* PLAY/PAUSE — bottom */
+.wheel-play {
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 32px;
+  font-size: 17px;
+  border-radius: 4px;
+}
+.wheel-play:active { transform: translateX(-50%); }
+
+/* Soft cast shadow under the device */
+.ipod-shadow {
+  width: 240px;
+  height: 14px;
+  margin: 12px auto 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.45), rgba(0,0,0,0) 70%);
+  filter: blur(2px);
+  position: relative;
+  z-index: 0;
+}
+
+/* =============================================================
+   RESPONSIVE
+   ============================================================= */
+@media (max-height: 720px) {
+  .ipod { --w: 270px; height: 450px; }
+  .ipod-wheel { --wheel-size: 184px; }
+  .wheel-center { width: 62px; height: 62px; }
+  .wheel-menu, .wheel-play { width: 70px; height: 28px; }
+  .wheel-prev, .wheel-next { width: 28px; height: 70px; }
+}
+
+@media (max-height: 600px) {
+  .ipod { --w: 230px; height: 380px; }
+  .ipod-wheel { --wheel-size: 156px; }
+  .wheel-center { width: 52px; height: 52px; }
+  .wheel-menu, .wheel-play { width: 60px; height: 24px; font-size: 11px; }
+  .wheel-prev, .wheel-next { width: 24px; height: 60px; }
+}
+/* =============================================================
+   MONOCHROME RESTYLE (2G–4G iPod look)
+   Body ~61.8 x 103.5 mm, white polycarbonate front with a gloss
+   sheen, mirror-chrome back edge, grayscale gray-green LCD.
+   ============================================================= */
+.ipod {
+  --w: 300px;
+  width: var(--w);
+  height: calc(var(--w) * 1.675);
+  border-radius: 26px;
+  padding: 20px 20px 18px;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.55) 42%, rgba(255,255,255,0) 52%),
+    linear-gradient(180deg, #ffffff 0%, #f7f7f5 45%, #eeeeec 100%);
+  box-shadow:
+    /* chrome back edge peeking around the white front */
+    0 0 0 1px #c9c9c9,
+    0 0 0 3px #f2f2f2,
+    0 0 0 4px #8d8d8d,
+    0 0 0 5px #e6e6e6,
+    0 0 0 6px #6f6f6f,
+    inset 0 2px 1px rgba(255,255,255,1),
+    inset 0 -3px 6px rgba(0,0,0,.08),
+    0 26px 48px rgba(0,0,0,.6),
+    0 6px 12px rgba(0,0,0,.4);
+}
+.ipod::before, .ipod::after { display: none; }
+
+.ipod-top { height: 47%; padding: 0; }
+.ipod-bezel {
+  width: 100%;
+  height: 100%;
+  padding: 9px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #2b2b2b, #1a1a1a);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.8),
+    inset 0 -1px 0 rgba(255,255,255,.12),
+    0 1px 0 rgba(255,255,255,.9),
+    0 -1px 0 rgba(0,0,0,.15);
+}
+.ipod-screen {
+  background: #c4ccba;
+  border-radius: 1px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.35);
+}
+.screen-stage {
+  /* faint LCD pixel grid + recess shadow */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.035) 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.035) 0 1px, transparent 1px 2px);
+}
+.screen-stage::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  box-shadow: inset 0 3px 6px rgba(0,0,0,.28), inset 0 0 12px rgba(0,0,0,.12);
+}
+
+.ipod-bottom { height: 53%; padding-top: 8px; }
+.ipod-wheel {
+  --wheel-size: 196px;
+  background: radial-gradient(circle at 50% 35%, #fbfbfa 0%, #f1f1ef 60%, #e3e3e0 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,1),
+    inset 0 -2px 3px rgba(0,0,0,.10),
+    0 0 0 1px rgba(0,0,0,.10),
+    0 2px 4px rgba(0,0,0,.14),
+    0 1px 0 rgba(255,255,255,.9);
+}
+.ipod-wheel::after { display: none; }
+.wheel-btn { color: #a9a9a9; font-family: Helvetica, Arial, sans-serif; font-weight: 700; }
+.wheel-btn:active { color: #6a6a6a; }
+.wheel-menu { font-size: 13px; letter-spacing: .08em; top: 10px; }
+.wheel-btn .glyph { font-size: 11px; letter-spacing: -2px; white-space: nowrap; }
+.wheel-prev { left: 6px; } .wheel-next { right: 6px; } .wheel-play { bottom: 8px; }
+.wheel-center {
+  width: 74px; height: 74px;
+  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #f4f4f2 45%, #dedede 100%);
+  box-shadow:
+    inset 0 -2px 3px rgba(255,255,255,.9),
+    inset 0 3px 5px rgba(0,0,0,.14),
+    0 0 0 1px rgba(0,0,0,.10),
+    0 1px 0 rgba(255,255,255,1);
+}
+.ipod-shadow { width: 260px; margin-top: 18px; }
+
+@media (max-height: 820px) {
+  .ipod { --w: 270px; border-radius: 24px; padding: 18px; }
+  .ipod-wheel { --wheel-size: 176px; }
+  .wheel-center { width: 66px; height: 66px; }
+}
+@media (max-height: 640px) {
+  .ipod { --w: 220px; border-radius: 20px; padding: 14px; }
+  .ipod-wheel { --wheel-size: 142px; }
+  .wheel-center { width: 52px; height: 52px; }
+}

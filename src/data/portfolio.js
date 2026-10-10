@@ -46,6 +46,17 @@ export const projects = [
     bg: 'starfield',
   },
   {
+    slug: 'ipod',
+    title: 'iPod — Web Edition',
+    description: 'A click-wheel iPod in your browser. Spin the wheel through real menus, hit play on built-in demo tracks, add your own audio files, or connect Spotify.',
+    tags: ['Retro', 'Browser', 'Audio'],
+    image: '/images/portfolio/ipod.png',
+    imageAlt: 'Classic white click-wheel iPod showing its main menu on a starfield background',
+    demoHref: '/demo/ipod/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
     slug: 'bench',
     title: 'Next up',
     description: 'Another toy is in pieces on the bench. It gets a link when you can open it and use it.',
