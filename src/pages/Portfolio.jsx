@@ -11,27 +11,35 @@ export default function Portfolio() {
         path="/portfolio"
       />
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-        <h1 className="text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">Portfolio</h1>
-        <p className="mt-4 max-w-measure text-lg text-ink/65">
+        <p className="text-[13px] font-medium text-brass">Work</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">Portfolio</h1>
+        <p className="mt-4 max-w-measure text-lg text-ink/70">
           Small tools we shipped and left running. If it is on this page, you can open it.
         </p>
 
         {projects.length === 0 ? (
           <p className="mt-12 max-w-measure text-ink/60">Nothing on the counter yet.</p>
         ) : (
-          <ul className="mt-14 grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className={`mt-12 grid list-none gap-8 ${projects.length > 1 ? 'sm:grid-cols-2' : 'max-w-3xl'}`}>
             {projects.map((project) => (
-              <li key={project.slug} className="flex flex-col border border-ink/10 bg-cream">
-                <img
-                  src={project.image}
-                  alt={project.imageAlt || ''}
-                  className="aspect-[16/10] w-full object-cover object-top"
-                  width="1280"
-                  height="800"
-                />
+              <li id={project.slug} key={project.slug} className="scroll-mt-20 flex flex-col border border-ink/10 bg-cream">
+                <div className="relative">
+                  <img
+                    src={project.image}
+                    alt={project.imageAlt || ''}
+                    className="aspect-[16/10] w-full object-cover object-top"
+                    width="1280"
+                    height="800"
+                  />
+                  {project.demoHref && (
+                    <span className="absolute left-3 top-3 bg-ink px-2 py-1 text-[12px] font-medium text-cream">
+                      Live
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h2 className="text-2xl font-semibold tracking-[-0.025em]">{project.title}</h2>
-                  <p className="mt-2 text-[15px] leading-6 text-ink/65">{project.description}</p>
+                  <p className="mt-2 text-[15px] leading-6 text-ink/70">{project.description}</p>
                   {project.tags?.length > 0 && (
                     <ul className="mt-4 flex list-none flex-wrap gap-2">
                       {project.tags.map((tag) => (

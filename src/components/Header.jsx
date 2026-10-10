@@ -26,7 +26,9 @@ export default function Header() {
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                isActive ? 'font-medium text-cream' : 'text-cream/60 hover:text-cream'
+                isActive
+                  ? 'font-medium text-cream underline decoration-brass decoration-2 underline-offset-8'
+                  : 'text-cream/60 hover:text-cream'
               }
             >
               {l.label}
@@ -60,7 +62,7 @@ export default function Header() {
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `min-h-[44px] py-3 text-[15px] ${isActive ? 'font-medium text-cream' : 'text-cream/70'}`
+                  `min-h-[44px] border-l-2 py-3 pl-3 text-[15px] ${isActive ? 'border-brass font-medium text-cream' : 'border-transparent text-cream/70'}`
                 }
               >
                 {l.label}
