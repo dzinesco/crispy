@@ -4,6 +4,7 @@ import AdminGate from './components/AdminGate.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import Packages from './pages/Packages.jsx';
+import Portfolio from './pages/Portfolio.jsx';
 import Blog from './pages/Blog.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import KitDetail from './pages/KitDetail.jsx';
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/packages" element={<Packages />} />
+        <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/kits/:slug" element={<KitDetail />} />

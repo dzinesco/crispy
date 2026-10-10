@@ -4,6 +4,7 @@ import Mark from './Mark.jsx';
 
 const links = [
   { to: '/packages', label: 'Packs' },
+  { to: '/portfolio', label: 'Portfolio' },
   { to: '/blog', label: 'Blog' },
   { to: '/apply', label: 'Pitch' },
   { to: '/contact', label: 'Contact' },
