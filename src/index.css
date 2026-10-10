@@ -240,8 +240,8 @@ a {
 }
 
 .folio-bezel {
-  background: #101014;
-  padding: 8px;
+  background-color: #101014;
+  padding: 14px;
   border-top: 2px solid #e1064a;
 }
 
@@ -431,6 +431,14 @@ a {
     transform: none !important;
   }
   .folio-card:hover {
+    transform: none !important;
+  }
+  .gc-bg,
+  .gc-marquee span {
+    animation: none !important;
+  }
+  .gc-marquee span {
+    padding-left: 0.75rem;
     transform: none !important;
   }
   .work-live {

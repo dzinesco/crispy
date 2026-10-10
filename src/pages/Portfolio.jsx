@@ -9,7 +9,12 @@ import {
   soonProjects,
   featuredProject,
   portfolioTags,
+  backdropName,
 } from '../data/portfolio.js';
+
+function backdropClass(project) {
+  return `gc-bg gc-${backdropName(project)}`;
+}
 
 function Tags({ tags, light = false }) {
   if (!tags?.length) return null;
@@ -48,7 +53,7 @@ function ReadMore({ project, onDark = false }) {
 function AppCard({ project }) {
   return (
     <li id={project.slug} className="folio-card scroll-mt-20 flex h-full flex-col bg-cream text-ink">
-      <div className="folio-bezel">
+      <div className={`folio-bezel ${backdropClass(project)}`}>
         <div className="folio-shot">
           <img
             src={project.image}
@@ -78,7 +83,7 @@ function AppCard({ project }) {
 function SoonCard({ project }) {
   return (
     <li id={project.slug} className="folio-card folio-soon scroll-mt-20 flex h-full flex-col bg-cream text-ink">
-      <div className="folio-bezel">
+      <div className={`folio-bezel ${backdropClass(project)}`}>
         <div className="folio-shot folio-soon-stage">
           <Mark className="h-10 w-10 text-brass" />
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-cream/80">In progress</p>
@@ -142,7 +147,13 @@ export default function Portfolio() {
 
           {hero && (
             <article id={hero.slug} className="scroll-mt-20 mt-10 grid items-center gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-10">
-              <WorkMedia project={hero} live />
+              <div className={`gc-showcase ${backdropClass(hero)}`}>
+                <div className="gc-marquee" aria-hidden="true">
+                  <span>★ crispy goat ★ {hero.title} ★ a working browser app ★ click launch ★</span>
+                </div>
+                <WorkMedia project={hero} live />
+                <p className="gc-hits" aria-hidden="true">HITS 000042</p>
+              </div>
               <div>
                 <p className="text-[12px] font-medium uppercase tracking-[0.16em] text-brass">
                   {filter === 'All' ? 'Featured' : filter}

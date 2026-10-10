@@ -31,8 +31,6 @@ button { font-family: inherit; cursor: pointer; padding: 0; margin: 0; }
 
 .desktop {
   position: relative; width: 100%; height: 100%; overflow: hidden;
-  background:
-    radial-gradient(ellipse at 30% 25%, #1d2233 0%, #0d0f17 60%, #07080c 100%);
 }
 
 /* ===== Window chrome ===== */

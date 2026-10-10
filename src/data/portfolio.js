@@ -8,6 +8,7 @@
 // shippedAt   ISO date (YYYY-MM-DD). Newest is featured unless `featured` is set.
 // featured    optional pin for the big slot. A later entry wins a date tie.
 // status      'soon' is a teaser only. Not counted as live, no demo, off the homepage.
+// bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
     slug: 'cad',
@@ -19,6 +20,7 @@ export const projects = [
     demoHref: '/demo/cad/',
     postHref: '/blog/draw-and-see',
     shippedAt: '2026-10-10',
+    bg: 'tiles',
   },
   {
     slug: 'win311',
@@ -30,6 +32,7 @@ export const projects = [
     demoHref: '/demo/win311/',
     postHref: '/blog/windows-311-folio',
     shippedAt: '2026-10-10',
+    bg: 'construction',
   },
   {
     slug: 'winamp',
@@ -40,6 +43,7 @@ export const projects = [
     imageAlt: 'Winamp 2 player with the equalizer and playlist windows open',
     demoHref: '/demo/winamp/',
     shippedAt: '2026-10-10',
+    bg: 'starfield',
   },
   {
     slug: 'bench',
@@ -47,8 +51,15 @@ export const projects = [
     description: 'Another toy is in pieces on the bench. It gets a link when you can open it and use it.',
     tags: [],
     status: 'soon',
+    bg: 'sparkle',
   },
 ];
+
+export const BACKDROPS = ['starfield', 'tiles', 'construction', 'space', 'sparkle'];
+
+export function backdropName(project) {
+  return BACKDROPS.includes(project?.bg) ? project.bg : 'tiles';
+}
 
 export function isSoon(project) {
   return project?.status === 'soon';

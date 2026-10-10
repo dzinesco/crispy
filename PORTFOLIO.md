@@ -17,6 +17,7 @@
   demoHref: '/demo/my-app/',
   postHref: '/blog/my-app',
   shippedAt: '2026-10-10',
+  bg: 'tiles',
 }
 ```
 
@@ -27,3 +28,7 @@
 `status: 'soon'` is the optional Next up teaser. Give it a title and description, no `demoHref`. It is not counted as live and does not appear on the homepage.
 
 Any tag on a shipped app becomes a filter chip. Slugs stay `[a-z0-9-]+`.
+
+`bg` is the 90s frame around the screenshot, the featured stage, and the margin of `/demo/<slug>/` where the app does not fill the window. One of `starfield`, `tiles`, `construction`, `space`, `sparkle`. Leave it off and the frame is `tiles`. The patterns are in `public/gc-bg.css`.
+
+Link `/gc-bg.css` after the app stylesheet. A full-bleed app gets `class="gc-frame gc-bg gc-<bg>"` on `<html>` so the pattern is a margin. A fixed full-window shell (Windows 3.11) gets `class="gc-demo gc-bg gc-<bg>"` on `<html>` so the shell is inset and its own desktop stays put. An app that already has a surround (Winamp) puts `gc-bg gc-<bg>` on that surround. Do not restyle the app UI itself.
