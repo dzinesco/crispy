@@ -8,130 +8,102 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23111'/%3E%3Crect x='2' y='4' width='12' height='2' fill='%236fff38'/%3E%3Crect x='2' y='7' width='12' height='2' fill='%2339b300'/%3E%3Crect x='2' y='10' width='12' height='2' fill='%231f5e00'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=VT323&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <title>Winamp 2 — Web Edition</title>
   </head>
   <body>
     <div class="desktop" id="desktop">
-      <!-- ===================== MAIN PLAYER ===================== -->
+      <!-- ===================== MAIN WINDOW (275x116) ===================== -->
       <div class="win win-player" data-window="player">
         <div class="titlebar" data-drag>
-          <span class="title-icon">◆</span>
-          <span class="title-text">WINAMP 2</span>
+          <span class="tb-icon"></span>
+          <span class="tb-stripes"></span>
+          <span class="title-text">WINAMP</span>
+          <span class="tb-stripes"></span>
           <div class="title-buttons">
-            <button class="btn-title min" data-action="minimize" title="Minimize">_</button>
-            <button class="btn-title close" data-action="close" title="Close">×</button>
+            <button class="btn-title min" data-action="minimize" title="Minimize"></button>
+            <button class="btn-title shade" data-action="minimize" title="Windowshade"></button>
+            <button class="btn-title close" data-action="close" title="Close"></button>
           </div>
         </div>
 
         <div class="player-body">
-          <!-- Preset number buttons -->
-          <div class="num-row">
-            <button class="num-btn" data-preset="1" title="Preset 1">1</button>
-            <button class="num-btn" data-preset="2" title="Preset 2">2</button>
-            <button class="num-btn" data-preset="3" title="Preset 3">3</button>
-            <button class="num-btn" data-preset="4" title="Preset 4">4</button>
-            <button class="num-btn" data-preset="5" title="Preset 5">5</button>
-            <button class="num-btn" data-preset="6" title="Preset 6">6</button>
-            <button class="num-btn" data-preset="7" title="Preset 7">7</button>
-            <button class="num-btn" data-preset="8" title="Preset 8">8</button>
-            <button class="num-btn" data-preset="9" title="Preset 9">9</button>
-            <button class="num-btn" data-preset="0" title="Preset 0">0</button>
+          <div class="clutterbar" aria-hidden="true"><i>O</i><i>A</i><i>I</i><i>D</i><i>V</i></div>
+          <div class="lcd">
+            <span class="play-status" aria-hidden="true"></span>
+            <div class="lcd-time" id="lcd-time">00:00</div>
+            <canvas class="spectrum" id="spectrum" width="76" height="16"></canvas>
+          </div>
+          <div class="lcd-title">
+            <span id="lcd-title-text">Drop or add tracks to play...</span>
+          </div>
+          <div class="lcd-info">
+            <span class="info-box"><span class="lcd-bitrate" id="lcd-bitrate">---</span></span><span class="lcd-unit">kbps</span>
+            <span class="info-box sr"><span class="lcd-sr" id="lcd-sr">--</span></span><span class="lcd-unit">khz</span>
+            <span class="mono-ind">mono</span>
+            <span class="lcd-mode" id="lcd-mode">----</span>
           </div>
 
-          <!-- LCD + spectrum + sliders row -->
-          <div class="main-row">
-            <div class="lcd-col">
-              <div class="lcd">
-                <div class="lcd-info">
-                  <span class="lcd-bitrate" id="lcd-bitrate">---</span>
-                  <span class="lcd-unit">kbps</span>
-                  <span class="lcd-spacer"></span>
-                  <span class="lcd-sr" id="lcd-sr">--</span>
-                  <span class="lcd-unit">khz</span>
-                  <span class="lcd-spacer"></span>
-                  <span class="lcd-mode" id="lcd-mode">----</span>
-                </div>
-                <div class="lcd-time" id="lcd-time">00:00 / 00:00</div>
-                <div class="lcd-title">
-                  <span id="lcd-title-text">Drop or add tracks to play...</span>
-                </div>
-              </div>
-              <canvas class="spectrum" id="spectrum" width="290" height="56"></canvas>
-            </div>
-
-            <!-- Volume + balance column -->
-            <div class="vu-col">
-              <div class="bal">
-                <div class="bal-track" id="bal-track" title="Balance (drag)">
-                  <div class="bal-fill" id="bal-fill"></div>
-                  <div class="bal-knob" id="bal-knob"></div>
-                </div>
-              </div>
-              <div class="vol">
-                <div class="vol-track" id="vol-track" title="Volume (drag)">
-                  <div class="vol-fill" id="vol-fill"></div>
-                  <div class="vol-knob" id="vol-knob"></div>
-                </div>
-              </div>
+          <div class="vol" title="Volume">
+            <div class="vol-track" id="vol-track">
+              <div class="vol-fill" id="vol-fill"></div>
+              <div class="vol-knob" id="vol-knob"></div>
             </div>
           </div>
+          <div class="bal" title="Balance">
+            <div class="bal-track" id="bal-track">
+              <div class="bal-fill" id="bal-fill"></div>
+              <div class="bal-knob" id="bal-knob"></div>
+            </div>
+          </div>
+          <button class="tgl-btn eq-btn" data-action="toggle-eq" title="Equalizer (E)">EQ</button>
+          <button class="tgl-btn pl-btn" data-action="toggle-pl" title="Playlist (L)">PL</button>
 
-          <!-- Transport row -->
+          <div class="pos" title="Seek">
+            <div class="pos-track" id="pos-track"><div class="pos-knob" id="pos-knob"></div></div>
+          </div>
+
           <div class="transport">
-            <button class="t-btn t-prev" data-action="prev" title="Previous (Z)">⏮</button>
-            <button class="t-btn t-play" data-action="play" title="Play (X)">▶</button>
-            <button class="t-btn t-pause" data-action="pause" title="Pause (C)">⏸</button>
-            <button class="t-btn t-stop" data-action="stop" title="Stop (V)">⏹</button>
-            <button class="t-btn t-next" data-action="next" title="Next (B)">⏭</button>
-            <button class="t-btn t-eject" data-action="eject" title="Open files">⏏</button>
+            <button class="t-btn t-prev" data-action="prev" title="Previous (Z)">PREV</button>
+            <button class="t-btn t-play" data-action="play" title="Play (X)">PLAY</button>
+            <button class="t-btn t-pause" data-action="pause" title="Pause (C)">PAUSE</button>
+            <button class="t-btn t-stop" data-action="stop" title="Stop (V)">STOP</button>
+            <button class="t-btn t-next" data-action="next" title="Next (B)">NEXT</button>
+            <button class="t-btn t-eject" data-action="eject" title="Open files">EJECT</button>
           </div>
-
-          <!-- Toggle row -->
-          <div class="toggles">
-            <button class="tgl-btn shuffle" data-action="shuffle" title="Shuffle">S</button>
-            <button class="tgl-btn repeat" data-action="repeat" title="Repeat">R</button>
-            <button class="tgl-btn eq-btn" data-action="toggle-eq" title="Equalizer (E)">EQ</button>
-            <button class="tgl-btn pl-btn" data-action="toggle-pl" title="Playlist (L)">PL</button>
-          </div>
+          <button class="tgl-btn shuffle" data-action="shuffle" title="Shuffle">SHUFFLE</button>
+          <button class="tgl-btn repeat" data-action="repeat" title="Repeat"><span class="rep-arrow"></span></button>
+          <span class="wa-logo" aria-hidden="true"></span>
         </div>
       </div>
 
-      <!-- ===================== EQUALIZER ===================== -->
+      <!-- ===================== EQUALIZER (275x116) ===================== -->
       <div class="win win-eq" data-window="eq" hidden>
         <div class="titlebar" data-drag>
-          <span class="title-icon">≡</span>
-          <span class="title-text">EQUALIZER</span>
+          <span class="tb-stripes"></span>
+          <span class="title-text">WINAMP EQUALIZER</span>
+          <span class="tb-stripes"></span>
           <div class="title-buttons">
-            <button class="btn-title min" data-action="minimize">_</button>
-            <button class="btn-title close" data-action="close">×</button>
+            <button class="btn-title close" data-action="close" title="Close"></button>
           </div>
         </div>
         <div class="eq-body">
-          <div class="eq-main">
-            <div class="eq-bands" id="eq-bands"></div>
-            <div class="eq-side">
-              <div class="eq-preamp-row">
-                <span class="eq-preamp-label">PREAMP</span>
-                <div class="eq-fader-track" id="preamp-track" title="Preamp">
-                  <div class="eq-fader-fill"></div>
-                  <div class="eq-fader-knob" id="preamp-knob"></div>
-                </div>
-                <span class="eq-preamp-val" id="preamp-val">+0.0 dB</span>
-              </div>
-              <div class="eq-presets">
-                <button class="eq-preset-btn active" data-preset="flat">FLAT</button>
-                <button class="eq-preset-btn" data-preset="rock">ROCK</button>
-                <button class="eq-preset-btn" data-preset="bass">BASS</button>
-                <button class="eq-preset-btn" data-preset="treble">TREB</button>
-              </div>
-              <button class="eq-toggle on" data-action="eq-toggle">ON</button>
-            </div>
+          <button class="eq-toggle on" data-action="eq-toggle" title="Equalizer on/off">ON</button>
+          <button class="eq-auto" data-action="eq-auto" title="Auto">AUTO</button>
+          <div class="eq-presets">
+            <button class="eq-preset-btn active" data-preset="flat">FLAT</button>
+            <button class="eq-preset-btn" data-preset="rock">ROCK</button>
+            <button class="eq-preset-btn" data-preset="bass">BASS</button>
+            <button class="eq-preset-btn" data-preset="treble">TREB</button>
           </div>
+          <span class="eq-preamp-label">PREAMP</span>
+          <div class="eq-fader-track preamp" id="preamp-track" title="Preamp">
+            <div class="eq-fader-knob" id="preamp-knob"></div>
+          </div>
+          <span class="eq-preamp-val" id="preamp-val">+0.0 dB</span>
+          <div class="eq-db" aria-hidden="true"><span>+12db</span><span>+0db</span><span>-12db</span></div>
+          <div class="eq-bands" id="eq-bands"></div>
           <div class="eq-labels" id="eq-labels"></div>
         </div>
       </div>
@@ -139,12 +111,16 @@
       <!-- ===================== PLAYLIST ===================== -->
       <div class="win win-pl" data-window="playlist" hidden>
         <div class="titlebar" data-drag>
-          <span class="title-icon">▤</span>
-          <span class="title-text">PLAYLIST</span>
+          <span class="tb-stripes"></span>
+          <span class="title-text">WINAMP PLAYLIST</span>
+          <span class="tb-stripes"></span>
           <div class="title-buttons">
-            <button class="btn-title min" data-action="minimize">_</button>
-            <button class="btn-title close" data-action="close">×</button>
+            <button class="btn-title close" data-action="close" title="Close"></button>
           </div>
+        </div>
+        <div class="pl-list-wrap">
+          <div class="pl-list" id="pl-list" tabindex="0" role="listbox" aria-label="Playlist"></div>
+          <div class="pl-empty" id="pl-empty">Drop audio files here, or click ADD</div>
         </div>
         <div class="pl-toolbar">
           <button data-action="pl-add" title="Add files">ADD</button>
@@ -152,10 +128,6 @@
           <button data-action="pl-select-all" title="Select all">SEL</button>
           <button data-action="pl-clear" title="Clear list">CLR</button>
           <span class="pl-len" id="pl-len">0 files · 00:00</span>
-        </div>
-        <div class="pl-list-wrap">
-          <div class="pl-list" id="pl-list" tabindex="0" role="listbox" aria-label="Playlist"></div>
-          <div class="pl-empty" id="pl-empty">Drop audio files here, or click ADD</div>
         </div>
       </div>
     </div>

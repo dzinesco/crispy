@@ -17,12 +17,18 @@
     bass:   [8, 7, 5, 3, 0, 0, 0, 0, 0, 0],
     treble: [0, 0, 0, 0, 0, 0, 2, 4, 5, 6],
   };
-  const DEFAULT_POSITIONS = {
-    player:   { x: 24,  y: 24  },
-    eq:       { x: 24,  y: 280 },
-    playlist: { x: 340, y: 24  },
+  // Windows are 275x116 skin units, drawn at --s (2x on wide screens).
+  const SCALE = window.matchMedia('(min-width: 1180px) and (min-height: 560px)').matches ? 2 : 1;
+  const DEFAULT_POSITIONS = SCALE === 2 ? {
+    player:   { x: 40,  y: 40  },
+    eq:       { x: 40,  y: 40 + 116 * 2 },
+    playlist: { x: 40 + 275 * 2, y: 40  },
+  } : {
+    player:   { x: 8, y: 8   },
+    eq:       { x: 8, y: 124 },
+    playlist: { x: 8, y: 240 },
   };
-  const STORAGE_KEY = 'winamp2.state.v1';
+  const STORAGE_KEY = 'winamp2.state.v2.s' + SCALE;
   const BAR_COUNT = 19;
 
   // ============================================================
@@ -294,7 +300,14 @@
   function updateLCD() {
     const cur = audio.currentTime || 0;
     const dur = isFinite(audio.duration) ? audio.duration : 0;
-    document.getElementById('lcd-time').textContent = `${fmt(cur)} / ${fmt(dur)}`;
+    document.getElementById('lcd-time').textContent = fmt(cur);
+    const player = document.querySelector('.win-player');
+    player.classList.toggle('has-track', state.current >= 0 && dur > 0);
+    if (!seekDragging) {
+      const k = document.getElementById('pos-knob');
+      const pct = dur > 0 ? Math.min(1, cur / dur) : 0;
+      k.style.left = `calc(${pct} * (100% - 29px))`;
+    }
 
     const track = state.playlist[state.current];
     const titleEl = document.getElementById('lcd-title-text');
@@ -327,6 +340,11 @@
   function renderTransport() {
     document.querySelector('.t-play').classList.toggle('playing', state.isPlaying);
     document.querySelector('.t-pause').classList.toggle('playing', !state.isPlaying && state.current >= 0);
+    const player = document.querySelector('.win-player');
+    const paused = !state.isPlaying && state.current >= 0 && audio.currentTime > 0;
+    player.classList.toggle('is-playing', state.isPlaying);
+    player.classList.toggle('is-paused', paused);
+    player.classList.toggle('is-stopped', !state.isPlaying && !paused && state.current >= 0);
   }
 
   function renderPlaylist() {
@@ -381,48 +399,46 @@
   const specCanvas = document.getElementById('spectrum');
   const specCtx = specCanvas.getContext('2d');
 
+  // Classic base-skin analyzer: 19 bars x 3px, green (bottom) -> yellow -> red (top),
+  // with grey peak dots that fall slowly.
+  const SPEC_COLORS = ['#ef3110','#ce2910','#d65a00','#d66600','#d67300','#c67b08','#dea518',
+    '#d6b521','#bdde29','#94de21','#29ce10','#32be10','#39b510','#319c08','#298c10','#188408'];
+  const peaks = new Array(BAR_COUNT).fill(0);
+  const peakHold = new Array(BAR_COUNT).fill(0);
+  let specData = null;
+
   function drawSpectrum() {
     const c = specCanvas;
-    specCtx.clearRect(0, 0, c.width, c.height);
+    specCtx.fillStyle = '#000';
+    specCtx.fillRect(0, 0, c.width, c.height);
+    // faint dot grid, like the empty vis area
+    specCtx.fillStyle = '#181818';
+    for (let y = 1; y < c.height; y += 2) for (let x = 1; x < c.width; x += 2) specCtx.fillRect(x, y, 1, 1);
 
-    if (!analyser || !state.isPlaying || audio.paused || state.current < 0) {
-      drawIdleSpectrum();
-      return;
+    const live = analyser && state.isPlaying && !audio.paused && state.current >= 0;
+    if (live) {
+      if (!specData || specData.length !== analyser.frequencyBinCount) specData = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(specData);
     }
-
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(data);
-
-    const barW = c.width / BAR_COUNT;
     for (let i = 0; i < BAR_COUNT; i++) {
-      // Logarithmic-ish bin mapping
-      const idx = Math.floor(Math.pow(i / (BAR_COUNT - 1), 1.7) * (data.length - 1));
-      const v = data[idx] / 255;
-      const h = Math.max(2, v * c.height);
-      const x = i * barW;
-      const y = c.height - h;
-
-      const grad = specCtx.createLinearGradient(0, y, 0, c.height);
-      grad.addColorStop(0, '#b6ff5a');
-      grad.addColorStop(0.4, '#6fff38');
-      grad.addColorStop(0.75, '#39b300');
-      grad.addColorStop(1, '#1f5e00');
-      specCtx.fillStyle = grad;
-      specCtx.fillRect(x + 1, y, Math.max(1, barW - 2), h);
-
-      // Bright cap
-      specCtx.fillStyle = '#e0ffa8';
-      specCtx.fillRect(x + 1, y, Math.max(1, barW - 2), 1);
-    }
-  }
-
-  function drawIdleSpectrum() {
-    const c = specCanvas;
-    const barW = c.width / BAR_COUNT;
-    specCtx.fillStyle = '#1f5e00';
-    for (let i = 0; i < BAR_COUNT; i++) {
-      const x = i * barW;
-      specCtx.fillRect(x + 1, c.height - 2, Math.max(1, barW - 2), 2);
+      let h = 0;
+      if (live) {
+        const idx = Math.floor(Math.pow(i / (BAR_COUNT - 1), 1.7) * (specData.length - 1));
+        h = Math.round((specData[idx] / 255) * c.height);
+      }
+      const x = i * 4;
+      for (let y = 0; y < h; y++) {
+        const row = c.height - 1 - y;          // canvas row
+        specCtx.fillStyle = SPEC_COLORS[row] || SPEC_COLORS[SPEC_COLORS.length - 1];
+        specCtx.fillRect(x, row, 3, 1);
+      }
+      if (h >= peaks[i]) { peaks[i] = h; peakHold[i] = 18; }
+      else if (peakHold[i] > 0) peakHold[i]--;
+      else peaks[i] = Math.max(0, peaks[i] - 0.35);
+      if (peaks[i] > 0.5) {
+        specCtx.fillStyle = '#969696';
+        specCtx.fillRect(x, c.height - Math.round(peaks[i]) - 1 < 0 ? 0 : c.height - Math.round(peaks[i]) - 1, 3, 1);
+      }
     }
   }
 
@@ -471,19 +487,45 @@
   // VOLUME
   // ============================================================
   function setupVolume() {
-    makeVSlider(
+    makeHSlider(
       document.getElementById('vol-track'),
-      document.getElementById('vol-fill'),
       document.getElementById('vol-knob'),
       {
         initPct: state.volume,
         onChange: (pct) => { state.volume = pct; applyVolume(); },
         setVisual: (pct) => {
-          document.getElementById('vol-fill').style.height = (pct * 100) + '%';
-          document.getElementById('vol-knob').style.top = `calc(${(1 - pct) * 100}% - 2px)`;
+          document.getElementById('vol-fill').style.width = (pct * 100) + '%';
+          document.getElementById('vol-knob').style.left = `calc(7px + ${pct} * (100% - 14px))`;
         },
       }
     );
+  }
+
+  // ============================================================
+  // POSITION (SEEK) BAR
+  // ============================================================
+  let seekDragging = false;
+  function setupSeek() {
+    const track = document.getElementById('pos-track');
+    const knob = document.getElementById('pos-knob');
+    function pctAt(e) {
+      const r = track.getBoundingClientRect();
+      return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    }
+    track.addEventListener('mousedown', (e) => {
+      if (state.current < 0 || !isFinite(audio.duration)) return;
+      seekDragging = true;
+      knob.style.left = `calc(${pctAt(e)} * (100% - 29px))`;
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (seekDragging) knob.style.left = `calc(${pctAt(e)} * (100% - 29px))`;
+    });
+    window.addEventListener('mouseup', (e) => {
+      if (!seekDragging) return;
+      seekDragging = false;
+      if (isFinite(audio.duration)) audio.currentTime = pctAt(e) * audio.duration;
+    });
   }
 
   // ============================================================
@@ -497,7 +539,7 @@
         initPct: (state.balance + 1) / 2,
         onChange: (pct) => { state.balance = (pct - 0.5) * 2; applyBalance(); },
         setVisual: (pct) => {
-          document.getElementById('bal-knob').style.left = `calc(${pct * 100}% - 1px)`;
+          document.getElementById('bal-knob').style.left = `calc(7px + ${pct} * (100% - 14px))`;
         },
       }
     );
@@ -532,8 +574,10 @@
       const initGain = state.eqBands[i] || 0;
 
       makeVSlider(track, fill, knob, {
-        initPct: 0.5 - initGain / 24,
-        onChange: (pct) => {
+        // makeVSlider reports 0 = bottom, 1 = top; EQ math uses top-based pct.
+        initPct: 1 - (0.5 - initGain / 24),
+        onChange: (p) => {
+          const pct = 1 - p;
           const gain = Math.max(-12, Math.min(12, (0.5 - pct) * 24));
           state.eqBands[i] = gain;
           if (eqFilters[i]) {
@@ -542,7 +586,8 @@
           valEl.textContent = (gain >= 0 ? '+' : '') + gain.toFixed(1);
           updateEqFill(fill, pct);
         },
-        setVisual: (pct) => {
+        setVisual: (p) => {
+          const pct = 1 - p;
           knob.style.top = `${pct * 100}%`;
           updateEqFill(fill, pct);
         },
@@ -575,15 +620,16 @@
     const initGain = state.preamp;
 
     makeVSlider(track, null, knob, {
-      initPct: 0.5 - initGain / 24,
-      onChange: (pct) => {
+      initPct: 1 - (0.5 - initGain / 24),
+      onChange: (p) => {
+        const pct = 1 - p;
         const gain = Math.max(-12, Math.min(12, (0.5 - pct) * 24));
         state.preamp = gain;
         if (preampNode) preampNode.gain.setTargetAtTime(Math.pow(10, gain / 20), audioCtx.currentTime, 0.02);
         valEl.textContent = (gain >= 0 ? '+' : '') + gain.toFixed(1) + ' dB';
       },
-      setVisual: (pct) => {
-        knob.style.top = `${pct * 100}%`;
+      setVisual: (p) => {
+        knob.style.top = `${(1 - p) * 100}%`;
       },
     });
     valEl.textContent = (initGain >= 0 ? '+' : '') + initGain.toFixed(1) + ' dB';
@@ -904,6 +950,9 @@
     setupEqBands();
     setupPreamp();
     setupVolume();
+    setupSeek();
+    document.querySelector('[data-action="eq-auto"]').addEventListener('click', (e) => e.currentTarget.classList.toggle('on'));
+    renderTransport();
 
     document.querySelector('.shuffle').classList.toggle('active', state.shuffle);
     document.querySelector('.repeat').classList.toggle('active', state.repeat);
