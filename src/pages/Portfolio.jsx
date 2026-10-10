@@ -13,7 +13,7 @@ import {
 } from '../data/portfolio.js';
 
 function backdropClass(project) {
-  return `gc-bg gc-${backdropName(project)}`;
+  return `geo geo-${backdropName(project)}`;
 }
 
 function Tags({ tags, light = false }) {

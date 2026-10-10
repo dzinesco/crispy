@@ -29,6 +29,14 @@
 
 Any tag on a shipped app becomes a filter chip. Slugs stay `[a-z0-9-]+`.
 
-`bg` is the 90s frame around the screenshot, the featured stage, and the margin of `/demo/<slug>/` where the app does not fill the window. One of `starfield`, `tiles`, `construction`, `space`, `sparkle`. Leave it off and the frame is `tiles`. The patterns are in `public/gc-bg.css`.
+`bg` is the 90s frame around the screenshot and the featured stage. One of `starfield`, `tiles`, `construction`, `space`, `sparkle`. Leave it off and the frame is `tiles`.
 
-Link `/gc-bg.css` after the app stylesheet. A full-bleed app gets `class="gc-frame gc-bg gc-<bg>"` on `<html>` so the pattern is a margin. A fixed full-window shell (Windows 3.11) gets `class="gc-demo gc-bg gc-<bg>"` on `<html>` so the shell is inset and its own desktop stays put. An app that already has a surround (Winamp) puts `gc-bg gc-<bg>` on that surround. Do not restyle the app UI itself.
+The same patterns are the page background on `/demo/<slug>/`. They live in `public/demo/_shared/geocities.css`. Link it after the app stylesheet, with a root-absolute path so a `<base>` tag cannot rewrite it:
+
+```html
+<link rel="stylesheet" href="/demo/_shared/geocities.css" />
+```
+
+Put `class="geo geo-starfield"` (or `geo-tiles`, `geo-construction`, `geo-space`, `geo-sparkle`) on the element that is the empty page behind the UI. Winamp uses that on `<html>` and `<body>`, and the player windows stay on their own skin.
+
+A full-bleed app keeps a margin with `geo-inset` on `<html>` as well. Windows 3.11 uses it so only the outside of the desktop changes. Do not put these classes on the app's own windows or canvas.
