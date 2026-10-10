@@ -1,15 +1,13 @@
-// Projects on /portfolio. Add one object to publish an app.
+// Projects on /portfolio. One object is one app. See PORTFOLIO.md.
 // The homepage hero features `cad` when it is present, otherwise the first
 // shipped entry. The homepage Latest strip mixes shipped apps with posts.
 //
 // demoHref    full navigation to a static app in public/demo/<slug>/
 // postHref    optional link to a blog post
 // image       a 16:10 screenshot in public/
-// shippedAt   ISO date (YYYY-MM-DD) so Latest can sort this beside posts
-// featured    optional. Pins the big slot on /portfolio. Otherwise the
-//             newest shippedAt wins, and a later entry wins a tie.
-// status      'soon' is a teaser only. It is not counted as live, has no
-//             demo, and stays off the homepage.
+// shippedAt   ISO date (YYYY-MM-DD). Newest is featured unless `featured` is set.
+// featured    optional pin for the big slot. A later entry wins a date tie.
+// status      'soon' is a teaser only. Not counted as live, no demo, off the homepage.
 export const projects = [
   {
     slug: 'cad',
@@ -58,6 +56,19 @@ export function isSoon(project) {
 
 export function shippedProjects(list = projects) {
   return (list || []).filter((project) => project?.slug && project?.title && !isSoon(project));
+}
+
+export function byNewest(list = projects) {
+  const source = list || [];
+  return shippedProjects(source)
+    .map((project) => ({ project, index: source.indexOf(project) }))
+    .sort((a, b) => {
+      const ta = Date.parse(a.project.shippedAt || '') || 0;
+      const tb = Date.parse(b.project.shippedAt || '') || 0;
+      if (tb !== ta) return tb - ta;
+      return b.index - a.index;
+    })
+    .map(({ project }) => project);
 }
 
 export function soonProjects(list = projects) {

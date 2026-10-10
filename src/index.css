@@ -241,7 +241,7 @@ a {
 
 .folio-bezel {
   background: #101014;
-  padding: 10px;
+  padding: 8px;
   border-top: 2px solid #e1064a;
 }
 
@@ -262,28 +262,90 @@ a {
   background: #1a1a1f;
 }
 
-.folio-launch {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+.folio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.folio-title {
+  margin: 0;
+  min-height: 2.5rem;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.folio-read {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.folio-read a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.folio-read span {
+  visibility: hidden;
+}
+
+.folio-soon .folio-read {
+  display: block;
+  font-weight: 400;
+  line-height: 44px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgba(16, 16, 20, 0.6);
+}
+
+.folio-go {
   display: inline-flex;
+  margin-top: auto;
   min-height: 44px;
+  width: 100%;
   align-items: center;
   justify-content: center;
-  padding: 0 1.15rem;
   background: #e1064a;
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  opacity: 0;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+}
+
+.folio-go.is-soon {
+  background: transparent;
+  color: #101014;
+  border: 1px solid rgba(16, 16, 20, 0.22);
 }
 
 .folio-card {
   border: 1px solid rgba(16, 16, 20, 0.1);
   box-shadow: 0 1px 0 rgba(16, 16, 20, 0.04);
+}
+
+.folio-chips {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.15rem;
+  scrollbar-width: thin;
+}
+
+.folio-chips .folio-chip {
+  flex: none;
 }
 
 .folio-soon-stage {
@@ -314,6 +376,23 @@ a {
   color: #ffffff;
 }
 
+@media (min-width: 640px) {
+  .folio-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .folio-chips {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+}
+
+@media (min-width: 1024px) {
+  .folio-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .folio-stage {
     animation: cg-grid 22s linear infinite;
@@ -325,25 +404,12 @@ a {
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
   }
   .folio-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 18px 40px rgba(16, 16, 20, 0.14);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(16, 16, 20, 0.16);
   }
-  .folio-card:hover .folio-still {
-    animation: cg-folio-pan 8s ease-in-out infinite alternate;
+  .folio-card:hover .folio-go:not(.is-soon) {
+    background: #101014;
   }
-  .folio-card:hover .folio-launch,
-  .folio-card:focus-within .folio-launch {
-    opacity: 1;
-  }
-}
-
-.folio-card:focus-within .folio-launch {
-  opacity: 1;
-}
-
-@keyframes cg-folio-pan {
-  from { object-position: center 18%; transform: scale(1); }
-  to { object-position: center 82%; transform: scale(1.05); }
 }
 
 @media (prefers-reduced-motion: reduce) {
