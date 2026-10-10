@@ -1,11 +1,15 @@
-// Projects on /portfolio. Add an object to publish a card.
+// Projects on /portfolio. Add one object to publish an app.
 // The homepage hero features `cad` when it is present, otherwise the first
-// entry. The homepage Latest strip mixes these with posts from the API.
+// shipped entry. The homepage Latest strip mixes shipped apps with posts.
 //
-// demoHref   full navigation to a static app in public/demo/<slug>/
-// postHref   optional link to a blog post
-// image      a 16:10 screenshot in public/
-// shippedAt  ISO date (YYYY-MM-DD) so Latest can sort this beside posts
+// demoHref    full navigation to a static app in public/demo/<slug>/
+// postHref    optional link to a blog post
+// image       a 16:10 screenshot in public/
+// shippedAt   ISO date (YYYY-MM-DD) so Latest can sort this beside posts
+// featured    optional. Pins the big slot on /portfolio. Otherwise the
+//             newest shippedAt wins, and a later entry wins a tie.
+// status      'soon' is a teaser only. It is not counted as live, has no
+//             demo, and stays off the homepage.
 export const projects = [
   {
     slug: 'cad',
@@ -39,4 +43,51 @@ export const projects = [
     demoHref: '/demo/winamp/',
     shippedAt: '2026-10-10',
   },
+  {
+    slug: 'bench',
+    title: 'Next up',
+    description: 'Another toy is in pieces on the bench. It gets a link when you can open it and use it.',
+    tags: [],
+    status: 'soon',
+  },
 ];
+
+export function isSoon(project) {
+  return project?.status === 'soon';
+}
+
+export function shippedProjects(list = projects) {
+  return (list || []).filter((project) => project?.slug && project?.title && !isSoon(project));
+}
+
+export function soonProjects(list = projects) {
+  return (list || []).filter((project) => project?.slug && project?.title && isSoon(project));
+}
+
+export function featuredProject(list = projects) {
+  const live = shippedProjects(list);
+  const flagged = live.find((project) => project.featured);
+  if (flagged) return flagged;
+  let best = null;
+  let bestAt = -Infinity;
+  let bestIndex = -1;
+  live.forEach((project, index) => {
+    const at = Date.parse(project.shippedAt || '') || 0;
+    if (at > bestAt || (at === bestAt && index >= bestIndex)) {
+      best = project;
+      bestAt = at;
+      bestIndex = index;
+    }
+  });
+  return best;
+}
+
+export function portfolioTags(list = projects) {
+  const tags = [];
+  for (const project of shippedProjects(list)) {
+    for (const tag of project.tags || []) {
+      if (tag && !tags.includes(tag)) tags.push(tag);
+    }
+  }
+  return tags;
+}
