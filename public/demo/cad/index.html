@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CAD — Draw &amp; See</title>
+    <base href="/demo/cad/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <a class="logo-link" href="https://crispygoat.com/" aria-label="Crispy Goat">
+          <svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
+            <rect width="32" height="32" fill="#171412" />
+            <path d="M8 24 L16 6 L24 24" fill="none" stroke="#A67C1A" stroke-width="2.4" />
+            <path d="M11 24h10" stroke="#E7E1D4" stroke-width="2" />
+          </svg>
+        </a>
+        <span class="brand-name">CAD</span>
+      </div>
+      <div class="topbar-actions">
+        <button id="btn-new" class="btn">New</button>
+        <button id="btn-save" class="btn">Save JSON</button>
+        <label class="btn" for="file-load">Load JSON</label>
+        <input id="file-load" type="file" accept="application/json" hidden />
+        <button id="btn-export-svg" class="btn">Export SVG</button>
+        <button id="btn-export-png" class="btn">Export PNG</button>
+        <span class="divider"></span>
+        <button id="btn-undo" class="btn" title="Undo (⌘Z)">↶</button>
+        <button id="btn-redo" class="btn" title="Redo (⌘⇧Z)">↷</button>
+        <span class="divider"></span>
+        <button id="btn-zoom-out" class="btn" title="Zoom out (−)">−</button>
+        <button id="btn-zoom-reset" class="btn" title="Reset view (0)">100%</button>
+        <button id="btn-zoom-in" class="btn" title="Zoom in (+)">+</button>
+        <label class="toggle">
+          <input id="toggle-grid" type="checkbox" checked />
+          <span>Grid</span>
+        </label>
+        <label class="toggle">
+          <input id="toggle-snap" type="checkbox" checked />
+          <span>Snap</span>
+        </label>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar" aria-label="Tools">
+        <button class="tool" data-tool="select" title="Select (V)">
+          <svg viewBox="0 0 24 24"><path d="M5 3l14 7-6 2-2 6L5 3z"/></svg>
+          <span>Select</span>
+        </button>
+        <button class="tool" data-tool="pan" title="Pan (H / hold Space)">
+          <svg viewBox="0 0 24 24"><path d="M7 11V5a2 2 0 1 1 4 0v6M11 11V4a2 2 0 1 1 4 0v7M15 11V6a2 2 0 1 1 4 0v8a6 6 0 0 1-12 0v-3l-2-2a1.5 1.5 0 0 1 2-2l2 2"/></svg>
+          <span>Pan</span>
+        </button>
+        <button class="tool" data-tool="line" title="Line (L)">
+          <svg viewBox="0 0 24 24"><path d="M4 20L20 4"/></svg>
+          <span>Line</span>
+        </button>
+        <button class="tool" data-tool="rect" title="Rectangle (R)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12"/></svg>
+          <span>Rect</span>
+        </button>
+        <button class="tool" data-tool="circle" title="Circle (C)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg>
+          <span>Circle</span>
+        </button>
+        <button class="tool" data-tool="ellipse" title="Ellipse">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="5"/></svg>
+          <span>Ellipse</span>
+        </button>
+        <button class="tool" data-tool="polyline" title="Polyline (Y)">
+          <svg viewBox="0 0 24 24"><path d="M3 18L9 6l4 8 4-4 4 6"/></svg>
+          <span>Polyline</span>
+        </button>
+        <button class="tool" data-tool="polygon" title="Polygon">
+          <svg viewBox="0 0 24 24"><polygon points="12,3 21,9 18,20 6,20 3,9"/></svg>
+          <span>Polygon</span>
+        </button>
+        <button class="tool" data-tool="arc" title="Arc (A)">
+          <svg viewBox="0 0 24 24"><path d="M3 18a9 9 0 1 1 18 0"/></svg>
+          <span>Arc</span>
+        </button>
+        <button class="tool" data-tool="text" title="Text (T)">
+          <svg viewBox="0 0 24 24"><path d="M5 5h14M12 5v14M9 19h6"/></svg>
+          <span>Text</span>
+        </button>
+        <button class="tool" data-tool="dimension" title="Dimension (D)">
+          <svg viewBox="0 0 24 24"><path d="M3 12h18M3 9v6M21 9v6M10 14l4-4"/></svg>
+          <span>Dimen</span>
+        </button>
+        <button class="tool" data-tool="eraser" title="Erase (X)">
+          <svg viewBox="0 0 24 24"><path d="M16 4l4 4-9 9H7l-3-3 9-10zM9 11l4 4"/></svg>
+          <span>Erase</span>
+        </button>
+      </aside>
+
+      <section class="stage" aria-label="Drawing area">
+        <canvas id="canvas"></canvas>
+        <div class="hud">
+          <div class="hud-row">
+            <span class="hud-label">Tool</span>
+            <span id="hud-tool" class="hud-value">—</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Cursor</span>
+            <span id="hud-cursor" class="hud-value">—</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Entities</span>
+            <span id="hud-count" class="hud-value">0</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Zoom</span>
+            <span id="hud-zoom" class="hud-value">100%</span>
+          </div>
+        </div>
+        <div id="text-input" class="text-input" hidden>
+          <input id="text-input-field" type="text" placeholder="Type, then Enter" />
+          <div class="hint">Enter to place · Esc to cancel</div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Properties">
+        <section class="panel-section">
+          <h2>Style</h2>
+          <div class="row">
+            <label for="stroke-color">Stroke</label>
+            <input id="stroke-color" type="color" value="#1f2937" />
+          </div>
+          <div class="row">
+            <label for="fill-color">Fill</label>
+            <input id="fill-color" type="color" value="#ffffff" />
+            <label class="checkbox">
+              <input id="fill-enabled" type="checkbox" />
+              <span>Fill</span>
+            </label>
+          </div>
+          <div class="row">
+            <label for="stroke-width">Width</label>
+            <input id="stroke-width" type="range" min="0.5" max="8" step="0.5" value="1.5" />
+            <span id="stroke-width-value" class="num">1.5</span>
+          </div>
+          <div class="row">
+            <label for="font-size">Text</label>
+            <input id="font-size" type="number" min="8" max="96" step="1" value="16" />
+            <span class="suffix">px</span>
+          </div>
+          <div class="row">
+            <label for="polygon-sides">Sides</label>
+            <input id="polygon-sides" type="number" min="3" max="32" step="1" value="6" />
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>Layers</h2>
+          <ul id="layer-list" class="layer-list"></ul>
+          <button id="btn-add-layer" class="btn small">+ Layer</button>
+        </section>
+
+        <section class="panel-section">
+          <h2>Selection</h2>
+          <div id="selection-info" class="muted">Nothing selected</div>
+        </section>
+
+        <section class="panel-section tips">
+          <h2>Shortcuts</h2>
+          <ul class="shortcuts">
+            <li><kbd>V</kbd> select · <kbd>H</kbd> pan</li>
+            <li><kbd>L</kbd> line · <kbd>R</kbd> rect · <kbd>C</kbd> circle</li>
+            <li><kbd>Y</kbd> polyline · <kbd>A</kbd> arc · <kbd>T</kbd> text</li>
+            <li><kbd>D</kbd> dimension · <kbd>X</kbd> erase</li>
+            <li><kbd>Space</kbd> (hold) pan · <kbd>Esc</kbd> cancel</li>
+            <li><kbd>Del</kbd> delete · <kbd>⌘Z</kbd> undo · <kbd>⌘⇧Z</kbd> redo</li>
+            <li><kbd>+</kbd>/<kbd>−</kbd> zoom · <kbd>0</kbd> reset · <kbd>G</kbd> grid · <kbd>S</kbd> snap</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

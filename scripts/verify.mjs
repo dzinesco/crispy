@@ -16,6 +16,7 @@ const ROUTES = [
   { name: 'home', path: '/' },
   { name: 'about', path: '/about' },
   { name: 'packages', path: '/packages' },
+  { name: 'portfolio', path: '/portfolio' },
   { name: 'blog', path: '/blog' },
   { name: 'apply', path: '/apply' },
   { name: 'contact', path: '/contact' },
