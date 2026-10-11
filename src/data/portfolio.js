@@ -11,6 +11,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'defrag',
+    title: 'Disk Defragmenter — Game Edition',
+    description: 'The grid you stared at for hours, now a game. Pack every file toward the front, dodge bad sectors, and survive the classic restart at 10%.',
+    tags: ['Retro', 'Browser', 'Game'],
+    image: '/images/portfolio/defrag.png',
+    imageAlt: 'Defragmenting Drive C mid-pass, with blue optimized blocks, red fragments, a green read head, and the color legend on a starfield',
+    demoHref: '/demo/defrag/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
     slug: 'lotus',
     title: 'Lotus 1-2-3 — Web Edition',
     description: 'Type @SUM formulas, drive everything from the / menu, then pop a bar graph in amber phosphor. Spreadsheets were cool once.',
