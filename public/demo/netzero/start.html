@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>NetZero - Welcome to the Free Internet</title>
+<style>
+  /* =====================================================
+     Classic 1999 NetZero start page
+     No CSS resets, no flexbox, just tables and spacer gifs.
+     ===================================================== */
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 13px;
+    color: #000000;
+  }
+
+  table { border-collapse: collapse; }
+  td, th { font-family: 'Times New Roman', Times, serif; font-size: 13px; }
+  a { color: #0033cc; }
+  a:hover { color: #ff6600; }
+  a:visited { color: #551a8b; }
+
+  /* --- Top branding bar --- */
+  .topbar {
+    width: 100%;
+    background: #003366;
+    color: #ffffff;
+    border-bottom: 3px solid #ffff66;
+  }
+  .topbar td {
+    padding: 6px 12px;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+  }
+  .topbar a {
+    color: #ffff66;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .topbar a:hover { text-decoration: underline; color: #ffffff; }
+
+  .logo-z {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #b6e6ff 0%, #6cc 35%, #006699 70%, #003366 100%);
+    border: 2px solid #ffffff;
+    vertical-align: middle;
+    text-align: center;
+    font-style: italic;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif;
+    font-size: 18px;
+    color: #ffffff;
+    line-height: 22px;
+    margin-right: 6px;
+  }
+  .brand {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #000033;
+    vertical-align: middle;
+  }
+  .brand-zero { color: #ffff66; }
+
+  .member-strip {
+    width: 100%;
+    background: #6699cc;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+  }
+  .member-strip td { padding: 3px 12px; }
+
+  /* --- Content --- */
+  .content {
+    width: 100%;
+    background: #ffffff;
+  }
+  .content td { padding: 10px 14px; vertical-align: top; }
+
+  .hero {
+    background: #e8f4ff;
+    border: 1px solid #6699cc;
+    padding: 16px;
+    text-align: center;
+  }
+  .hero h1 {
+    margin: 0 0 8px;
+    color: #003366;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .hero h2 {
+    margin: 0 0 12px;
+    color: #006699;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: italic;
+  }
+  .search-form {
+    margin: 12px 0 4px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .search-input {
+    width: 320px;
+    padding: 3px 4px;
+    border: 2px inset #999;
+    background: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+  }
+  .search-btn {
+    padding: 2px 14px;
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .search-btn:active { border-style: inset; }
+  .powered-by {
+    font-size: 11px;
+    color: #555;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 4px;
+  }
+
+  /* --- Section headers --- */
+  .section-header {
+    background: #003366;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-bottom: 2px solid #ffff66;
+  }
+  .section-header a {
+    color: #ffff66;
+    text-decoration: none;
+    font-size: 11px;
+    float: right;
+    font-weight: normal;
+  }
+
+  /* --- Featured sites --- */
+  .featured {
+    border: 1px solid #6699cc;
+    background: #ffffff;
+  }
+  .featured td {
+    padding: 8px 12px;
+    border-bottom: 1px dotted #cccccc;
+    font-size: 12px;
+  }
+  .featured tr:last-child td { border-bottom: 0; }
+  .featured a {
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .featured a:hover { text-decoration: underline; }
+  .featured .desc {
+    color: #555;
+    font-size: 11px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* --- Spotlight box --- */
+  .spotlight {
+    border: 3px double #006699;
+    background: #ffffcc;
+    padding: 10px;
+  }
+  .spotlight h3 {
+    margin: 0 0 4px;
+    color: #003366;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+  }
+  .spotlight p {
+    margin: 6px 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .spotlight-img {
+    width: 100%;
+    height: 100px;
+    background:
+      linear-gradient(135deg,
+        #ff9966 0%,
+        #ff66cc 25%,
+        #66ccff 50%,
+        #ffff66 75%,
+        #66ff99 100%);
+    border: 2px ridge #003366;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 #003366, -1px -1px 0 #000;
+    text-align: center;
+  }
+
+  /* --- Banner ad --- */
+  .banner-ad {
+    width: 100%;
+    height: 70px;
+    background:
+      linear-gradient(180deg, #ff6699 0%, #ff9933 100%);
+    border: 2px solid #cc0066;
+    text-align: center;
+    color: #ffffff;
+    font-family: 'Comic Sans MS', cursive;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .banner-ad:hover { opacity: 0.92; }
+
+  .ad-label {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9px;
+    color: #888;
+    text-align: center;
+    padding: 1px 0;
+  }
+
+  /* --- Promo boxes --- */
+  .promo {
+    border: 2px solid #ffff66;
+    background: #fffacc;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  .promo h4 {
+    margin: 0 0 4px;
+    color: #996600;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    font-style: italic;
+  }
+  .promo p { margin: 4px 0; font-size: 12px; }
+
+  .btn-1999 {
+    display: inline-block;
+    background: linear-gradient(180deg, #99ccff 0%, #6699cc 100%);
+    border: 2px outset #99ccff;
+    padding: 4px 14px;
+    color: #003366;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-1999:hover { color: #006699; }
+  .btn-1999:active { border-style: inset; }
+
+  /* --- Sidebar --- */
+  .sidebar {
+    border: 1px solid #6699cc;
+    background: #f0f8ff;
+    padding: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+  }
+  .sidebar h4 {
+    margin: 0 0 4px;
+    color: #003366;
+    font-size: 12px;
+    border-bottom: 1px solid #6699cc;
+    padding-bottom: 2px;
+  }
+  .sidebar ul {
+    margin: 4px 0 8px;
+    padding-left: 18px;
+  }
+  .sidebar li { margin: 2px 0; }
+
+  /* --- Footer --- */
+  .footer {
+    background: #003366;
+    color: #ffffff;
+    padding: 12px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    border-top: 3px solid #ffff66;
+  }
+  .footer a { color: #ffff66; }
+  .footer hr {
+    border: 0;
+    border-top: 1px dashed #6699cc;
+    margin: 8px 0;
+  }
+
+  /* --- Visitor counter --- */
+  .counter {
+    font-family: 'Courier New', monospace;
+    background: #000000;
+    color: #00ff00;
+    padding: 2px 6px;
+    border: 1px inset #333;
+    letter-spacing: 2px;
+  }
+
+  /* --- Marquee --- */
+  marquee {
+    background: #ffff66;
+    color: #003366;
+    padding: 3px 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    border-top: 1px solid #cccc00;
+    border-bottom: 1px solid #cccc00;
+  }
+
+  /* --- Under construction --- */
+  .uc {
+    display: inline-block;
+    background: #ffff00;
+    color: #000;
+    padding: 1px 6px;
+    font-family: 'Comic Sans MS', cursive;
+    font-size: 11px;
+    font-weight: bold;
+    border: 2px dashed #996600;
+  }
+</style>
+</head>
+<body>
+
+<!-- Top branding bar -->
+<table class="topbar" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="50%">
+      <span class="logo-z">z</span>
+      <span class="brand">net<span class="brand-zero">zero</span></span>
+      <sup style="font-size: 10px; color: #ffff66;">&trade;</sup>
+    </td>
+    <td width="50%" align="right">
+      <a href="#" onclick="alert('Sign Out is not available in this demo'); return false;">Sign Out</a>
+      &nbsp;|&nbsp;
+      <a href="#" onclick="alert('Help is not available in this demo'); return false;">Help</a>
+      &nbsp;|&nbsp;
+      <a href="#" onclick="alert('My Account is not available in this demo'); return false;">My Account</a>
+    </td>
+  </tr>
+</table>
+
+<!-- Marquee ticker -->
+<marquee scrollamount="3">
+  ★ Welcome to the Free Internet! ★ &nbsp;&nbsp;&nbsp; NetZero Platinum now available &mdash; 5x faster! ★ &nbsp;&nbsp;&nbsp; Get 10 hours FREE every month &mdash; no credit card needed ★ &nbsp;&nbsp;&nbsp; Build your FREE homepage at members.netzero.net ★
+</marquee>
+
+<!-- Member strip -->
+<table class="member-strip" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>
+      <strong>Welcome back, coolcoder@netzero.net</strong> &nbsp;|&nbsp;
+      Member since: 03/14/1999 &nbsp;|&nbsp;
+      You have <strong style="color: #ffff66;">07:42:18</strong> of free time remaining this month
+    </td>
+  </tr>
+</table>
+
+<!-- Main content -->
+<table class="content" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <!-- Left column (main) -->
+    <td width="68%">
+
+      <!-- Hero search -->
+      <div class="hero">
+        <h1>Welcome to the Free Internet&trade;</h1>
+        <h2>The world's #1 free dial-up Internet service</h2>
+        <div class="search-form">
+          <form onsubmit="alert('Search is not available in this demo.\n\nImagine AltaVista returning 2,341,892 results for \u201C' + this.q.value + '\u201D'); return false;">
+            <input class="search-input" type="text" name="q" value="" placeholder="Search the Web..." />
+            <input class="search-btn" type="submit" value="Search!" />
+            <br />
+            <span class="powered-by">Powered by AltaVista &nbsp;|&nbsp; <a href="#">Advanced Search</a> &nbsp;|&nbsp; <a href="#">LookSmart Directory</a></span>
+          </form>
+        </div>
+      </div>
+
+      <!-- Today's Featured Site -->
+      <div style="height: 12px;"></div>
+      <div class="section-header">
+        Today's Featured Site
+        <a href="#">More featured sites »</a>
+      </div>
+      <div class="spotlight">
+        <div class="spotlight-img">EBAY.COM</div>
+        <h3>Auctions, Bidding, and Bargains!</h3>
+        <p>Find collectibles, computers, jewelry, and just about anything else you can imagine. With over 2 million auctions every day, eBay is the world's largest online marketplace. Bid, buy, and sell from your home.</p>
+        <p><span class="uc">UNDER CONSTRUCTION</span> New! Free listing every month for NetZero members.</p>
+        <p><a class="btn-1999" href="#" onclick="alert('This site is part of the retro recreation — no live link.'); return false;">Visit eBay.com »</a></p>
+      </div>
+
+      <!-- Banner ad -->
+      <div style="height: 12px;"></div>
+      <div class="banner-ad" onclick="alert('Congratulations! You just won a FREE trip to Hawaii!\n\n(sorry, this is a retro recreation — no actual prize)')">
+        🎉 YOU'VE WON! 🎉 Click here to claim your FREE 🎁 iMac G3 Computer! 💻
+      </div>
+      <div class="ad-label">[ Advertisement ]</div>
+
+      <!-- Featured sites table -->
+      <div style="height: 12px;"></div>
+      <div class="section-header">
+        Cool Sites on the Web
+        <a href="#">Submit a site »</a>
+      </div>
+      <table class="featured" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="20%" align="center">
+            <div style="background: linear-gradient(45deg, #ff66cc, #66ccff); color: #fff; padding: 8px; font-family: 'Comic Sans MS', cursive; font-weight: bold; border: 2px ridge #fff;">GeoCities</div>
+          </td>
+          <td width="80%">
+            <a href="#" onclick="alert('GeoCities — get your free hometown page!'); return false;">GeoCities.com</a>
+            <span class="desc">Get your FREE homepage on the Web! Join one of our 30+ "neighborhoods" and start building your personal site today. Includes 5MB of free web space!</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="20%" align="center">
+            <div style="background: #0066cc; color: #fff; padding: 8px; font-family: 'Arial Black', sans-serif; font-weight: bold; border: 2px ridge #fff; letter-spacing: 1px;">MSN.com</div>
+          </td>
+          <td width="80%">
+            <a href="#" onclick="alert('Microsoft Network — your portal to the Web.'); return false;">MSN.com</a>
+            <span class="desc">Microsoft's portal: Hotmail, news, weather, sports, and the celebrated "Today" column. The most comprehensive starting point on the Internet.</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="20%" align="center">
+            <div style="background: #990000; color: #ffcc00; padding: 8px; font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; border: 2px ridge #fff; font-size: 18px;">N 📰 Y</div>
+          </td>
+          <td width="80%">
+            <a href="#" onclick="alert('Classifieds, personals, and news from around the world.'); return false;">Classifieds2000</a>
+            <span class="desc">The best online classifieds. Buy and sell cars, homes, jobs, and personals. Updated daily.</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="20%" align="center">
+            <div style="background: #ffff99; color: #000; padding: 8px; font-family: 'Courier New', monospace; font-weight: bold; border: 2px ridge #cc6600;">Y! Mail</div>
+          </td>
+          <td width="80%">
+            <a href="#" onclick="alert('Yahoo! Mail — free email with 6MB of storage!'); return false;">mail.yahoo.com</a>
+            <span class="desc">FREE email with 6MB of storage! Check your mail from anywhere on the Web. Includes address book and powerful search.</span>
+          </td>
+        </tr>
+        <tr>
+          <td width="20%" align="center">
+            <div style="background: #663399; color: #fff; padding: 8px; font-family: 'Impact', sans-serif; font-weight: bold; border: 2px ridge #fff; font-size: 18px;">MAPQUEST</div>
+          </td>
+          <td width="80%">
+            <a href="#" onclick="alert('MapQuest — driving directions, anywhere.'); return false;">MapQuest.com</a>
+            <span class="desc">FREE driving directions and interactive maps. Find any address in the United States. Print your own maps for that road trip!</span>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+
+    <!-- Right column (sidebar) -->
+    <td width="32%">
+
+      <!-- Welcome sidebar -->
+      <div class="sidebar">
+        <h4>👋 Welcome to NetZero!</h4>
+        <p>You've just signed in for free. Make the most of your time on the Internet!</p>
+      </div>
+
+      <!-- Tools sidebar -->
+      <div class="sidebar" style="margin-top: 8px;">
+        <h4>📧 NetZero Tools</h4>
+        <ul>
+          <li><a href="#" onclick="alert('WebMail'); return false;">📥 WebMail</a></li>
+          <li><a href="#" onclick="alert('Message Center'); return false;">📨 Message Center</a></li>
+          <li><a href="#" onclick="alert('Address Book'); return false;">📖 Address Book</a></li>
+          <li><a href="#" onclick="alert('Calendar'); return false;">📅 Calendar</a></li>
+          <li><a href="#" onclick="alert('Channels'); return false;">📡 My Channels</a></li>
+          <li><a href="#" onclick="alert('Personal Start Page'); return false;">⭐ My Start Page</a></li>
+        </ul>
+      </div>
+
+      <!-- Tips sidebar -->
+      <div class="sidebar" style="margin-top: 8px;">
+        <h4>💡 Member Tip</h4>
+        <p>Press <kbd>Ctrl+D</kbd> to bookmark this page for quick access. Set NetZero as your browser's <strong>home page</strong> to start every session here.</p>
+      </div>
+
+      <!-- Promotion -->
+      <div class="promo">
+        <h4>⭐ Upgrade to Platinum</h4>
+        <p>Tired of waiting for pages to load? Upgrade to <strong>NetZero Platinum</strong> and get:</p>
+        <p>
+          ✓ 5x faster browsing<br />
+          ✓ No banner ads<br />
+          ✓ 30 free hours / month<br />
+          ✓ Priority access
+        </p>
+        <p style="text-align: center; margin-top: 8px;">
+          <a class="btn-1999" href="#" onclick="alert('NetZero Platinum — $9.95/month. Not a real offer.'); return false;">Upgrade Now!</a>
+        </p>
+      </div>
+
+      <!-- Visitor counter -->
+      <div class="sidebar" style="margin-top: 8px; text-align: center;">
+        <h4>👥 Visitor Count</h4>
+        <span class="counter">00147293</span>
+        <p style="margin: 4px 0 0; font-size: 10px;">You are visitor #14,293 today!</p>
+      </div>
+
+    </td>
+  </tr>
+</table>
+
+<!-- Footer -->
+<div class="footer">
+  <a href="#">About NetZero</a> |
+  <a href="#">Our Services</a> |
+  <a href="#">Advertisers</a> |
+  <a href="#">Investors</a> |
+  <a href="#">Press Room</a> |
+  <a href="#">Privacy Statement</a> |
+  <a href="#">Terms of Service</a>
+  <hr />
+  <p>
+    © 1998-1999 NetZero, Inc. &nbsp; All rights reserved. &nbsp; NetZero is a registered trademark of NetZero, Inc.<br />
+    NetZero is a service of United Online, Inc. &nbsp;|&nbsp;
+    <a href="#">Classmates.com</a> &nbsp;|&nbsp;
+    <a href="#">MyPoints.com</a> &nbsp;|&nbsp;
+    <a href="#">Juno</a> &nbsp;|&nbsp;
+    <a href="#">MySite</a>
+  </p>
+  <p style="margin-top: 8px;">
+    Best viewed in <a href="#">Netscape Navigator 4.0</a> or <a href="#">Internet Explorer 5.0</a> at 800x600 resolution.
+  </p>
+</div>
+
+</body>
+</html>
