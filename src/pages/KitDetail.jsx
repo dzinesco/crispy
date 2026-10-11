@@ -16,7 +16,6 @@ export default function KitDetail() {
     return (
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
         <h1 className="text-3xl font-bold tracking-tightish">Kit not found</h1>
-        <Link to="/packages" className="mt-4 inline-block text-brass hover:text-ink">See packs</Link>
       </section>
     );
   }
@@ -39,8 +38,7 @@ export default function KitDetail() {
     <>
       <Seo title={kit.title} description={kit.tagline} path={`/kits/${kit.slug}`} />
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <Link to="/packages" className="text-sm text-ink/50 hover:text-ink">All packs</Link>
-        <h1 className="mt-6 text-4xl font-extrabold tracking-tightish sm:text-5xl">{kit.title}</h1>
+        <h1 className="text-4xl font-extrabold tracking-tightish sm:text-5xl">{kit.title}</h1>
         {kit.tagline && <p className="mt-3 max-w-measure text-xl text-ink/65">{kit.tagline}</p>}
         <p className="mt-8 text-4xl text-brass">${(kit.price_cents / 100).toFixed(0)}</p>
         {kit.description_md && (

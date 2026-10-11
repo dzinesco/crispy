@@ -3,13 +3,11 @@ import Layout from './components/Layout.jsx';
 import AdminGate from './components/AdminGate.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
-import Packages from './pages/Packages.jsx';
 import Portfolio from './pages/Portfolio.jsx';
 import Blog from './pages/Blog.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import KitDetail from './pages/KitDetail.jsx';
 import DemoDetail from './pages/DemoDetail.jsx';
-import Apply from './pages/Apply.jsx';
 import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
 import Admin from './pages/Admin.jsx';
@@ -24,7 +22,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/packages" element={<Packages />} />
+        <Route path="/packages" element={<Navigate to="/portfolio" replace />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/tyler" element={<Tyler />} />
         <Route path="/guestbook" element={<Guestbook />} />
@@ -32,7 +30,7 @@ export default function App() {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/kits/:slug" element={<KitDetail />} />
         <Route path="/demos/:slug" element={<DemoDetail />} />
-        <Route path="/apply" element={<Apply />} />
+        <Route path="/apply" element={<Navigate to="/portfolio" replace />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />

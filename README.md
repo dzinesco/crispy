@@ -153,7 +153,9 @@ curl -b jar -X POST http://localhost:3102/api/demos \
   }'
 ```
 
-### Applications (from `/apply` form)
+### Applications
+
+`/apply` redirects to `/portfolio`. The submission endpoint is still here:
 
 ```bash
 # Public submission

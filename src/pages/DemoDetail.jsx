@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
 import { useDemo } from '../lib/api.js';
 
@@ -13,7 +13,6 @@ export default function DemoDetail() {
     return (
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
         <h1 className="text-3xl font-bold tracking-tightish">Demo not found</h1>
-        <Link to="/packages" className="mt-4 inline-block text-brass hover:text-ink">See packs</Link>
       </section>
     );
   }
@@ -23,8 +22,7 @@ export default function DemoDetail() {
       <Seo title={`Demo · ${demo.title}`} description={demo.title} path={`/demos/${demo.slug}`} />
       <section className="border-b border-ink/10 py-10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Link to="/packages" className="text-sm text-ink/50 hover:text-ink">All packs</Link>
-          <h1 className="mt-3 text-3xl font-bold tracking-tightish">{demo.title}</h1>
+          <h1 className="text-3xl font-bold tracking-tightish">{demo.title}</h1>
           <p className="mt-2 text-ink/60">A preview of what comes with the kit.</p>
         </div>
       </section>

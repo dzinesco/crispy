@@ -8,7 +8,7 @@ export function Privacy() {
         <h1 className="text-4xl font-extrabold tracking-tightish">Privacy</h1>
         <div className="prose-cg mt-8">
           <p>
-            We collect what you send us: pitch forms, checkout emails via Stripe, and the usual server logs
+            We collect what you send us: checkout emails via Stripe, and the usual server logs
             (IP, user agent) needed to keep the site up.
           </p>
           <p>

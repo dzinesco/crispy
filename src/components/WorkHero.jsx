@@ -17,21 +17,13 @@ export default function WorkHero({ project, featured }) {
           <p className="mt-5 max-w-[34rem] text-[17px] leading-7 text-cream/75 sm:text-[19px] sm:leading-8">
             Buy a kit and go live today. Or open what’s on the bench.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            {project?.demoHref ? (
+          {project?.demoHref && (
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a className="btn-accent" href={project.demoHref}>
                 Open {project.title}
               </a>
-            ) : (
-              <Link className="btn-accent" to="/packages">See starter packs</Link>
-            )}
-            <Link
-              to={project?.demoHref ? '/packages' : '/apply'}
-              className="btn-ghost border-white/25 text-cream hover:border-white hover:bg-white hover:text-ink"
-            >
-              {project?.demoHref ? 'See starter packs' : 'Pitch a build'}
-            </Link>
-          </div>
+            </div>
+          )}
           {featured && (
             <p className="mt-6 text-[15px] text-cream/70">
               On the counter:{' '}

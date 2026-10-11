@@ -65,6 +65,6 @@ If you run (or bill for) a Colorado home care agency:
 - notice how many of them started as “we emailed a file”
 - decide whether you want software, a service, or both
 
-When you are ready to talk file intake and CO Medicaid ops — without a sales circus — reach out via [Crispy Goat](https://crispygoat.com/apply/) or watch [NeoClaim](https://neoclaim.io).
+When you are ready to talk file intake and CO Medicaid ops — without a sales circus — reach out via [Crispy Goat](https://crispygoat.com/contact) or watch [NeoClaim](https://neoclaim.io).
 
 *No client data in this post. Process language only.*

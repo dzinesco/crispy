@@ -15,13 +15,13 @@ const OUT = '/tmp/crispy-screenshots';
 const ROUTES = [
   { name: 'home', path: '/' },
   { name: 'about', path: '/about' },
-  { name: 'packages', path: '/packages' },
+  { name: 'packages', path: '/packages', redirect: '/portfolio' },
   { name: 'portfolio', path: '/portfolio' },
   { name: 'tyler', path: '/tyler' },
   { name: 'guestbook', path: '/guestbook' },
   { name: 'macos8', path: '/demo/macos8/' },
   { name: 'blog', path: '/blog' },
-  { name: 'apply', path: '/apply' },
+  { name: 'apply', path: '/apply', redirect: '/portfolio' },
   { name: 'contact', path: '/contact' },
   { name: 'privacy', path: '/privacy' },
   { name: 'terms', path: '/terms' },
@@ -118,6 +118,9 @@ async function main() {
       try {
         await page.goto(url, { waitUntil: 'load', timeout: 15000 });
         await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+        if (r.redirect) {
+          await page.waitForURL((u) => new URL(u).pathname === r.redirect, { timeout: 5000 });
+        }
         const file = `${OUT}/${vp.name}-${r.name}.png`;
         await page.screenshot({ path: file, fullPage: false });
         console.log(`[${vp.name}] ${url} → ${file}`);

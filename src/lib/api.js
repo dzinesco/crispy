@@ -206,12 +206,6 @@ export function useAdminActions() {
   };
 }
 
-export function useSubmitApplication() {
-  return useMutation({
-    mutationFn: (body) => request('/applications', { method: 'POST', body: JSON.stringify(body) }),
-  });
-}
-
 export function useGuestbook(page = 'guestbook', limit = 20) {
   return useQuery({
     queryKey: ['guestbook', page, limit],

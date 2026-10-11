@@ -79,6 +79,6 @@ Pick last month’s unpaid visits and ask only:
 
 If those three questions feel uncomfortable, that is the product opportunity — and the consulting opportunity — sitting on your AR aging.
 
-When you want a file-intake billing path instead of another spreadsheet ritual, start at [NeoClaim](https://neoclaim.io) or [Crispy Goat](https://crispygoat.com/apply/).
+When you want a file-intake billing path instead of another spreadsheet ritual, start at [NeoClaim](https://neoclaim.io) or [Crispy Goat](https://crispygoat.com/contact).
 
 *Process language only. No client data. No PHI.*
