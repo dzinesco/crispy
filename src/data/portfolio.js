@@ -18,7 +18,7 @@ export const projects = [
     image: '/images/portfolio/goatshop.png',
     imageAlt: 'Goatshop 5.0 mid-edit with layers, a selection, and the lens flare dialog',
     demoHref: '/demo/goatshop/',
-    shippedAt: '2026-10-11',
+    shippedAt: '2026-10-10',
     bg: 'starfield',
     featured: true,
   },
