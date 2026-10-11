@@ -1,6 +1,8 @@
 // Projects on /portfolio. One object is one app. See PORTFOLIO.md.
-// The homepage hero features `cad` when it is present, otherwise the first
-// shipped entry. The homepage Latest strip mixes shipped apps with posts.
+// The homepage flagship (Goatshop 5.0) shows featuredProject().
+// Shipped apps fill the rest of the homepage grid, newest first.
+// status: 'soon' stays off /portfolio. The Defrag teaser is the only
+// "under construction" block, and it is only on the homepage.
 //
 // demoHref    full navigation to a static app in public/demo/<slug>/
 // postHref    optional link to a blog post
@@ -101,8 +103,8 @@ export const projects = [
   },
   {
     slug: 'windows98',
-    title: 'Windows 98 — Setup Challenge',
-    description: 'Install Windows 98 against the clock. Swap disks, type setup, survive ScanDisk. Win and you get ME.',
+    title: 'Windows 98 Setup Challenge',
+    description: 'Install Windows 98 from floppy and CD against the clock. Time to beat: 00:52. Survive ScanDisk, dodge the blue screen, and earn the ME boot.',
     tags: ['Retro', 'Browser', 'Game'],
     image: '/images/portfolio/windows98.png',
     imageAlt: 'ScanDisk window with a grid of disk sectors and two bad sectors flagged in red',
@@ -161,7 +163,6 @@ export const projects = [
     description: 'On the bench now. It gets a link the day it actually works.',
     tags: [],
     status: 'soon',
-    bg: 'sparkle',
   },
 ];
 
