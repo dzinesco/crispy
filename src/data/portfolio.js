@@ -11,6 +11,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'macos8',
+    title: 'Mac OS 8',
+    description: 'A 1997 Mac desktop in your browser. Finder, MacPaint-style paint, games and all.',
+    tags: ['Retro', 'Browser', 'Game'],
+    image: '/images/portfolio/macos8.png',
+    imageAlt: 'Mac OS 8 desktop with Finder, Paint, Calculator, and Brickout open',
+    demoHref: '/demo/macos8/',
+    shippedAt: '2026-10-10',
+    bg: 'space',
+  },
+  {
     slug: 'windows98',
     title: 'Windows 98 Setup Challenge',
     description: 'Install Windows 98 from floppy and CD against the clock. Survive ScanDisk, dodge the blue screen, and earn the ME boot.',
