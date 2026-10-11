@@ -11,6 +11,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'deskmate',
+    title: 'Tandy DeskMate',
+    description: 'Tandy\'s 1984 GUI, F-keys and all. Eight full-screen apps, sixteen colors, and a modem that dials a BBS.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/deskmate.png',
+    imageAlt: 'Crispygoat DeskMate worksheet on a blue screen, with a SUM total and the F1–F10 bar, letterboxed on a starfield',
+    demoHref: '/demo/deskmate/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
     slug: 'netzero',
     title: 'NetZero — Free Internet',
     description: 'Dial up with the full 56k modem screech, click the banner ad, and spend your free hours wisely.',
