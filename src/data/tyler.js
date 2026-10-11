@@ -82,7 +82,7 @@ export const top8 = [
     id: 'windows98',
     name: 'Windows 98 Setup Challenge',
     href: '/demo/windows98/',
-    blurb: 'Install it against the clock.',
+    blurb: 'Time to beat: 00:52.',
   },
   {
     kind: 'bot',

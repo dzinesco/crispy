@@ -53,7 +53,10 @@ function migrationTwice() {
   const sql = fs.readFileSync(path.join(root, 'server/migrations/004_hits_guestbook.sql'), 'utf8');
   db.exec(sql);
   db.exec(sql);
-  assert.equal(db.prepare('SELECT count FROM hits WHERE id = 1').get().count, 0);
+  assert.equal(db.prepare('SELECT count FROM hits WHERE id = 1').get().count, 2000);
+  db.prepare('UPDATE hits SET count = 2500 WHERE id = 1').run();
+  db.exec(sql);
+  assert.equal(db.prepare('SELECT count FROM hits WHERE id = 1').get().count, 2500);
   db.close();
 }
 
@@ -84,9 +87,9 @@ async function main() {
 
     const before = await api('/api/hits');
     assert.equal(before.status, 200);
-    assert.equal(before.json.count, 0);
+    assert.equal(before.json.count, 2000);
     const still = await api('/api/hits');
-    assert.equal(still.json.count, 0);
+    assert.equal(still.json.count, 2000);
 
     const headers = {
       'user-agent': 'crispy-test',
@@ -94,23 +97,23 @@ async function main() {
     };
     const first = await api('/api/hits', { method: 'POST', body: {}, headers });
     assert.equal(first.status, 200);
-    assert.equal(first.json.count, 1);
+    assert.equal(first.json.count, 2001);
     const again = await api('/api/hits', { method: 'POST', body: {}, headers });
-    assert.equal(again.json.count, 1);
+    assert.equal(again.json.count, 2001);
 
     const otherAgent = await api('/api/hits', {
       method: 'POST',
       body: {},
       headers: { ...headers, 'user-agent': 'crispy-test-other' },
     });
-    assert.equal(otherAgent.json.count, 2);
+    assert.equal(otherAgent.json.count, 2002);
 
     const nextDay = await api('/api/hits', {
       method: 'POST',
       body: {},
       headers: { ...headers, 'x-test-day': '2030-01-02' },
     });
-    assert.equal(nextDay.json.count, 3);
+    assert.equal(nextDay.json.count, 2003);
 
     const db = new Database(dbFile, { readonly: true });
     const stored = JSON.stringify(db.prepare('SELECT visitor_hash, day FROM hit_visitors').all());

@@ -5,7 +5,10 @@ CREATE TABLE IF NOT EXISTS hits (
   count INTEGER NOT NULL DEFAULT 0
 );
 
-INSERT OR IGNORE INTO hits (id, count) VALUES (1, 0);
+INSERT OR IGNORE INTO hits (id, count) VALUES (1, 2000);
+-- Re-running this file must not add another 2000, and must not lower a counter
+-- that has already moved past the seed.
+UPDATE hits SET count = 2000 WHERE id = 1 AND count < 2000;
 
 CREATE TABLE IF NOT EXISTS hit_visitors (
   visitor_hash TEXT NOT NULL,
