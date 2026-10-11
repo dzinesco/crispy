@@ -11,6 +11,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'lotus',
+    title: 'Lotus 1-2-3 — Web Edition',
+    description: 'Type @SUM formulas, drive everything from the / menu, then pop a bar graph in amber phosphor. Spreadsheets were cool once.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/lotus.png',
+    imageAlt: 'Lotus 1-2-3 in amber phosphor on a beige IBM monitor, with the slash menu open over a budget sheet',
+    demoHref: '/demo/lotus/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
     slug: 'goatshop',
     title: 'Goatshop 5.0 — 1998 Edition',
     description: "Layers, History, Magic Wand and a Lens Flare you'll overuse. A full 1998 photo editor that really works.",

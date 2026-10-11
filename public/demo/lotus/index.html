@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/lotus/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Lotus 1-2-3 — browser recreation of the 1983 DOS spreadsheet classic."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Crect x='2' y='2' width='12' height='10' fill='%23000' stroke='%23ffb000' stroke-width='.6'/%3E%3Crect x='3' y='3' width='2' height='7' fill='%23ffb000'/%3E%3Crect x='6' y='3' width='2' height='3' fill='%23ffb000'/%3E%3Crect x='6' y='7' width='2' height='3' fill='%23ffb000'/%3E%3Crect x='9' y='3' width='2' height='5' fill='%23ffb000'/%3E%3Crect x='12' y='3' width='1' height='7' fill='%23ffb000'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>/* Crispy Goat: starfield frame around the room only */
+      body.gc-starfield { padding: 24px !important; }
+      body.gc-starfield .room {
+        background: radial-gradient(ellipse at 50% 38%, rgba(60,50,30,.45) 0%, rgba(20,16,10,.9) 70%), #050505;
+        box-shadow: 0 18px 50px rgba(0,0,0,.6); overflow: hidden;
+      }
+    </style>
+    <title>Lotus 1-2-3</title>
+  </head>
+  <body class="gc-starfield" data-phosphor="amber" data-cols="80">
+    <!-- ============================================================
+         DESK — keyboard, monitor, and IBM PC/XT-class tower on a wood
+         desktop, with a window showing the dim room behind it.
+         ============================================================ -->
+    <div class="room" id="room">
+      <div class="desk-shadow" aria-hidden="true"></div>
+
+      <!-- ============================================================
+           IBM PC/XT TOWER (beige) sitting to the right of the monitor
+           ============================================================ -->
+      <aside class="tower" aria-hidden="true">
+        <div class="tower-front">
+          <div class="tower-bezel-top"></div>
+
+          <!-- 5.25" floppy slot -->
+          <div class="floppy">
+            <div class="floppy-slot"></div>
+            <div class="floppy-led" id="floppy-led"></div>
+            <div class="floppy-label">LOTUS 1-2-3</div>
+          </div>
+
+          <!-- Drive bay / panel -->
+          <div class="tower-bays">
+            <div class="bay"></div>
+            <div class="bay"></div>
+            <div class="bay"></div>
+            <div class="bay"></div>
+          </div>
+
+          <!-- Power block + LED -->
+          <div class="tower-power">
+            <div class="tower-led" id="power-led" title="Power"></div>
+            <div class="tower-led-label">PWR</div>
+            <div class="tower-led drive" id="hdd-led" title="Hard disk"></div>
+            <div class="tower-led-label">HDD</div>
+            <div class="tower-keylock" title="Keylock"></div>
+          </div>
+
+          <!-- IBM-style badges -->
+          <div class="tower-badge">Personal Computer</div>
+          <div class="tower-badge-small">XT</div>
+
+          <div class="tower-bezel-bottom"></div>
+        </div>
+        <div class="tower-shadow"></div>
+      </aside>
+
+      <!-- ============================================================
+           CRT MONITOR with classic 80-column monochrome screen running Lotus
+           ============================================================ -->
+      <main class="monitor" aria-label="Lotus 1-2-3 monitor">
+        <div class="monitor-casing">
+          <!-- Front bezel + amber CRT -->
+          <div class="bezel">
+            <div class="bezel-inner">
+              <div class="screen" id="screen" data-cols="80" aria-live="polite">
+                <!-- Phosphor overlays -->
+                <div class="scanlines" aria-hidden="true"></div>
+                <div class="vignette" aria-hidden="true"></div>
+                <div class="reflection" aria-hidden="true"></div>
+
+                <!-- The Lotus spreadsheet surface -->
+                <div class="lotus">
+                  <header class="lotus-titlebar">
+                    <span class="titlebar-text">
+                      Lotus 1-2-3 Release 2.2 — Untitled Sheet
+                    </span>
+                  </header>
+
+                  <section class="lotus-grid" id="grid" role="grid" aria-label="Spreadsheet"></section>
+
+                  <section class="lotus-indicator" id="indicator">
+                    <span class="cell-coord" id="cell-coord">A1</span><span class="cell-sep">:</span><span class="cell-contents" id="cell-contents">&nbsp;</span>
+                  </section>
+
+                  <section class="lotus-mode" id="mode-strip">
+                    <span class="mode-label" id="mode-label">READY</span>
+                    <span class="mode-menus" id="mode-menus"></span>
+                  </section>
+
+                  <footer class="lotus-keys" id="key-line"></footer>
+                </div>
+
+                <!-- Optional chart overlay (toggled via /G View) -->
+                <div class="chart-overlay" id="chart-overlay" hidden>
+                  <div class="chart-frame">
+                    <div class="chart-title" id="chart-title">Graph</div>
+                    <canvas id="chart-canvas" width="640" height="320"></canvas>
+                    <div class="chart-hint">
+                      Press <b>Esc</b> to return to the spreadsheet
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Blinking caret -->
+                <span class="caret" id="caret" aria-hidden="true">&#9608;</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Power LED + brand -->
+          <div class="monitor-bottom">
+            <div class="monitor-brand">IBM</div>
+            <div class="monitor-led" title="Power"></div>
+          </div>
+        </div>
+
+        <!-- Tilt/swivel stand -->
+        <div class="monitor-stand" aria-hidden="true">
+          <div class="stand-neck"></div>
+          <div class="stand-base"></div>
+        </div>
+      </main>
+
+      <div class="floor-shadow" aria-hidden="true"></div>
+    </div>
+
+    <!-- ============================================================
+         KEYBOARD LEGEND — pinned below the monitor, with F1..F10
+         ============================================================ -->
+    <div
+      class="legend"
+      id="legend"
+      role="region"
+      aria-label="Keyboard controls"
+    >
+      <span class="legend-title">F-KEYS</span>
+      <span class="legend-keys" id="legend-keys"></span>
+    </div>
+
+    <!-- ============================================================
+         SOFT-KEY ROW for small viewports (mobile fallback)
+         ============================================================ -->
+    <div class="softkeys" id="softkeys" aria-hidden="true"></div>
+
+    <!-- Hidden file input for JSON save/import -->
+    <input id="file-input" type="file" accept=".json,application/json" hidden />
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
