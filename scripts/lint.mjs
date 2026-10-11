@@ -23,6 +23,7 @@ const files = [
   ...(await walk(path.join(root, 'src'))),
   ...(await walk(path.join(root, 'server', 'src'))),
   ...(await walk(path.join(root, 'scripts'))),
+  ...(await walk(path.join(root, 'apps', 'goatshop'))),
   ...(await walk(path.join(root, 'public', 'demo', 'macos8'))),
   ...(await walk(path.join(root, 'public', 'demo', 'deskmate'))),
   ...(await walk(path.join(root, 'tests'))),
