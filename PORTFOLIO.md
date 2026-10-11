@@ -23,9 +23,9 @@
 
 `postHref` is optional. Leave it off and the featured card hides “Read the build”. Gallery cards are a single link to the demo.
 
-`featured: true` pins the large slot on `/portfolio` and the Goatshop 5.0 slot on the homepage. Omit it and Windows 3.11 is featured. The card title is the part of `title` before ` — `; the edition stays in the tagline. Winamp’s card title is `Winamp`.
+`featured: true` pins the large slot on `/portfolio`. Omit it and Windows 3.11 is featured. Goatshop 5.0 is the current flagship. The homepage hero still features CAD. The card title is the part of `title` before ` — `; the edition stays in the tagline. Winamp’s card title is `Winamp`.
 
-`status: 'soon'` is a teaser. Give it a title and description, no `demoHref`. It is not counted as live and does not appear on `/portfolio`. The Defrag teaser is the only “under construction” block, and it only appears on the homepage.
+`status: 'soon'` is the optional Next up teaser. Give it a title and description, no `demoHref`. It is not counted as live and does not appear on the homepage or on `/portfolio`.
 
 Filter chips are `All` plus each tag except `Browser`, sorted by how many shipped apps use it. The choice is stored in `?tag=`. Slugs stay `[a-z0-9-]+`.
 
