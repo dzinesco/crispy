@@ -5,8 +5,8 @@
 // demoHref    full navigation to a static app in public/demo/<slug>/
 // postHref    optional link to a blog post
 // image       a 16:10 screenshot in public/
-// shippedAt   ISO date (YYYY-MM-DD). Newest is featured unless `featured` is set.
-// featured    optional pin for the big slot. A later entry wins a date tie.
+// shippedAt   ISO date (YYYY-MM-DD).
+// featured    pins the large slot on /portfolio. Default is Windows 3.11.
 // status      'soon' is a teaser only. Not counted as live, no demo, off the homepage.
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
@@ -16,7 +16,7 @@ export const projects = [
     description: 'A drawing board in the browser. Lines, layers, undo, and an export.',
     tags: ['Drawing', 'Browser'],
     image: '/images/portfolio/cad.png',
-    imageAlt: 'CAD drawing board with a rectangle, a circle, and a line',
+    imageAlt: 'CAD drawing board mid-stroke, with a rectangle, a circle, and a line on the grid',
     demoHref: '/demo/cad/',
     postHref: '/blog/draw-and-see',
     shippedAt: '2026-10-10',
@@ -28,11 +28,12 @@ export const projects = [
     description: 'A working Windows 3.11 desktop in the browser. Drag windows, play Minesweeper and Solitaire, write in Notepad.',
     tags: ['Retro', 'Browser'],
     image: '/images/portfolio/win311.png',
-    imageAlt: 'Windows 3.11 desktop with Program Manager and a Notepad window open',
+    imageAlt: 'Windows 3.11 desktop with Program Manager and Minesweeper open',
     demoHref: '/demo/win311/',
     postHref: '/blog/windows-311-folio',
     shippedAt: '2026-10-10',
     bg: 'construction',
+    featured: true,
   },
   {
     slug: 'winamp',
@@ -40,7 +41,7 @@ export const projects = [
     description: 'It really whips. Drop in your own MP3s and get a live spectrum visualizer, a 10-band EQ with presets, and a draggable playlist.',
     tags: ['Retro', 'Browser', 'Audio'],
     image: '/images/portfolio/winamp.png',
-    imageAlt: 'Winamp 2 player with the equalizer and playlist windows open',
+    imageAlt: 'Winamp playing, with the spectrum visualizer, equalizer, and playlist centered',
     demoHref: '/demo/winamp/',
     shippedAt: '2026-10-10',
     bg: 'starfield',
@@ -51,7 +52,7 @@ export const projects = [
     description: 'A click-wheel iPod in your browser. Spin the wheel through real menus, hit play on built-in demo tracks, add your own audio files, or connect Spotify.',
     tags: ['Retro', 'Browser', 'Audio'],
     image: '/images/portfolio/ipod.png',
-    imageAlt: 'Classic white click-wheel iPod showing its main menu on a starfield background',
+    imageAlt: 'Classic white click-wheel iPod showing its main menu, centered on a starfield',
     demoHref: '/demo/ipod/',
     shippedAt: '2026-10-10',
     bg: 'starfield',
@@ -101,18 +102,7 @@ export function featuredProject(list = projects) {
   const live = shippedProjects(list);
   const flagged = live.find((project) => project.featured);
   if (flagged) return flagged;
-  let best = null;
-  let bestAt = -Infinity;
-  let bestIndex = -1;
-  live.forEach((project, index) => {
-    const at = Date.parse(project.shippedAt || '') || 0;
-    if (at > bestAt || (at === bestAt && index >= bestIndex)) {
-      best = project;
-      bestAt = at;
-      bestIndex = index;
-    }
-  });
-  return best;
+  return live.find((project) => project.slug === 'win311') || byNewest(list)[0] || null;
 }
 
 export function portfolioTags(list = projects) {
@@ -123,4 +113,29 @@ export function portfolioTags(list = projects) {
     }
   }
   return tags;
+}
+
+export function portfolioFilters(list = projects) {
+  const counts = new Map();
+  for (const project of shippedProjects(list)) {
+    for (const tag of project.tags || []) {
+      if (!tag || tag === 'Browser') continue;
+      counts.set(tag, (counts.get(tag) || 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([tag]) => tag);
+}
+
+export function shortName(project) {
+  if (project?.slug === 'winamp') return 'Winamp';
+  return String(project?.title || '').split(' — ')[0];
+}
+
+export function cardTagline(project) {
+  const parts = String(project?.title || '').split(' — ');
+  const edition = parts.length > 1 ? parts.slice(1).join(' — ') : '';
+  const description = project?.description || '';
+  return edition ? `${edition}. ${description}` : description;
 }

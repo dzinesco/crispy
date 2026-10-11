@@ -1,9 +1,9 @@
 # Adding an app
 
-`/portfolio` reads `src/data/portfolio.js`. One object is one app. The page sorts shipped apps newest-first and will hold a long list.
+`/portfolio` reads `src/data/portfolio.js`. One object is one app. Shipped apps sort newest-first. The page is a quiet frame: hero, one featured app, a tag filter, then the gallery.
 
 1. Drop the static build in `public/demo/<slug>/` so `public/demo/<slug>/index.html` is the app.
-2. Add a 16:10 screenshot at `public/images/portfolio/<slug>.png` (1280×800 is the usual size).
+2. Add a 16:10 screenshot at `public/images/portfolio/<slug>.png` (1280×800), shot mid-action and centered. Also ship AVIF and WebP next to it: `<slug>-1280`, `<slug>-640`, and a tighter mobile crop `<slug>-m`, each as `.avif` and `.webp`. The page lazy-loads those and falls back to the PNG.
 3. Append one entry to `projects`:
 
 ```js
@@ -21,17 +21,17 @@
 }
 ```
 
-`postHref` is optional. Leave it off and the card has Launch only.
+`postHref` is optional. Leave it off and the featured card hides “Read the build”. Gallery cards are a single link to the demo.
 
-`featured: true` pins the large slot. Omit it and the newest `shippedAt` is featured. If two dates match, the later entry wins.
+`featured: true` pins the large slot on `/portfolio`. Omit it and Windows 3.11 is featured. The homepage hero still features CAD. The card title is the part of `title` before ` — `; the edition stays in the tagline. Winamp’s card title is `Winamp`.
 
-`status: 'soon'` is the optional Next up teaser. Give it a title and description, no `demoHref`. It is not counted as live and does not appear on the homepage.
+`status: 'soon'` is the optional Next up teaser. Give it a title and description, no `demoHref`. It is not counted as live and does not appear on the homepage or on `/portfolio`.
 
-Any tag on a shipped app becomes a filter chip. Slugs stay `[a-z0-9-]+`.
+Filter chips are `All` plus each tag except `Browser`, sorted by how many shipped apps use it. The choice is stored in `?tag=`. Slugs stay `[a-z0-9-]+`.
 
-`bg` is the 90s frame around the screenshot and the featured stage. One of `starfield`, `tiles`, `construction`, `space`, `sparkle`. Leave it off and the frame is `tiles`.
+`bg` is the pattern inside the screenshot bezel only. One of `starfield`, `tiles`, `construction`, `space`, `sparkle`. Leave it off and the bezel is `tiles`. It is not the page background.
 
-The same patterns are the page background on `/demo/<slug>/`. They live in `public/demo/_shared/geocities.css`. Link it after the app stylesheet, with a root-absolute path so a `<base>` tag cannot rewrite it:
+Demo pages keep their own surround in `public/demo/_shared/geocities.css`. Link it after the app stylesheet, with a root-absolute path so a `<base>` tag cannot rewrite it:
 
 ```html
 <link rel="stylesheet" href="/demo/_shared/geocities.css" />
