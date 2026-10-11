@@ -11,6 +11,7 @@
     "lint": "node scripts/lint.mjs",
     "test:macos8": "node tests/macos8.spec.mjs",
     "test:deskmate": "node tests/deskmate.spec.mjs",
+    "test:defrag": "node tests/defrag.spec.mjs",
     "preview": "vite preview",
     "install:all": "npm install && npm --prefix server install"
   },
