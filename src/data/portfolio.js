@@ -132,7 +132,7 @@ export function byNewest(list = projects) {
       const ta = Date.parse(a.project.shippedAt || '') || 0;
       const tb = Date.parse(b.project.shippedAt || '') || 0;
       if (tb !== ta) return tb - ta;
-      return b.index - a.index;
+      return a.index - b.index;
     })
     .map(({ project }) => project);
 }
