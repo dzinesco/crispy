@@ -1489,21 +1489,37 @@
     caret.style.display = "block";
   }
 
+  // On-screen function keys: every button replays the real key through onKeyDown,
+  // so clicks/taps and the keyboard share one code path.
+  const FKEY_BUTTONS = [
+    { k: "F1", l: "Help" },
+    { k: "F2", l: "Edit" },
+    { k: "F3", l: "Name" },
+    { k: "F4", l: "Menu" },
+    { k: "F5", l: "GoTo" },
+    { k: "F6", l: "Window" },
+    { k: "F7", l: "Format" },
+    { k: "F8", l: "Calc" },
+    { k: "F9", l: "File" },
+    { k: "F10", l: "Graph" },
+    { k: "/", l: "Menu" },
+    { k: "Escape", t: "Esc", l: "Cancel" },
+  ];
+  let legendBuilt = false;
   function updateLegend() {
-    const slots = [
-      { k: "F1", l: "Help" },
-      { k: "F2", l: "Edit" },
-      { k: "F4", l: "Name" },
-      { k: "F5", l: "Goto" },
-      { k: "F7", l: "Format" },
-      { k: "F8", l: "Recalc" },
-      { k: "F9", l: "/File" },
-      { k: "F10", l: "/Graph" },
-      { k: "Esc", l: "Cancel" },
-    ];
-    legendKeys.innerHTML = slots
-      .map(s => `<span class="key">${s.k}</span> ${s.l}`)
-      .join(" · ");
+    if (legendBuilt) return;
+    legendBuilt = true;
+    legendKeys.innerHTML = FKEY_BUTTONS
+      .map(s => `<button type="button" class="fkey" data-key="${s.k}" aria-label="${s.t || s.k} ${s.l}">` +
+        `<span class="key">${s.t || s.k}</span><span class="fkey-label">${s.l}</span></button>`)
+      .join("");
+    // Keep focus where it is (the sheet listens on document).
+    legendKeys.addEventListener("mousedown", (e) => { if (e.target.closest(".fkey")) e.preventDefault(); });
+    legendKeys.addEventListener("click", (e) => {
+      const btn = e.target.closest(".fkey");
+      if (!btn) return;
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: btn.dataset.key, bubbles: true, cancelable: true }));
+    });
   }
 
   function updateFloppyLed() {
@@ -1580,6 +1596,11 @@
         if (coordValid(c, r)) { cur.c = c; cur.r = r; render(); return; }
       }
       setError(`No cell or name "${target}"`);
+      return;
+    }
+    if (k === "F3" || k === "F6") {
+      e.preventDefault();
+      setIndicatorNote(k === "F3" ? "F3 Name: use /Range Name in this edition" : "F6 Window: single window in this edition");
       return;
     }
     if (k === "F7") { e.preventDefault(); enterRangeFormatPrompt(); return; }
