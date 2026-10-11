@@ -15,7 +15,7 @@ const required = (name, fallback) => {
 export const config = {
   port: parseInt(process.env.PORT || '3102', 10),
   databaseFile: path.resolve(__dirname, '..', process.env.DATABASE_FILE || './data/crispy.db'),
-  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:5173')
+  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),

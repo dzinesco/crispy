@@ -15,13 +15,16 @@ const OUT = '/tmp/crispy-screenshots';
 const ROUTES = [
   { name: 'home', path: '/' },
   { name: 'about', path: '/about' },
-  { name: 'packages', path: '/packages' },
+  { name: 'packages', path: '/packages', redirect: '/portfolio' },
   { name: 'portfolio', path: '/portfolio' },
+  { name: 'tyler', path: '/tyler' },
+  { name: 'guestbook', path: '/guestbook' },
   { name: 'macos8', path: '/demo/macos8/' },
   { name: 'deskmate', path: '/demo/deskmate/' },
   { name: 'defrag', path: '/demo/defrag/' },
   { name: 'blog', path: '/blog' },
-  { name: 'apply', path: '/apply' },
+  { name: 'apply', path: '/apply', redirect: '/portfolio' },
+  { name: 'kits', path: '/kits', redirect: '/portfolio' },
   { name: 'contact', path: '/contact' },
   { name: 'privacy', path: '/privacy' },
   { name: 'terms', path: '/terms' },
@@ -111,13 +114,17 @@ async function main() {
     const allRoutes = [...ROUTES];
     if (vp.name === 'desktop' && createdSlug) {
       allRoutes.push({ name: 'blog-post', path: `/blog/${createdSlug}` });
-      allRoutes.push({ name: 'kit-detail', path: `/kits/${createdKit}` });
+      allRoutes.push({ name: 'kit-detail', path: `/kits/${createdKit}`, redirect: '/portfolio' });
+      allRoutes.push({ name: 'kit-nested', path: `/kits/${createdKit}/extra`, redirect: '/portfolio' });
     }
     for (const r of allRoutes) {
       const url = BASE + r.path;
       try {
         await page.goto(url, { waitUntil: 'load', timeout: 15000 });
         await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+        if (r.redirect) {
+          await page.waitForURL((u) => new URL(u).pathname === r.redirect, { timeout: 5000 });
+        }
         const file = `${OUT}/${vp.name}-${r.name}.png`;
         await page.screenshot({ path: file, fullPage: false });
         console.log(`[${vp.name}] ${url} → ${file}`);

@@ -10,8 +10,13 @@ import kitRoutes from './routes/kits.js';
 import demoRoutes from './routes/demos.js';
 import appRoutes from './routes/applications.js';
 import stripeRoutes, { stripeWebhook } from './routes/stripe.js';
+import hitRoutes from './routes/hits.js';
+import guestbookRoutes from './routes/guestbook.js';
 
 const app = express();
+// Nginx on this host appends X-Forwarded-For. Trust one hop so the hit
+// counter can hash the visitor address without storing it.
+app.set('trust proxy', 1);
 
 // Stripe webhook needs the raw body — mount before express.json().
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
@@ -41,6 +46,8 @@ app.use('/api', kitRoutes);
 app.use('/api', demoRoutes);
 app.use('/api', appRoutes);
 app.use('/api', stripeRoutes);
+app.use('/api', hitRoutes);
+app.use('/api', guestbookRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);

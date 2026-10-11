@@ -14,12 +14,6 @@ import {
   cardTagline,
 } from '../data/portfolio.js';
 
-const SIZES = '(min-width:1024px) 560px, 100vw';
-
-function imageBase(src) {
-  return String(src || '').replace(/\.png$/, '');
-}
-
 function Shot({ project, priority = false }) {
   const [failed, setFailed] = useState(false);
   if (failed || !project?.image) {
@@ -29,34 +23,17 @@ function Shot({ project, priority = false }) {
       </div>
     );
   }
-  const base = imageBase(project.image);
   return (
-    <picture>
-      <source media="(max-width: 639px)" type="image/avif" srcSet={`${base}-m.avif`} />
-      <source media="(max-width: 639px)" type="image/webp" srcSet={`${base}-m.webp`} />
-      <source
-        type="image/avif"
-        srcSet={`${base}-640.avif 640w, ${base}-1280.avif 1280w`}
-        sizes={SIZES}
-      />
-      <source
-        type="image/webp"
-        srcSet={`${base}-640.webp 640w, ${base}-1280.webp 1280w`}
-        sizes={SIZES}
-      />
-      <img
-        className="cg-bezel__shot"
-        src={project.image}
-        alt={project.imageAlt || ''}
-        width="1280"
-        height="800"
-        sizes={SIZES}
-        loading={priority ? 'eager' : 'lazy'}
-        fetchpriority={priority ? 'high' : undefined}
-        decoding="async"
-        onError={() => setFailed(true)}
-      />
-    </picture>
+    <img
+      className="cg-bezel__shot"
+      src={project.image}
+      alt={project.imageAlt || ''}
+      width="1280"
+      height="800"
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
@@ -283,15 +260,16 @@ export default function Portfolio() {
   return (
     <div className="cg-portfolio">
       <Seo
-        title="Portfolio"
-        description="Every project here is live. Pick one, break it, tell me what you'd build next."
+        title="Apps"
+        description="Every project here is live. Pick one and open it."
         path="/portfolio"
       />
 
       <header className="cg-hero">
         <div className="cg-page">
-          <h1>You had to be there. Now you can be.</h1>
-          <p className="cg-hero__sub">Old software, rebuilt from scratch for the modern web. Click anything.</p>
+          <p className="pixel">Newest first</p>
+          <h1>Apps</h1>
+          <p className="cg-hero__sub">Every project here is live. Pick one and open it.</p>
           <p className="cg-hero__meta">{countLabel}</p>
         </div>
       </header>
@@ -328,8 +306,8 @@ export default function Portfolio() {
 
       <section className="cg-close">
         <div className="cg-page">
-          <h2>Want one of these for your brand?</h2>
-          <Link className="cg-btn cg-btn-ghost" to="/apply">Pitch</Link>
+          <h2>Leave a note in the guestbook.</h2>
+          <Link className="cg-btn cg-btn-ghost" to="/guestbook">Guestbook</Link>
         </div>
       </section>
     </div>

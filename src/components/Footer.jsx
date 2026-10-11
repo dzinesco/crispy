@@ -3,41 +3,40 @@ import Mark from './Mark.jsx';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-ink/10 bg-ink text-cream">
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+    <footer className="border-t border-white/10 bg-ink text-white">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 md:grid-cols-3">
-          <div className="md:col-span-1">
-            <Link to="/" className="mb-4 inline-flex items-center gap-2.5">
+          <div>
+            <Link to="/" className="inline-flex items-center gap-2.5 text-white">
               <Mark className="h-7 w-7" />
-              <span className="font-semibold tracking-tightish">Crispy Goat</span>
+              <span className="font-semibold tracking-tight">Crispy Goat</span>
             </Link>
-            <p className="mt-4 max-w-xs text-[15px] leading-6 text-cream/70">
-              Site kits you can buy today. Custom work when a kit won’t cover it.
+            <p className="mt-4 max-w-xs text-[15px] leading-6 text-[#e4e4e7]">
+              A personal homepage. EST. 2024.
             </p>
           </div>
-          <div>
-            <p className="mb-3 text-sm text-cream/50">Pages</p>
+          <nav aria-label="Footer">
             <ul className="space-y-2 text-[15px]">
-              <li><Link className="text-cream/80 hover:text-cream" to="/packages">Packs</Link></li>
-              <li><Link className="text-cream/80 hover:text-cream" to="/portfolio">Portfolio</Link></li>
-              <li><Link className="text-cream/80 hover:text-cream" to="/blog">Blog</Link></li>
-              <li><Link className="text-cream/80 hover:text-cream" to="/apply">Pitch</Link></li>
-              <li><Link className="text-cream/80 hover:text-cream" to="/about">About</Link></li>
+              <li><Link to="/portfolio">Apps</Link></li>
+              <li><Link to="/blog">Blog</Link></li>
+              <li><Link to="/tyler">Tyler</Link></li>
+              <li><Link to="/guestbook">Guestbook</Link></li>
             </ul>
-          </div>
+          </nav>
           <div>
-            <p className="mb-3 text-sm text-cream/50">Reach</p>
-            <a className="text-[15px] text-cream/80 hover:text-cream" href="mailto:tm@crispygoat.com">
-              tm@crispygoat.com
-            </a>
-            <p className="mt-3 text-[15px] text-cream/60">Remote. Worldwide.</p>
+            <a className="text-[15px]" href="mailto:tm@crispygoat.com">tm@crispygoat.com</a>
+            <p className="mt-3 text-[15px] text-[#e4e4e7]">Western Slope, Colorado</p>
+            <p className="mt-4 text-sm">
+              <Link to="/contact">hire me</Link>
+            </p>
           </div>
         </div>
-        <div className="mt-12 flex flex-col gap-3 border-t border-cream/10 pt-6 text-sm text-cream/45 sm:flex-row sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-sm text-[#e4e4e7] sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Crispy Goat</p>
           <div className="flex gap-5">
-            <Link className="hover:text-cream" to="/privacy">Privacy</Link>
-            <Link className="hover:text-cream" to="/terms">Terms</Link>
+            <Link to="/about">About</Link>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
           </div>
         </div>
       </div>

@@ -59,21 +59,6 @@ export function usePost(slug) {
   });
 }
 
-export function useKits() {
-  return useQuery({
-    queryKey: ['kits'],
-    queryFn: () => request('/kits'),
-  });
-}
-
-export function useKit(slug) {
-  return useQuery({
-    queryKey: ['kits', slug],
-    queryFn: () => request(`/kits/${slug}`),
-    enabled: !!slug,
-  });
-}
-
 export function useDemo(slug) {
   return useQuery({
     queryKey: ['demos', slug],
@@ -153,6 +138,7 @@ export function useAdminActions() {
     qc.invalidateQueries({ queryKey: ['kits'] });
     qc.invalidateQueries({ queryKey: ['demos'] });
     qc.invalidateQueries({ queryKey: ['admin'] });
+    qc.invalidateQueries({ queryKey: ['guestbook'] });
   };
   return {
     createPost: useMutation({
@@ -194,18 +180,27 @@ export function useAdminActions() {
       mutationFn: (slug) => request(`/admin/demos/${slug}`, { method: 'DELETE' }),
       onSuccess: invalidate,
     }),
+    approveGuestbook: useMutation({
+      mutationFn: (id) => request(`/admin/guestbook/${id}/approve`, { method: 'POST', body: '{}' }),
+      onSuccess: invalidate,
+    }),
+    deleteGuestbook: useMutation({
+      mutationFn: (id) => request(`/admin/guestbook/${id}`, { method: 'DELETE' }),
+      onSuccess: invalidate,
+    }),
   };
 }
 
-export function useSubmitApplication() {
-  return useMutation({
-    mutationFn: (body) => request('/applications', { method: 'POST', body: JSON.stringify(body) }),
+export function useGuestbook(page = 'guestbook', limit = 20) {
+  return useQuery({
+    queryKey: ['guestbook', page, limit],
+    queryFn: () => request(`/guestbook?page=${encodeURIComponent(page)}&limit=${limit}`),
   });
 }
 
-export function useStripeCheckout() {
-  return useMutation({
-    mutationFn: (kit_slug) =>
-      request('/stripe/checkout', { method: 'POST', body: JSON.stringify({ kit_slug }) }),
+export function useAdminGuestbook() {
+  return useQuery({
+    queryKey: ['admin', 'guestbook'],
+    queryFn: () => request('/admin/guestbook'),
   });
 }

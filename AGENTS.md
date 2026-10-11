@@ -35,9 +35,9 @@ Use the API directly (`curl` examples in [README.md](./README.md)), or log in
 at `/admin/login` and use the in-app editor. Admin tabs:
 
 - **Posts** — blog content (markdown body)
-- **Kits** — products for sale (Stripe Checkout)
+- **Kits** — stored products (public `/kits` redirects to `/portfolio`; admin and the Stripe API remain)
 - **Demos** — sample sites linked to a kit (`kit_slug` FK)
-- **Applications** — `/apply` form submissions
+- **Applications** — stored pitch submissions (the public `/apply` page redirects to `/portfolio`; the API remains)
 
 ## Build & deploy
 

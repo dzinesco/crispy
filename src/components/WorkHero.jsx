@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom';
 import Mark from './Mark.jsx';
 import WorkMedia from './WorkMedia.jsx';
 
-export default function WorkHero({ project, featured }) {
+export default function WorkHero({ project }) {
   return (
     <section className="hero-stage relative isolate overflow-hidden bg-ink text-cream" aria-label="Introduction">
       <div className="relative z-10 mx-auto grid min-h-0 max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:min-h-[calc(100svh-3rem)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-12 lg:py-10">
@@ -15,34 +14,14 @@ export default function WorkHero({ project, featured }) {
             Ship the site. Skip the agency theater.
           </h1>
           <p className="mt-5 max-w-[34rem] text-[17px] leading-7 text-cream/75 sm:text-[19px] sm:leading-8">
-            Buy a kit and go live today. Or open what’s on the bench.
+            Open what’s on the bench.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            {project?.demoHref ? (
+          {project?.demoHref && (
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a className="btn-accent" href={project.demoHref}>
                 Open {project.title}
               </a>
-            ) : (
-              <Link className="btn-accent" to="/packages">See starter packs</Link>
-            )}
-            <Link
-              to={project?.demoHref ? '/packages' : '/apply'}
-              className="btn-ghost border-white/25 text-cream hover:border-white hover:bg-white hover:text-ink"
-            >
-              {project?.demoHref ? 'See starter packs' : 'Pitch a build'}
-            </Link>
-          </div>
-          {featured && (
-            <p className="mt-6 text-[15px] text-cream/70">
-              On the counter:{' '}
-              <Link
-                to={`/kits/${featured.slug}`}
-                className="text-cream underline decoration-brass decoration-2 underline-offset-4 hover:text-brass"
-              >
-                {featured.title}
-              </Link>
-              <span> · ${(featured.price_cents / 100).toFixed(0)}</span>
-            </p>
+            </div>
           )}
         </div>
 

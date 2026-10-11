@@ -35,8 +35,8 @@ router.post('/checkout', async (req, res) => {
             },
             quantity: 1,
           }],
-      success_url: `${config.siteUrl.replace(/\/$/, '')}/kits/${kit.slug}?purchase=success`,
-      cancel_url: `${config.siteUrl.replace(/\/$/, '')}/kits/${kit.slug}?purchase=cancelled`,
+      success_url: `${config.siteUrl.replace(/\/$/, '')}/portfolio?purchase=success`,
+      cancel_url: `${config.siteUrl.replace(/\/$/, '')}/portfolio?purchase=cancelled`,
     });
 
     db.prepare(

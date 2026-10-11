@@ -89,6 +89,6 @@ Crispy Goat’s bias is blunt: delete email as the billing system of record. Kee
 2. Drop it somewhere intentional for seven days — same naming rule, same owner, same “received” check.  
 3. Count how many “which file?” moments disappear.
 
-When you want that path productized for Colorado Medicaid-style claim work, start at [NeoClaim](https://neoclaim.io) or [Crispy Goat](https://crispygoat.com/apply/).
+When you want that path productized for Colorado Medicaid-style claim work, start at [NeoClaim](https://neoclaim.io) or [Crispy Goat](https://crispygoat.com/contact).
 
 *Process language only. No client data. No PHI. No secrets.*

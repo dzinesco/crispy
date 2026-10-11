@@ -11,6 +11,7 @@
     "build:goatshop": "vite build --config apps/goatshop/vite.config.js",
     "lint": "node scripts/lint.mjs",
     "test:macos8": "node tests/macos8.spec.mjs",
+    "test:site": "node tests/hits-guestbook.spec.mjs && node tests/tyler.spec.mjs",
     "test:deskmate": "node tests/deskmate.spec.mjs",
     "test:goatshop": "node tests/goatshop.spec.mjs",
     "test:defrag": "node tests/defrag.spec.mjs",

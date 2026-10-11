@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
 import {
-  useAdminPosts, useAdminKits, useAdminDemos, useApplications,
+  useAdminPosts, useAdminKits, useAdminDemos, useApplications, useAdminGuestbook,
   useLogout, useAdminActions,
 } from '../lib/api.js';
 
-const TABS = ['Posts', 'Kits', 'Demos', 'Applications'];
+const TABS = ['Posts', 'Kits', 'Demos', 'Applications', 'Guestbook'];
 
 export default function Admin() {
   const [tab, setTab] = useState('Posts');
@@ -16,6 +16,7 @@ export default function Admin() {
   const kits = useAdminKits();
   const demos = useAdminDemos();
   const apps = useApplications();
+  const guestbook = useAdminGuestbook();
   const actions = useAdminActions();
 
   async function onLogout() {
@@ -50,6 +51,9 @@ export default function Admin() {
         {tab === 'Kits' && <KitsPanel data={kits.data?.kits || []} actions={actions} />}
         {tab === 'Demos' && <DemosPanel data={demos.data?.demos || []} actions={actions} />}
         {tab === 'Applications' && <AppsPanel data={apps.data?.applications || []} />}
+        {tab === 'Guestbook' && (
+          <GuestbookPanel data={guestbook.data?.entries || []} actions={actions} />
+        )}
       </section>
     </>
   );
@@ -275,6 +279,38 @@ function DemosPanel({ data, actions }) {
           {data.length === 0 && <tr><td colSpan={5} className="py-6 text-center text-charcoal/50">No demos yet.</td></tr>}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function GuestbookPanel({ data, actions }) {
+  return (
+    <div className="space-y-3">
+      {data.map((entry) => (
+        <article key={entry.id} className="card">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="font-semibold">
+              {entry.first_name}
+              {entry.city ? <span className="font-normal text-charcoal/70"> · {entry.city}</span> : null}
+            </p>
+            <p className="font-mono text-xs uppercase text-charcoal/70">
+              {entry.page} · {entry.status}
+            </p>
+          </div>
+          <p className="whitespace-pre-wrap text-sm">{entry.message}</p>
+          <div className="mt-3 flex gap-2">
+            {entry.status !== 'approved' && (
+              <button type="button" className="btn-primary" onClick={() => actions.approveGuestbook.mutate(entry.id)}>
+                Approve
+              </button>
+            )}
+            <button type="button" className="btn-ghost" onClick={() => actions.deleteGuestbook.mutate(entry.id)}>
+              Delete
+            </button>
+          </div>
+        </article>
+      ))}
+      {data.length === 0 && <p className="py-6 text-center text-charcoal/70">No guestbook notes yet.</p>}
     </div>
   );
 }
