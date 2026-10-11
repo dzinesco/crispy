@@ -20,6 +20,8 @@ const ROUTES = [
   { name: 'tyler', path: '/tyler' },
   { name: 'guestbook', path: '/guestbook' },
   { name: 'macos8', path: '/demo/macos8/' },
+  { name: 'deskmate', path: '/demo/deskmate/' },
+  { name: 'defrag', path: '/demo/defrag/' },
   { name: 'blog', path: '/blog' },
   { name: 'apply', path: '/apply', redirect: '/portfolio' },
   { name: 'kits', path: '/kits', redirect: '/portfolio' },

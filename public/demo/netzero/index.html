@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/netzero/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="NetZero v1.2 — Dial-up Experience. The free-internet ISP login and modem handshake, rebuilt in the browser with sound."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23006699'/%3E%3Cpath d='M5 4h6L8 13l-3-6 3-1z' fill='%23fff'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Tahoma&family=Arial&family=Verdana&family=Lucida+Console&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>/* Crispy Goat: starfield frame around the desktop */
+      body.gc-starfield .desktop { position: fixed; inset: 24px; width: auto; height: auto; box-shadow: 0 18px 50px rgba(0,0,0,.5); }
+    </style>
+    <title>NetZero v1.2 — Dial-up Experience</title>
+  </head>
+  <body class="gc-starfield">
+    <!-- CRT overlay (subtle scanlines) -->
+    <div class="crt" aria-hidden="true"></div>
+
+    <!-- ===================== DESKTOP ===================== -->
+    <div class="desktop" id="desktop">
+      <!-- Taskbar -->
+      <div class="taskbar" id="taskbar" hidden>
+        <button class="start-btn" data-action="start">
+          <span class="start-flag">▶</span>
+          <span class="start-label">Start</span>
+        </button>
+        <div class="taskbar-tray">
+          <span class="tray-time" id="tray-time">12:00 PM</span>
+          <span class="tray-state" id="tray-state">Disconnected</span>
+          <button class="tray-mute" id="tray-mute" data-action="mute" title="Mute sounds">♪</button>
+        </div>
+      </div>
+
+      <!-- Desktop icons -->
+      <div class="desktop-icons">
+        <button class="desktop-icon" id="netzero-icon" data-action="open-login" title="Double-click to open NetZero">
+          <span class="icon-art" aria-hidden="true">
+            <span class="z-circle"></span>
+            <span class="z-glyph">z</span>
+          </span>
+          <span class="icon-label">NetZero</span>
+        </button>
+        <button class="desktop-icon" id="recycle-icon" data-action="open-about" title="About this app">
+          <span class="icon-art icon-folder" aria-hidden="true"></span>
+          <span class="icon-label">About</span>
+        </button>
+      </div>
+
+      <!-- ===================== LOGIN WINDOW (QuickStep) ===================== -->
+      <div class="window win-login" id="login-window">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">📡</span>
+          <span class="title-text">NetZero – QuickStep Login</span>
+          <div class="title-buttons">
+            <button class="btn-title min" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+
+        <div class="login-body">
+          <!-- Branded header strip -->
+          <div class="login-header">
+            <div class="logo-block">
+              <div class="logo-z">
+                <span class="logo-z-tail"></span>
+                <span class="logo-z-stem"></span>
+              </div>
+              <div class="logo-words">
+                <span class="logo-net">net</span><span class="logo-zero">zero</span><sup class="logo-tm">™</sup>
+              </div>
+            </div>
+            <div class="header-banner">Welcome to the Free Internet<span class="blink">_</span></div>
+          </div>
+
+          <!-- Form -->
+          <div class="login-form">
+            <div class="form-row">
+              <label for="member-id">Member ID:</label>
+              <div class="combo-wrap">
+                  <select id="member-id">
+                    <option>coolcoder@netzero.net</option>
+                    <option>surferdude99@netzero.net</option>
+                    <option>webmaster@netzero.net</option>
+                  </select>
+                <span class="combo-arrow">▼</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="password">Password:</label>
+              <input type="password" id="password" value="••••••••" autocomplete="off" />
+            </div>
+
+            <div class="form-row form-row-check">
+              <label class="check-label">
+                <input type="checkbox" id="save-pwd" checked />
+                <span class="check-box"></span>
+                Save password
+              </label>
+              <label class="check-label">
+                <input type="checkbox" id="auto-connect" checked />
+                <span class="check-box"></span>
+                Auto-connect on launch
+              </label>
+            </div>
+
+            <div class="form-row access-row">
+              <label for="access-num">Dial:</label>
+              <input type="text" id="access-num" value="1-800-638-9376" />
+              <button class="link-btn" data-action="change-number">Change…</button>
+            </div>
+
+            <div class="login-buttons">
+              <button class="btn btn-primary" id="connect-btn" data-action="connect">Connect</button>
+              <button class="btn" data-action="cancel">Cancel</button>
+              <button class="btn" data-action="setup">Setup…</button>
+              <button class="btn" data-action="help">Help</button>
+            </div>
+          </div>
+
+          <!-- Status bar -->
+          <div class="login-status" id="login-status">
+            <span class="status-light" id="status-light"></span>
+            <span class="status-text" id="status-text">Ready</span>
+            <span class="status-spacer"></span>
+            <span class="status-meter" id="status-meter">53.3 kbps</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== STATUS WINDOW (Dialing) ===================== -->
+      <div class="window win-status" id="status-window" hidden>
+        <div class="titlebar" data-drag>
+          <span class="title-icon">📞</span>
+          <span class="title-text">NetZero – Connection Status</span>
+          <div class="title-buttons">
+            <button class="btn-title close" data-action="cancel-dial" title="Cancel">×</button>
+          </div>
+        </div>
+        <div class="status-body">
+          <div class="dial-display">
+            <canvas class="signal-canvas" id="signal-canvas" width="380" height="90"></canvas>
+          </div>
+
+          <div class="dial-log" id="dial-log">
+            <!-- Status messages get appended here -->
+          </div>
+
+          <div class="dial-buttons">
+            <button class="btn btn-primary" id="dial-cancel" data-action="cancel-dial">Cancel</button>
+            <button class="btn" id="dial-details" data-action="details">Details »</button>
+          </div>
+
+          <div class="dial-progress">
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Initializing…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== BROWSER WINDOW (NetZero Start Page) ===================== -->
+      <div class="window win-browser" id="browser-window" hidden>
+        <div class="titlebar titlebar-browser" data-drag>
+          <span class="title-icon">🌐</span>
+          <span class="title-text">NetZero – Welcome to the Free Internet</span>
+          <div class="title-buttons">
+            <button class="btn-title min" data-action="minimize">_</button>
+            <button class="btn-title close" data-action="close">×</button>
+          </div>
+        </div>
+
+        <!-- Browser toolbar -->
+        <div class="browser-toolbar">
+          <div class="nav-row">
+            <button class="nav-btn" title="Back">◀</button>
+            <button class="nav-btn" title="Forward">▶</button>
+            <button class="nav-btn" title="Reload">⟳</button>
+            <button class="nav-btn" title="Home">🏠</button>
+            <span class="url-bar">
+              <span class="url-protocol">http://</span><span class="url-host">www.netzero.net</span><span class="url-path">/start/</span>
+            </span>
+          </div>
+
+          <!-- NetZero nav tabs -->
+          <div class="netzero-nav">
+            <button class="tab-btn tab-active">Home</button>
+            <button class="tab-btn">WebMail</button>
+            <button class="tab-btn">Search</button>
+            <button class="tab-btn">Channels</button>
+            <button class="tab-btn">Help</button>
+            <button class="tab-btn">My Account</button>
+            <span class="nav-spacer"></span>
+            <span class="nav-greeting" id="nav-greeting">Welcome, coolcoder@netzero.net</span>
+          </div>
+        </div>
+
+        <!-- Browser content: classic 1999 NetZero start page -->
+        <div class="browser-frame">
+          <iframe id="browser-iframe" title="NetZero Start Page" scrolling="auto"></iframe>
+        </div>
+
+        <!-- Status bar -->
+        <div class="browser-statusbar">
+          <span class="bs-left">✅ Connected to NetZero · 53.3 kbps · 00:14:23</span>
+          <span class="bs-right">Done</span>
+        </div>
+      </div>
+
+      <!-- ===================== ACCESS NUMBER DIALOG ===================== -->
+      <div class="window win-modal win-access" id="access-window" hidden>
+        <div class="titlebar" data-drag>
+          <span class="title-icon">📍</span>
+          <span class="title-text">Local Access Numbers</span>
+          <div class="title-buttons">
+            <button class="btn-title close" data-action="close">×</button>
+          </div>
+        </div>
+        <div class="access-body">
+          <div class="access-row">
+            <label>State:</label>
+            <select>
+              <option>California</option>
+              <option>New York</option>
+              <option>Texas</option>
+              <option>Florida</option>
+            </select>
+          </div>
+          <div class="access-row">
+            <label>Area code:</label>
+            <input type="text" value="555" />
+          </div>
+          <div class="access-list-wrap">
+            <div class="access-list-header">Available Numbers</div>
+            <div class="access-list">
+              <div class="access-num-row selected">555-0100 · Los Angeles · 56k</div>
+              <div class="access-num-row">555-0101 · Long Beach · 56k</div>
+              <div class="access-num-row">555-0102 · Pasadena · 53k</div>
+              <div class="access-num-row">555-0103 · Burbank · 56k</div>
+            </div>
+          </div>
+          <div class="access-buttons">
+            <button class="btn btn-primary" data-action="save-numbers">OK</button>
+            <button class="btn" data-action="close">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== ABOUT DIALOG ===================== -->
+      <div class="window win-modal win-about" id="about-window" hidden>
+        <div class="titlebar" data-drag>
+          <span class="title-icon">ℹ️</span>
+          <span class="title-text">About NetZero v1.2</span>
+          <div class="title-buttons">
+            <button class="btn-title close" data-action="close">×</button>
+          </div>
+        </div>
+        <div class="about-body">
+          <div class="about-logo">
+            <div class="logo-z logo-z-big">
+              <span class="logo-z-tail"></span>
+              <span class="logo-z-stem"></span>
+            </div>
+          </div>
+          <h3>NetZero™ v1.2</h3>
+          <p class="about-tag">The Free Internet — Browser Edition</p>
+          <p>A nostalgic recreation of the dial-up login and handshake experience from the late-90s NetZero ISP, rebuilt in the browser with synthesized audio.</p>
+          <ul class="about-list">
+            <li>Authentic QuickStep login window</li>
+            <li>Real synthesized modem handshake</li>
+            <li>Classic 1999 start page</li>
+            <li>Keyboard shortcuts: Enter to Connect, Esc to cancel</li>
+          </ul>
+          <div class="about-buttons">
+            <button class="btn btn-primary" data-action="close">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
