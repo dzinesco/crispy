@@ -48,12 +48,16 @@ button { cursor: default; }
 
 [hidden] { display: none !important; }
 
+/* Zero-specificity fallback so the shared GeoCities starfield wins. */
+:where(#viewport) {
+  background:
+    radial-gradient(ellipse at center, #2a2e32 0%, #121416 72%);
+}
+
 #viewport {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse at center, #2a2e32 0%, #121416 72%);
   touch-action: none;
 }
 

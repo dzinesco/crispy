@@ -290,8 +290,8 @@ export default function Portfolio() {
 
       <header className="cg-hero">
         <div className="cg-page">
-          <h1>Portfolio, but you can play it.</h1>
-          <p className="cg-hero__sub">Every project here is live. Pick one, break it, tell me what you&apos;d build next.</p>
+          <h1>You had to be there. Now you can be.</h1>
+          <p className="cg-hero__sub">Old software, rebuilt from scratch for the modern web. Click anything.</p>
           <p className="cg-hero__meta">{countLabel}</p>
         </div>
       </header>

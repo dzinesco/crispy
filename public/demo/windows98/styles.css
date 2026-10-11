@@ -75,6 +75,7 @@ input { font-family: inherit; }
 }
 
 .phase[hidden] { display: none; }
+.hud[hidden] { display: none; }
 
 /* ----- HUD (always-visible status bar in DOS mode) ----- */
 .hud {
