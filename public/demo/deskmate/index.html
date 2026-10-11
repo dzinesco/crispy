@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crispygoat DeskMate</title>
+    <meta name="description" content="A keyboard-driven 1984-style desk in the browser. Function keys, sixteen colors, no overlapping windows." />
+    <base href="/demo/deskmate/" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="fonts/Silkscreen-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="stylesheet" href="css/desk.css" />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <script>
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('reduce-motion');
+      }
+    </script>
+  </head>
+  <body class="gc-starfield">
+    <div id="letterbox">
+      <div id="screen" data-screen>
+        <div id="boot" data-boot>
+          <div class="goat" data-goat></div>
+          <div class="boot-name">Crispygoat DeskMate</div>
+          <div>Version 1.00</div>
+          <div class="boot-gap"></div>
+          <div>640K RAM OK</div>
+          <div data-memory>0 bytes</div>
+          <div class="boot-gap"></div>
+          <div data-boot-ready hidden><span class="blink">Press any key</span></div>
+        </div>
+        <div id="os" hidden>
+          <header id="titlebar">
+            <span id="title-name">DeskMate</span>
+            <span id="title-clock"></span>
+          </header>
+          <div id="stage" data-stage data-view="desktop"></div>
+          <div id="status" data-status aria-live="polite">Ready</div>
+          <nav id="fkeys" data-fkeys aria-label="Function keys"></nav>
+          <div id="intro" data-overlay="intro" hidden role="dialog" aria-label="How to drive DeskMate">
+            <div class="panel">
+              <h2>FIRST TIME ON THIS DISK</h2>
+              <p>Arrow keys move the highlight.<br>Enter opens. Esc steps back.</p>
+              <p>F1 to F10 are the bar below.<br>Alt+1 to Alt+0 are the same keys,<br>for browsers that eat F-keys.</p>
+              <p>Tap a gray key if you have no F-keys.<br>Tap an icon twice to open it.</p>
+              <p>Press F1 for help.<br>Press F1 again for more help.</p>
+              <button type="button" data-dismiss-intro>OK</button>
+            </div>
+          </div>
+        </div>
+        <div id="scan" aria-hidden="true"></div>
+      </div>
+      <nav id="touchkeys" aria-label="Function keys"></nav>
+    </div>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

@@ -18,6 +18,7 @@ const ROUTES = [
   { name: 'packages', path: '/packages' },
   { name: 'portfolio', path: '/portfolio' },
   { name: 'macos8', path: '/demo/macos8/' },
+  { name: 'deskmate', path: '/demo/deskmate/' },
   { name: 'blog', path: '/blog' },
   { name: 'apply', path: '/apply' },
   { name: 'contact', path: '/contact' },

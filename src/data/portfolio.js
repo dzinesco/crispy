@@ -11,6 +11,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'deskmate',
+    title: 'Tandy DeskMate',
+    description: 'Tandy\'s 1984 keyboard GUI, rebuilt. F-keys, no overlapping windows, sixteen glorious colors.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/deskmate.png',
+    imageAlt: 'Crispygoat DeskMate worksheet on a blue screen, with a SUM total and the F1–F10 bar, letterboxed on a starfield',
+    demoHref: '/demo/deskmate/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
     slug: 'macos8',
     title: 'Mac OS 8',
     description: 'A 1997 Mac desktop in your browser. Finder, MacPaint-style paint, games and all.',
