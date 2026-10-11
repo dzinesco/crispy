@@ -8,7 +8,7 @@ export default function About() {
         <h1 className="max-w-[12ch] text-4xl font-extrabold tracking-tightish sm:text-5xl">A shop, not an agency.</h1>
         <div className="prose-cg mt-10">
           <p>
-            Crispy Goat sells site kits and takes on a small number of custom builds. We skip the kickoff
+            Crispy Goat takes on a small number of custom builds. We skip the kickoff
             workshops, the status theater, and the twelve-person Slack.
           </p>
           <h2>We move because we already know the work</h2>

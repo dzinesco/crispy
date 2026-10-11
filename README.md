@@ -101,6 +101,8 @@ curl -b jar -X DELETE http://localhost:3102/api/posts/shipped-farm-stand-kit
 
 ### Kits (products for sale)
 
+Public `/kits` and `/kits/*` redirect to `/portfolio`. The API remains:
+
 ```bash
 # List published kits
 curl http://localhost:3102/api/kits

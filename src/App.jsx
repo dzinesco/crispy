@@ -6,7 +6,6 @@ import About from './pages/About.jsx';
 import Portfolio from './pages/Portfolio.jsx';
 import Blog from './pages/Blog.jsx';
 import BlogPost from './pages/BlogPost.jsx';
-import KitDetail from './pages/KitDetail.jsx';
 import DemoDetail from './pages/DemoDetail.jsx';
 import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
@@ -28,7 +27,8 @@ export default function App() {
         <Route path="/guestbook" element={<Guestbook />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
-        <Route path="/kits/:slug" element={<KitDetail />} />
+        <Route path="/kits" element={<Navigate to="/portfolio" replace />} />
+        <Route path="/kits/*" element={<Navigate to="/portfolio" replace />} />
         <Route path="/demos/:slug" element={<DemoDetail />} />
         <Route path="/apply" element={<Navigate to="/portfolio" replace />} />
         <Route path="/contact" element={<Contact />} />

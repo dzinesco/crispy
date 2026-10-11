@@ -59,21 +59,6 @@ export function usePost(slug) {
   });
 }
 
-export function useKits() {
-  return useQuery({
-    queryKey: ['kits'],
-    queryFn: () => request('/kits'),
-  });
-}
-
-export function useKit(slug) {
-  return useQuery({
-    queryKey: ['kits', slug],
-    queryFn: () => request(`/kits/${slug}`),
-    enabled: !!slug,
-  });
-}
-
 export function useDemo(slug) {
   return useQuery({
     queryKey: ['demos', slug],
@@ -217,12 +202,5 @@ export function useAdminGuestbook() {
   return useQuery({
     queryKey: ['admin', 'guestbook'],
     queryFn: () => request('/admin/guestbook'),
-  });
-}
-
-export function useStripeCheckout() {
-  return useMutation({
-    mutationFn: (kit_slug) =>
-      request('/stripe/checkout', { method: 'POST', body: JSON.stringify({ kit_slug }) }),
   });
 }

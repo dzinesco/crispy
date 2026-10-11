@@ -22,6 +22,7 @@ const ROUTES = [
   { name: 'macos8', path: '/demo/macos8/' },
   { name: 'blog', path: '/blog' },
   { name: 'apply', path: '/apply', redirect: '/portfolio' },
+  { name: 'kits', path: '/kits', redirect: '/portfolio' },
   { name: 'contact', path: '/contact' },
   { name: 'privacy', path: '/privacy' },
   { name: 'terms', path: '/terms' },
@@ -111,7 +112,8 @@ async function main() {
     const allRoutes = [...ROUTES];
     if (vp.name === 'desktop' && createdSlug) {
       allRoutes.push({ name: 'blog-post', path: `/blog/${createdSlug}` });
-      allRoutes.push({ name: 'kit-detail', path: `/kits/${createdKit}` });
+      allRoutes.push({ name: 'kit-detail', path: `/kits/${createdKit}`, redirect: '/portfolio' });
+      allRoutes.push({ name: 'kit-nested', path: `/kits/${createdKit}/extra`, redirect: '/portfolio' });
     }
     for (const r of allRoutes) {
       const url = BASE + r.path;

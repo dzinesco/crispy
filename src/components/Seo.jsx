@@ -7,7 +7,7 @@ export default function Seo({ title, description, path = '/' }) {
   return (
     <Helmet>
       <title>{fullTitle}</title>
-      <meta name="description" content={description || 'Productized site kits and selective custom builds.'} />
+      <meta name="description" content={description || 'Crispy Goat, est. 2024. Apps, a guestbook, and notes.'} />
       <link rel="canonical" href={url} />
       <meta property="og:type" content="website" />
       <meta property="og:title" content={fullTitle} />
