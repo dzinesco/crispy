@@ -11,6 +11,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'napster',
+    title: 'Napster 2 — Web Edition',
+    description: 'Log in, search 220 late-90s tracks, watch the KB/s crawl, and chat in #lobby. Nobody gets sued this time.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/napster.png',
+    imageAlt: 'Napster search results for Metallica with a download crawling in File Transfers and #lobby chat open',
+    demoHref: '/demo/napster/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
     slug: 'deskmate',
     title: 'Tandy DeskMate',
     description: 'Tandy\'s 1984 GUI, F-keys and all. Eight full-screen apps, sixteen colors, and a modem that dials a BBS.',

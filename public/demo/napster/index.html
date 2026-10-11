@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/napster/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Napster 2 — Web Edition. The classic 1999 peer-to-peer music sharing app, recreated in the browser." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ece9d8'/%3E%3Crect x='1' y='1' width='14' height='3' fill='%23008080'/%3E%3Ctext x='8' y='3' font-family='Verdana' font-size='2.4' font-weight='bold' fill='white' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tahoma&family=Verdana&family=Lucida+Console&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>/* Crispy Goat: starfield frame around the desktop only */
+      body.gc-starfield .desktop {
+        position: fixed; inset: 24px; width: auto; height: auto; transform: translateZ(0);
+        background: repeating-linear-gradient(45deg, #2c5f5f 0, #2c5f5f 2px, #285a5a 2px, #285a5a 4px);
+        box-shadow: 0 18px 50px rgba(0,0,0,.5);
+      }
+    </style>
+    <title>Napster 2 — Web Edition</title>
+  </head>
+  <body class="gc-starfield">
+    <!-- ============================== DESKTOP ============================== -->
+    <div class="desktop" id="desktop">
+
+      <!-- ===================== LOGIN DIALOG ===================== -->
+      <div class="login-overlay" id="login-overlay">
+        <div class="login-window" role="dialog" aria-label="Napster Login">
+          <div class="login-titlebar">
+            <span class="login-title-icon">N</span>
+            <span class="login-title-text">Napster Login</span>
+            <button class="login-close" id="login-close" aria-label="Close">×</button>
+          </div>
+          <div class="login-body">
+            <div class="login-logo">
+              <span class="napster-n">n</span><span class="napster-rest">apster</span>
+            </div>
+            <div class="login-form">
+              <label>
+                <span>Username:</span>
+                <input type="text" id="login-username" autocomplete="off" maxlength="12" />
+              </label>
+              <label>
+                <span>Password:</span>
+                <input type="password" id="login-password" autocomplete="off" />
+              </label>
+              <label>
+                <span>Connection:</span>
+                <select id="login-connection">
+                  <option>Cable Modem (700kbps+)</option>
+                  <option selected>DSL (256kbps+)</option>
+                  <option>T1 / T3 (1.5Mbps+)</option>
+                  <option>56K Modem</option>
+                  <option>ISDN</option>
+                </select>
+              </label>
+              <label class="login-checkbox">
+                <input type="checkbox" id="login-share" checked />
+                <span>Share files in my Shared Files folder</span>
+              </label>
+            </div>
+            <div class="login-actions">
+              <button class="btn primary" id="login-connect">Connect</button>
+              <button class="btn" id="login-new-account">New Account</button>
+              <button class="btn" id="login-cancel">Cancel</button>
+            </div>
+            <div class="login-status" id="login-status">Not connected.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== MENU BAR ===================== -->
+      <div class="menubar">
+        <div class="menubar-brand">
+          <span class="brand-mark">n</span><span class="brand-rest">apster</span>
+        </div>
+        <ul class="menubar-menu">
+          <li><button class="menubar-item" data-menu="file">File</button></li>
+          <li><button class="menubar-item" data-menu="edit">Edit</button></li>
+          <li><button class="menubar-item" data-menu="view">View</button></li>
+          <li><button class="menubar-item" data-menu="search">Search</button></li>
+          <li><button class="menubar-item" data-menu="actions">Actions</button></li>
+          <li><button class="menubar-item" data-menu="help">Help</button></li>
+        </ul>
+        <div class="menubar-status" id="menubar-status">Logged in as guest@offline · 0 users online</div>
+      </div>
+
+      <!-- ===================== TOOLBAR ===================== -->
+      <div class="toolbar">
+        <button class="tool" data-window="search" title="Search for music (Ctrl+F)">
+          <span class="tool-icon">🔍</span><span class="tool-label">Search</span>
+        </button>
+        <button class="tool" data-window="library" title="My Library">
+          <span class="tool-icon">📚</span><span class="tool-label">Library</span>
+        </button>
+        <button class="tool" data-window="transfers" title="File Transfers">
+          <span class="tool-icon">⇣</span><span class="tool-label">Transfers</span>
+        </button>
+        <button class="tool" data-window="hotlist" title="Hotlist (favorite users)">
+          <span class="tool-icon">★</span><span class="tool-label">Hotlist</span>
+        </button>
+        <button class="tool" data-window="users" title="Browse user">
+          <span class="tool-icon">👤</span><span class="tool-label">Browse</span>
+        </button>
+        <button class="tool" data-window="chat" title="Chat">
+          <span class="tool-icon">💬</span><span class="tool-label">Chat</span>
+        </button>
+        <button class="tool" data-window="player" title="Now Playing">
+          <span class="tool-icon">▶</span><span class="tool-label">Player</span>
+        </button>
+        <div class="toolbar-spacer"></div>
+        <div class="toolbar-online">
+          <span class="dot" id="online-dot"></span>
+          <span id="online-count">0</span> users online
+        </div>
+      </div>
+
+      <!-- ===================== WINDOWS ===================== -->
+
+      <!-- Search Results window -->
+      <div class="win win-search" data-window="search">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">🔍</span>
+          <span class="title-text">Search Results</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="win-toolbar">
+          <input type="text" class="search-input" id="search-input" placeholder="Enter artist, song, or filename…" />
+          <select class="search-filter" id="search-filter">
+            <option value="any">Any file</option>
+            <option value="mp3">MP3 only</option>
+            <option value="wma">WMA only</option>
+          </select>
+          <label class="search-bitrate">
+            Min bitrate:
+            <select id="search-bitrate">
+              <option value="0">Any</option>
+              <option value="128" selected>128 kbps</option>
+              <option value="192">192 kbps</option>
+              <option value="256">256 kbps</option>
+              <option value="320">320 kbps</option>
+            </select>
+          </label>
+          <label class="search-max">
+            Max results:
+            <input type="number" id="search-max" value="100" min="10" max="500" />
+          </label>
+          <button class="btn primary" id="search-go">Search</button>
+        </div>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th class="col-filename">Filename</th>
+                <th class="col-user">User</th>
+                <th class="col-bitrate">Bitrate</th>
+                <th class="col-length">Length</th>
+                <th class="col-size">Size</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="results-body">
+              <tr class="empty"><td colspan="6">Search the Napster network for music.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="statusbar" id="results-status">Ready.</div>
+      </div>
+
+      <!-- My Library window -->
+      <div class="win win-library" data-window="library">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">📚</span>
+          <span class="title-text">My Library</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="win-toolbar">
+          <button class="btn" id="lib-add">Add File…</button>
+          <button class="btn" id="lib-remove">Remove</button>
+          <button class="btn" id="lib-rescan">Rescan Folder</button>
+        </div>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th class="col-play"></th>
+                <th class="col-filename">Filename</th>
+                <th class="col-bitrate">Bitrate</th>
+                <th class="col-length">Length</th>
+                <th class="col-size">Size</th>
+              </tr>
+            </thead>
+            <tbody id="library-body">
+              <tr class="empty"><td colspan="5">Your shared library is empty. Add files to share.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="statusbar"><span id="library-count">0</span> files · <span id="library-size">0 KB</span></div>
+      </div>
+
+      <!-- Transfers window -->
+      <div class="win win-transfers" data-window="transfers">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">⇣</span>
+          <span class="title-text">File Transfers</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="win-toolbar">
+          <button class="btn" id="xfer-clear">Clear Completed</button>
+          <button class="btn" id="xfer-pause">Pause All</button>
+        </div>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th class="col-play"></th>
+                <th class="col-filename">Filename</th>
+                <th class="col-user">From</th>
+                <th class="col-size">Size</th>
+                <th class="col-progress">Progress</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="transfers-body">
+              <tr class="empty"><td colspan="6">No active downloads. Double-click a search result to download.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="statusbar"><span id="xfer-count">0</span> downloads · <span id="xfer-rate">0 KB/s</span></div>
+      </div>
+
+      <!-- Hotlist window -->
+      <div class="win win-hotlist" data-window="hotlist">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">★</span>
+          <span class="title-text">Hotlist</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th class="col-user">User</th>
+                <th class="col-speed">Connection</th>
+                <th class="col-count">Files</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="hotlist-body">
+              <tr class="empty"><td colspan="4">Hotlist is empty. Right-click a user in Browse to add.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="statusbar"><span id="hotlist-count">0</span> favorites</div>
+      </div>
+
+      <!-- Browse users window -->
+      <div class="win win-users" data-window="users">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">👤</span>
+          <span class="title-text">Browse Users</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="win-toolbar">
+          <input type="text" class="search-input" id="users-filter" placeholder="Filter users…" />
+          <span class="muted">Right-click for actions.</span>
+        </div>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th class="col-user">User</th>
+                <th class="col-speed">Connection</th>
+                <th class="col-count">Files</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="users-body"></tbody>
+          </table>
+        </div>
+        <div class="statusbar"><span id="users-count">0</span> users</div>
+      </div>
+
+      <!-- Now Playing (audio player) window -->
+      <div class="win win-player" data-window="player">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">▶</span>
+          <span class="title-text">Now Playing</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="player-now">
+          <div class="player-track" id="np-track">— nothing playing —</div>
+          <div class="player-from" id="np-from"></div>
+        </div>
+        <div class="player-progress-row">
+          <div class="player-progress" id="np-progress">
+            <div class="player-progress-fill" id="np-progress-fill"></div>
+          </div>
+          <span class="player-time" id="np-time">0:00 / 0:00</span>
+        </div>
+        <div class="player-controls">
+          <button class="btn" id="np-prev" title="Previous">⏮</button>
+          <button class="btn primary" id="np-play" title="Play / Pause (Space)">▶</button>
+          <button class="btn" id="np-stop" title="Stop">⏹</button>
+          <button class="btn" id="np-next" title="Next">⏭</button>
+          <label class="player-vol">
+            🔊
+            <input type="range" id="np-volume" min="0" max="100" value="60" />
+          </label>
+          <select id="np-wave">
+            <option value="square">Square</option>
+            <option value="sawtooth" selected>Sawtooth</option>
+            <option value="triangle">Triangle</option>
+            <option value="sine">Sine</option>
+          </select>
+        </div>
+        <div class="player-statusbar" id="np-status">Ready. Synthesized audio preview — generated from the track's filename.</div>
+      </div>
+
+      <!-- Chat window -->
+      <div class="win win-chat" data-window="chat">
+        <div class="titlebar" data-drag>
+          <span class="title-icon">💬</span>
+          <span class="title-text">Chat</span>
+          <div class="title-buttons">
+            <button class="btn-title" data-action="minimize" title="Minimize">_</button>
+            <button class="btn-title close" data-action="close" title="Close">×</button>
+          </div>
+        </div>
+        <div class="win-toolbar">
+          <span class="muted">Channel:</span>
+          <select id="chat-channel">
+            <option value="#lobby">#lobby</option>
+            <option value="#90s">#90s</option>
+            <option value="#metal">#metal</option>
+            <option value="#hiphop">#hiphop</option>
+            <option value="#help">#help</option>
+          </select>
+          <span class="muted" id="chat-roster">— users</span>
+        </div>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Type a message and press Enter…" />
+          <button class="btn primary" id="chat-send">Send</button>
+        </div>
+      </div>
+
+      <!-- User context menu (right-click) -->
+      <ul class="ctx-menu" id="ctx-menu" hidden>
+        <li data-action="browse">Browse Files…</li>
+        <li data-action="download-all">Download All</li>
+        <li data-action="message">Message…</li>
+        <li data-action="hotlist-add">Add to Hotlist</li>
+        <li data-action="hotlist-remove">Remove from Hotlist</li>
+        <li data-action="get-info">Get Info</li>
+        <li data-action="block">Block User</li>
+      </ul>
+
+      <!-- Get Info dialog -->
+      <div class="dialog" id="info-dialog" hidden>
+        <div class="dialog-window">
+          <div class="titlebar" data-drag>
+            <span class="title-icon">ⓘ</span>
+            <span class="title-text">User Information</span>
+            <div class="title-buttons">
+              <button class="btn-title close" id="info-close" data-action="close" title="Close">×</button>
+            </div>
+          </div>
+          <div class="dialog-body" id="info-body"></div>
+          <div class="dialog-actions">
+            <button class="btn primary" id="info-ok">OK</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Browse user dialog -->
+      <div class="dialog" id="browse-dialog" hidden>
+        <div class="dialog-window wide">
+          <div class="titlebar" data-drag>
+            <span class="title-icon">👤</span>
+            <span class="title-text">Browsing <span id="browse-username">—</span></span>
+            <div class="title-buttons">
+              <button class="btn-title close" id="browse-close" data-action="close" title="Close">×</button>
+            </div>
+          </div>
+          <div class="dialog-body">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th class="col-filename">Filename</th>
+                  <th class="col-bitrate">Bitrate</th>
+                  <th class="col-length">Length</th>
+                  <th class="col-size">Size</th>
+                </tr>
+              </thead>
+              <tbody id="browse-body"></tbody>
+            </table>
+          </div>
+          <div class="dialog-actions">
+            <button class="btn primary" id="browse-ok">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer / status -->
+      <div class="footer">
+        <span id="footer-server">napster.com — disconnected</span>
+        <span class="sep">·</span>
+        <span id="footer-libinfo">0 shared · 0 downloaded</span>
+        <span class="sep">·</span>
+        <span id="footer-build">Napster 2.0 Beta 7</span>
+      </div>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
