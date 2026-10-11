@@ -2,60 +2,277 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <base href="/demo/netscape/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Netscape Navigator 3 — Crispy Goat</title>
-    <style>
-      :root { color-scheme: light; }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: #d4d4d8;
-        color: #101014;
-        font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
-        line-height: 1.5;
-      }
-      a:link { color: #9f1239; }
-      a:visited { color: #86104e; }
-      a:focus-visible { outline: 2px solid #9f1239; outline-offset: 3px; }
-      .window {
-        max-width: 640px;
-        margin: 32px auto;
-        background: #f4f4f5;
-        border: 2px solid #fff;
-        border-right-color: #3f3f46;
-        border-bottom-color: #3f3f46;
-      }
-      .title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        min-height: 44px;
-        padding: 8px 12px;
-        background: #101014;
-        color: #fff;
-        font-weight: 600;
-      }
-      .title a { color: #fff; }
-      .title a:visited { color: #ff8ad4; }
-      .body { padding: 24px 20px 32px; }
-      h1 { font-size: 28px; line-height: 1.2; margin: 0 0 12px; }
-      p { margin: 0 0 12px; max-width: 42rem; }
-      .meta { color: #3f3f46; font-size: 14px; }
-    </style>
+    <meta
+      name="description"
+      content="Netscape Navigator 3 — Web Edition. The classic 1996 browser, reborn in your browser."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23a0b8d0'/%3E%3Crect x='2' y='2' width='12' height='12' fill='%23ffffff' stroke='%23555'/%3E%3Cpath d='M5 11 V5 L11 11 V5' stroke='%23204080' stroke-width='2' fill='none' stroke-linejoin='miter'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Times+New+Roman&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Netscape Navigator 3 — Web Edition</title>
   </head>
-  <body>
-    <main class="window">
-      <div class="title">
-        <span>Netscape</span>
-        <a href="/">Back to Crispy Goat</a>
+  <body class="gc-starfield">
+    <div class="crt" aria-hidden="true"></div>
+
+    <!-- ============================================================
+         BROWSER WINDOW
+         ============================================================ -->
+    <div class="window" id="browser">
+      <!-- Title bar -->
+      <div class="titlebar" id="titlebar" data-drag>
+        <div class="title-stripes left" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="title-stripes right" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="titlebar-content">
+          <span class="title-nlogo" id="title-nlogo" aria-hidden="true">N</span>
+          <span class="title-text" id="title-text">Netscape: Welcome</span>
+          <span class="title-loading" id="title-loading" hidden>●</span>
+        </div>
+        <div class="title-buttons">
+          <button class="tb-btn minimize" data-title-action="minimize" title="Minimize">_</button>
+          <button class="tb-btn maximize" data-title-action="maximize" title="Maximize">▢</button>
+          <button class="tb-btn close" data-title-action="close" title="Close">×</button>
+        </div>
       </div>
-      <div class="body">
-        <h1>Best viewed in Netscape Navigator 3</h1>
-        <p>This is the page the button on the homepage points at. The badge is a joke with a real address.</p>
-        <p class="meta">800×600 was the old promise. This page is fine at the size you have.</p>
+
+      <!-- Menu bar -->
+      <div class="menubar" id="menubar">
+        <button class="menu" data-menu="file">File</button>
+        <button class="menu" data-menu="edit">Edit</button>
+        <button class="menu" data-menu="view">View</button>
+        <button class="menu" data-menu="go">Go</button>
+        <button class="menu" data-menu="bookmarks">Bookmarks</button>
+        <button class="menu" data-menu="options">Options</button>
+        <button class="menu" data-menu="directory">Directory</button>
+        <button class="menu" data-menu="window">Window</button>
+        <button class="menu" data-menu="help">Help</button>
       </div>
-    </main>
+
+      <!-- Toolbar (Navigation) -->
+      <div class="toolbar" id="toolbar">
+        <button class="tb nav" id="btn-back" title="Back" data-action="back">
+          <span class="tb-icon icon-back"></span>
+          <span class="tb-label">Back</span>
+        </button>
+        <button class="tb nav" id="btn-forward" title="Forward" data-action="forward">
+          <span class="tb-icon icon-forward"></span>
+          <span class="tb-label">Forward</span>
+        </button>
+        <button class="tb" id="btn-reload" title="Reload the current document" data-action="reload">
+          <span class="tb-icon icon-reload"></span>
+          <span class="tb-label">Reload</span>
+        </button>
+        <button class="tb" id="btn-home" title="Go to your Home page" data-action="home">
+          <span class="tb-icon icon-home"></span>
+          <span class="tb-label">Home</span>
+        </button>
+        <button class="tb" id="btn-images" title="Load all images for the current document" data-action="toggle-images">
+          <span class="tb-icon icon-images"></span>
+          <span class="tb-label">Images</span>
+        </button>
+        <button class="tb" id="btn-open" title="Open a file" data-action="open">
+          <span class="tb-icon icon-open"></span>
+          <span class="tb-label">Open</span>
+        </button>
+        <button class="tb" id="btn-print" title="Print the current document" data-action="print">
+          <span class="tb-icon icon-print"></span>
+          <span class="tb-label">Print</span>
+        </button>
+        <button class="tb" id="btn-find" title="Find in this document" data-action="find">
+          <span class="tb-icon icon-find"></span>
+          <span class="tb-label">Find</span>
+        </button>
+        <button class="tb" id="btn-stop" title="Stop loading" data-action="stop">
+          <span class="tb-icon icon-stop"></span>
+          <span class="tb-label">Stop</span>
+        </button>
+      </div>
+
+      <!-- Location bar -->
+      <div class="location-bar">
+        <label class="loc-label" for="url-bar">Location:</label>
+        <div class="url-wrap">
+          <input
+            type="text"
+            id="url-bar"
+            class="url-bar"
+            spellcheck="false"
+            autocomplete="off"
+            aria-label="Location"
+          />
+        </div>
+        <button class="tb small" id="btn-go" data-action="go" title="Load the URL">Go!</button>
+      </div>
+
+      <!-- Personal Bookmarks Bar -->
+      <div class="bookmarks-bar" id="bookmarks-bar">
+        <span class="bk-label" aria-hidden="true">Personal Bookmarks Bar:</span>
+        <div class="bk-items" id="bk-items"></div>
+        <button class="bk-add" id="bk-add" data-action="bookmark-add" title="Add Bookmark">+ Add</button>
+      </div>
+
+      <!-- Content area (renders "web pages") -->
+      <div class="content" id="content" tabindex="0">
+        <!-- The current page is rendered here. -->
+      </div>
+
+      <!-- Find bar -->
+      <div class="find-bar" id="find-bar" hidden>
+        <span class="find-label">Find:</span>
+        <input type="text" id="find-input" class="find-input" spellcheck="false" />
+        <button class="tb small" id="find-prev" data-action="find-prev" title="Previous match">&uarr;</button>
+        <button class="tb small" id="find-next" data-action="find-next" title="Next match">&darr;</button>
+        <button class="tb small" id="find-highlight" data-action="find-highlight" title="Highlight all">All</button>
+        <span class="find-count" id="find-count">No matches</span>
+        <button class="tb small" id="find-close" data-action="find-close" title="Close">Done</button>
+      </div>
+
+      <!-- Status bar -->
+      <div class="statusbar">
+        <div class="status-stripes left" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="status-stripes right" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span class="status-icon mozilla" id="status-mozilla" aria-hidden="true"></span>
+        <span class="status-progress" id="status-progress">
+          <span class="status-progress-fill" id="status-progress-fill"></span>
+        </span>
+        <span class="status-text" id="status-text">Document: Done</span>
+        <span class="status-sec" id="status-sec" aria-hidden="true">
+          <span class="sec-net" id="network-sec"></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL DIALOGS (Find, Open Location, Print, Bookmarks manager,
+         About, Alert/Confirm)
+         ============================================================ -->
+    <div class="modal-shroud" id="modal-shroud" hidden></div>
+
+    <!-- Open Location dialog -->
+    <div class="modal" id="dlg-open" hidden>
+      <div class="modal-titlebar" data-drag>
+        <span class="modal-nlogo">N</span>
+        <span class="modal-title-text">Open Location</span>
+        <button class="modal-close" data-modal-close="dlg-open" title="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-prompt">Enter the location (URL) of the document you want to open:</p>
+        <div class="modal-row">
+          <input type="text" id="open-url" class="modal-input" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="modal-actions">
+          <button class="tb small primary" id="open-ok" data-modal-ok="dlg-open">Open</button>
+          <button class="tb small" data-modal-cancel="dlg-open">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Print dialog -->
+    <div class="modal" id="dlg-print" hidden>
+      <div class="modal-titlebar" data-drag>
+        <span class="modal-nlogo">N</span>
+        <span class="modal-title-text">Print</span>
+        <button class="modal-close" data-modal-close="dlg-print" title="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-prompt">Sending page to printer&hellip;</p>
+        <div class="print-progress">
+          <div class="print-progress-fill" id="print-progress-fill"></div>
+        </div>
+        <p class="print-status" id="print-status">Preparing&hellip;</p>
+        <div class="modal-actions">
+          <button class="tb small" data-modal-close="dlg-print" id="print-done" disabled>Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookmarks Manager -->
+    <div class="modal" id="dlg-bookmarks" hidden>
+      <div class="modal-titlebar" data-drag>
+        <span class="modal-nlogo">N</span>
+        <span class="modal-title-text">Bookmarks</span>
+        <button class="modal-close" data-modal-close="dlg-bookmarks" title="Close">×</button>
+      </div>
+      <div class="modal-body bookmarks-body">
+        <ul class="bk-list" id="bk-list"></ul>
+        <div class="modal-actions">
+          <button class="tb small" id="bk-remove-selected" data-action="bookmark-remove">Remove</button>
+          <button class="tb small" data-modal-close="dlg-bookmarks">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Netscape -->
+    <div class="modal" id="dlg-about" hidden>
+      <div class="modal-titlebar" data-drag>
+        <span class="modal-nlogo">N</span>
+        <span class="modal-title-text">About Netscape</span>
+        <button class="modal-close" data-modal-close="dlg-about" title="Close">×</button>
+      </div>
+      <div class="modal-body about-body">
+        <div class="about-mark">
+          <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+            <circle cx="32" cy="32" r="28" fill="#fff" stroke="#000" stroke-width="2"/>
+            <path d="M22 44 L22 18 L44 18 L44 44" fill="none" stroke="#000" stroke-width="3"/>
+          </svg>
+        </div>
+        <h3>Netscape Navigator 3.04</h3>
+        <p class="about-tagline">Quality Software for the Web</p>
+        <p>Copyright &copy; 1994&ndash;1996 Netscape Communications Corporation</p>
+        <p>This is a portfolio recreation &mdash; not the real browser.</p>
+        <div class="modal-actions">
+          <button class="tb small primary" data-modal-close="dlg-about">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert / Confirm generic dialog -->
+    <div class="modal" id="dlg-alert" hidden>
+      <div class="modal-titlebar" data-drag>
+        <span class="modal-nlogo">N</span>
+        <span class="modal-title-text" id="alert-title">Netscape</span>
+        <button class="modal-close" data-modal-close="dlg-alert" title="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <p id="alert-message">Message</p>
+        <div class="modal-actions">
+          <button class="tb small primary" id="alert-ok">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generic dropdown menu -->
+    <div class="menu-popup" id="menu-popup" hidden role="menu"></div>
+
+    <!-- Scratch element for new windows -->
+    <input type="file" id="file-input" hidden />
+
+    <script src="app.js"></script>
   </body>
 </html>
