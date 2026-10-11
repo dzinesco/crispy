@@ -11,6 +11,16 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'windows98',
+    title: 'Windows 98 Setup Challenge',
+    description: 'Install Windows 98 from floppy and CD against the clock. Survive ScanDisk, dodge the blue screen, and earn the ME boot.',
+    tags: ['Retro', 'Browser', 'Game'],
+    image: '/images/portfolio/windows98.png',
+    imageAlt: 'ScanDisk window with a grid of disk sectors and two bad sectors flagged in red',
+    demoHref: '/demo/windows98/',
+    shippedAt: '2026-10-10',
+  },
+  {
     slug: 'cad',
     title: 'CAD',
     description: 'A drawing board in the browser. Lines, layers, undo, and an export.',

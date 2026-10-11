@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/windows98/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Windows 98 Setup Challenge — a browser game where you have to install Windows 98 from disk, one retro screen at a time."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Crect x='2' y='3' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='6' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='9' width='12' height='2' fill='%23fff'/%3E%3Crect x='2' y='12' width='12' height='2' fill='%23fff'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Tahoma&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <title>Windows 98 Setup Challenge</title>
+  </head>
+  <body>
+    <!-- CRT overlay sits above everything except modals -->
+    <div class="crt" aria-hidden="true"></div>
+    <div class="crt-flicker" aria-hidden="true"></div>
+
+    <!-- Persistent HUD -->
+    <div class="hud" id="hud" hidden>
+      <span class="hud-level" id="hud-level">Phase 1 / 9</span>
+      <span class="hud-errors" id="hud-errors">Errors: 0 / 3</span>
+      <span class="hud-time" id="hud-time">00:00</span>
+    </div>
+
+    <!-- ============================= MAIN SCREEN ============================= -->
+    <main class="screen" id="screen">
+
+      <!-- -------------------- START SCREEN -------------------- -->
+      <section class="phase phase-start" data-phase="start">
+        <div class="start-card">
+          <div class="start-title">
+            <span class="start-flag">▐</span>
+            <span class="start-name">Windows<sup>®</sup> 98</span>
+            <span class="start-tag">Setup Challenge</span>
+          </div>
+          <div class="start-body">
+            <p>Welcome to <b>1998</b>. Your hard drive is empty.</p>
+            <p>Your task: get <b>Windows 98</b> installed, one step at a time.</p>
+            <ul class="start-rules">
+              <li>You'll boot from a floppy disk and run <code>SETUP</code> from CD.</li>
+              <li>Read each screen carefully — type the right commands and click the right buttons.</li>
+              <li>You start with <b>3 retries</b>. Run out and your computer restarts from scratch.</li>
+              <li>Find the floppy at the top of the screen — it'll show you what's on the disk.</li>
+            </ul>
+            <button class="start-btn" id="start-btn" type="button">Power&nbsp;on 💥</button>
+            <p class="start-mute">
+              <label><input type="checkbox" id="mute-toggle" /> Mute sounds</label>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- -------------------- BOOT (DOS) -------------------- -->
+      <section class="phase phase-dos phase-boot" data-phase="boot" hidden>
+        <div class="dos-screen" id="boot-screen">
+          <pre class="dos-text" id="boot-text"></pre>
+        </div>
+      </section>
+
+      <!-- -------------------- DOS PROMPT (FLOPPY) -------------------- -->
+      <section class="phase phase-dos phase-prompt" data-phase="prompt-floppy" hidden>
+        <div class="hud-drives">
+          <button class="drive-btn" id="floppy-eject" title="Swap the floppy disk">
+            <span class="drive-led"></span>
+            <span class="drive-label">A:</span>
+            <span class="drive-disk">Windows 98 Startup Disk</span>
+          </button>
+        </div>
+        <div class="dos-screen">
+          <pre class="dos-text" id="floppy-text"></pre>
+          <div class="dos-input-row">
+            <span class="dos-prompt" id="floppy-prompt">A:\&gt;</span>
+            <input
+              class="dos-input"
+              id="floppy-input"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-label="DOS command"
+            />
+            <span class="dos-cursor">▌</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- -------------------- INSERT CD PROMPT -------------------- -->
+      <section class="phase phase-dos phase-disk-insert" data-phase="disk-insert" hidden>
+        <div class="dos-screen">
+          <pre class="dos-text" id="disk-insert-text"></pre>
+        </div>
+        <div class="insert-card" id="insert-card">
+          <div class="insert-disk" id="insert-disk">Windows 98 CD</div>
+          <p>Click the CD to insert it into the drive.</p>
+        </div>
+      </section>
+
+      <!-- -------------------- DOS PROMPT (CD) -------------------- -->
+      <section class="phase phase-dos phase-prompt" data-phase="prompt-cd" hidden>
+        <div class="hud-drives">
+          <button class="drive-btn" id="cd-eject" disabled>
+            <span class="drive-led lit"></span>
+            <span class="drive-label">D:</span>
+            <span class="drive-disk">Windows 98 CD</span>
+          </button>
+          <button class="drive-btn" id="floppy-eject-2" disabled>
+            <span class="drive-led"></span>
+            <span class="drive-label">A:</span>
+            <span class="drive-disk">Startup Disk (ejected)</span>
+          </button>
+        </div>
+        <div class="dos-screen">
+          <pre class="dos-text" id="cd-text"></pre>
+          <div class="dos-input-row">
+            <span class="dos-prompt" id="cd-prompt">D:\&gt;</span>
+            <input
+              class="dos-input"
+              id="cd-input"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-label="DOS command"
+            />
+            <span class="dos-cursor">▌</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- -------------------- SETUP LAUNCHING -------------------- -->
+      <section class="phase phase-dos phase-setup-launch" data-phase="setup-launch" hidden>
+        <div class="dos-screen">
+          <pre class="dos-text" id="setup-launch-text"></pre>
+        </div>
+      </section>
+
+      <!-- -------------------- WIN98 SETUP -------------------- -->
+      <section class="phase phase-win phase-setup" data-phase="setup" hidden>
+        <div class="win-setup-window" id="setup-window">
+
+          <!-- Welcome / EULA -->
+          <div class="win-step" data-step="welcome">
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Microsoft Windows 98 Setup</span>
+            </div>
+            <div class="setup-body">
+              <div class="setup-welcome">
+                <h1>Welcome to Setup</h1>
+                <p>
+                  This program will install Microsoft Windows 98 on your computer.
+                  Please read the End-User License Agreement below.
+                </p>
+              </div>
+              <div class="setup-eula-wrap">
+                <div class="eula-box" id="eula-box" tabindex="0">
+                  <pre id="eula-text"></pre>
+                </div>
+                <div class="setup-hint">
+                  <span class="key">Page Down</span> to scroll ·
+                  <span class="key">F8</span> to accept · <span class="key">ESC</span> to exit
+                </div>
+              </div>
+              <div class="setup-actions">
+                <button class="setup-btn" data-action="eula-accept" disabled>
+                  <u>A</u>ccept (F8)
+                </button>
+                <button class="setup-btn" data-action="eula-decline">Decline (ESC)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checking system configuration -->
+          <div class="win-step" data-step="checking" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Microsoft Windows 98 Setup Wizard</span>
+            </div>
+            <div class="setup-body">
+              <p class="setup-status" id="checking-status">
+                Setup is checking your system configuration...
+              </p>
+              <div class="setup-progress" id="setup-progress">
+                <div class="setup-progress-fill" id="setup-progress-fill"></div>
+              </div>
+              <p class="setup-meta" id="checking-meta">0% complete</p>
+            </div>
+          </div>
+
+          <!-- SCANDISK option -->
+          <div class="win-step" data-step="scandisk-prompt" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Microsoft Windows 98 Setup</span>
+            </div>
+            <div class="setup-body">
+              <p>It is recommended that you run <b>ScanDisk</b> before installing
+                Windows 98. ScanDisk checks your hard disk for errors, which can
+                prevent problems during Setup.</p>
+              <p>Do you want to run ScanDisk?</p>
+              <div class="setup-actions">
+                <button class="setup-btn" data-action="scandisk-yes">
+                  <u>Y</u>es, run ScanDisk
+                </button>
+                <button class="setup-btn" data-action="scandisk-no">
+                  <u>N</u>o, skip ScanDisk
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCANDISK mini-game -->
+          <div class="win-step" data-step="scandisk-game" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">ScanDisk</span>
+            </div>
+            <div class="setup-body">
+              <p class="setup-status">
+                Scanning drive C: for errors...
+              </p>
+              <div class="setup-progress" id="scandisk-progress">
+                <div class="setup-progress-fill" id="scandisk-progress-fill"></div>
+              </div>
+              <p class="setup-meta" id="scandisk-meta">
+                Click every <span class="danger">bad sector</span> before time runs out.
+              </p>
+              <div class="scandisk-grid" id="scandisk-grid"></div>
+              <div class="scandisk-stat">
+                Bad sectors found: <span id="scandisk-found">0</span> /
+                <span id="scandisk-total">0</span> ·
+                Time left: <span id="scandisk-time">10.0</span>s
+              </div>
+            </div>
+          </div>
+
+          <!-- Install directory -->
+          <div class="win-step" data-step="install-dir" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Microsoft Windows 98 Setup Wizard</span>
+            </div>
+            <div class="setup-body">
+              <p>Setup will install Windows 98 into the following directory:</p>
+              <div class="setup-path">C:\WINDOWS</div>
+              <p>If you want to install to a different directory, type its name.
+                To accept the default, press ENTER or click Next.</p>
+              <div class="setup-actions">
+                <button class="setup-btn primary" data-action="install-dir-ok">
+                  <u>N</u>ext &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Setup options -->
+          <div class="win-step" data-step="options" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Setup Options</span>
+            </div>
+            <div class="setup-body">
+              <p>Choose the type of setup you prefer:</p>
+              <div class="setup-options">
+                <button class="setup-option" data-action="opt-typical">
+                  <b>Typical</b>
+                  <span>Recommended for most users.</span>
+                </button>
+                <button class="setup-option" data-action="opt-portable">
+                  <b>Portable</b>
+                  <span>For laptops or older PCs.</span>
+                </button>
+                <button class="setup-option" data-action="opt-compact">
+                  <b>Compact</b>
+                  <span>Minimal install, no optional components.</span>
+                </button>
+                <button class="setup-option" data-action="opt-custom">
+                  <b>Custom</b>
+                  <span>Choose individual components yourself.</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User information -->
+          <div class="win-step" data-step="user-info" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">User Information</span>
+            </div>
+            <div class="setup-body">
+              <p>Please enter your full name and the name of your company.</p>
+              <div class="setup-field-row">
+                <label for="user-name">Name:</label>
+                <input class="setup-input" id="user-name" type="text" />
+              </div>
+              <div class="setup-field-row">
+                <label for="user-org">Company:</label>
+                <input class="setup-input" id="user-org" type="text" />
+              </div>
+              <div class="setup-actions">
+                <button class="setup-btn primary" data-action="user-info-ok">
+                  <u>N</u>ext &gt;
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CD key -->
+          <div class="win-step" data-step="product-key" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Product Key</span>
+            </div>
+            <div class="setup-body">
+              <p>
+                Please enter your 25-character Windows 98 Product Key.
+                The key is printed on the <b>back of your CD case</b>.
+              </p>
+              <div class="setup-field-row">
+                <label for="product-key">Product Key:</label>
+                <input
+                  class="setup-input wide"
+                  id="product-key"
+                  type="text"
+                  placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                  maxlength="29"
+                />
+              </div>
+              <div class="setup-meta" id="product-key-hint">
+                Look at the disc label on the right.
+              </div>
+              <div class="setup-actions">
+                <button class="setup-btn primary" data-action="product-key-ok">
+                  <u>N</u>ext &gt;
+                </button>
+              </div>
+            </div>
+            <!-- Disc prop -->
+            <div class="disc-prop" id="disc-prop">
+              <div class="disc-label-strip">
+                <span>Microsoft</span><b>Windows 98</b>
+              </div>
+              <div class="disc-key" id="disc-key">PBH4G-MWXBQ-7KC8W-VHFRD-MTKKY</div>
+              <div class="disc-hint">↑ CD back-sticker · Product Key ↑</div>
+            </div>
+          </div>
+
+          <!-- Final confirm -->
+          <div class="win-step" data-step="final" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Start Copying Files</span>
+            </div>
+            <div class="setup-body">
+              <p>Setup is ready to start copying Windows 98 files.</p>
+              <p>Choose <b>Next</b> to begin.</p>
+              <div class="setup-actions">
+                <button class="setup-btn primary" data-action="start-copy">
+                  <u>N</u>ext &gt;
+                </button>
+                <button class="setup-btn" data-action="cancel-copy">Back</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Copy / WIN screen -->
+          <div class="win-step" data-step="copy" hidden>
+            <div class="setup-titlebar">
+              <span class="setup-title-text">Microsoft Windows 98 Setup Wizard</span>
+            </div>
+            <div class="setup-body">
+              <p class="setup-status">
+                Copying Windows 98 files to your computer...
+              </p>
+              <div class="setup-progress wide">
+                <div class="setup-progress-fill" id="copy-fill"></div>
+              </div>
+              <p class="setup-meta" id="copy-meta">1% complete</p>
+              <p class="setup-done" id="copy-done" hidden>
+                ✓ Setup is now preparing to install. Your computer will restart shortly.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- -------------------- BSOD / FAILURE -------------------- -->
+      <section class="phase phase-bsod" data-phase="bsod" hidden>
+        <div class="bsod">
+          <p>Windows</p>
+          <p class="bsod-msg" id="bsod-msg">
+            A fatal exception 0E has occurred at 0028:C0014E0B in VXD VWIN32(05) +
+            00000784. The current application will be terminated.
+          </p>
+          <ul>
+            <li>Press any key to terminate the current application</li>
+            <li>Press CTRL+ALT+DEL again to restart your computer. Your computer will restart.</li>
+            <li>You will lose any unsaved information in all applications.</li>
+          </ul>
+          <p class="bsod-footer">Press any key to restart...</p>
+        </div>
+      </section>
+
+      <!-- -------------------- ME BOOT -------------------- -->
+      <section class="phase phase-me" data-phase="me-boot" hidden>
+        <div class="me-boot">
+          <div class="me-flag" aria-hidden="true">🪟</div>
+          <div class="me-name">Windows<sup>®</sup> Millennium Edition</div>
+          <div class="me-tagline">It&rsquo;s the greatest.</div>
+          <div class="me-loader"><div class="me-loader-fill"></div></div>
+          <div class="me-version">v 4.90.3000</div>
+        </div>
+      </section>
+
+      <!-- -------------------- WIN / SCORE -------------------- -->
+      <section class="phase phase-win phase-end" data-phase="win" hidden>
+        <div class="end-card">
+          <h1 class="end-title">✓ Windows ME Installed</h1>
+          <p class="end-sub">Widely regarded as the greatest version of Windows ever made.</p>
+          <div class="end-stats">
+            <div class="end-stat"><b id="stat-time">00:00</b><span>Time</span></div>
+            <div class="end-stat"><b id="stat-errors">0</b><span>Errors</span></div>
+            <div class="end-stat"><b id="stat-restarts">0</b><span>Restarts</span></div>
+          </div>
+          <p class="end-quote" id="end-quote"></p>
+          <button class="end-btn" id="restart-btn" type="button">Install it again</button>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
