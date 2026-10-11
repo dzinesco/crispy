@@ -11,20 +11,31 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
-    slug: 'deskmate',
-    title: 'Tandy DeskMate',
-    description: 'Tandy\'s 1984 keyboard GUI, rebuilt. F-keys, no overlapping windows, sixteen glorious colors.',
+    slug: 'netzero',
+    title: 'NetZero — Free Internet',
+    description: 'Dial up with the full 56k modem screech, click the banner ad, and spend your free hours wisely.',
     tags: ['Retro', 'Browser'],
-    image: '/images/portfolio/deskmate.png',
-    imageAlt: 'Crispygoat DeskMate worksheet on a blue screen, with a SUM total and the F1–F10 bar, letterboxed on a starfield',
-    demoHref: '/demo/deskmate/',
+    image: '/images/portfolio/netzero.png',
+    imageAlt: 'NetZero start page open in its browser window on a teal Windows desktop, connected at 53.3 kbps',
+    demoHref: '/demo/netzero/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
+    slug: 'netscape',
+    title: 'Netscape Navigator 3',
+    description: 'Back, Forward, bookmarks and Find all work. Stare at the spinning N like it\'s 1996 and the page is still loading.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/netscape.png',
+    imageAlt: 'Netscape Navigator 3 window showing the Welcome to Netscape page',
+    demoHref: '/demo/netscape/',
     shippedAt: '2026-10-10',
     bg: 'starfield',
   },
   {
     slug: 'macos8',
-    title: 'Mac OS 8',
-    description: 'A 1997 Mac desktop in your browser. Finder, MacPaint-style paint, games and all.',
+    title: 'Mac OS 8 — Platinum Edition',
+    description: 'Finder windows, a paint app and Brickout on a 1997 Platinum desktop. Think different, slowly.',
     tags: ['Retro', 'Browser', 'Game'],
     image: '/images/portfolio/macos8.png',
     imageAlt: 'Mac OS 8 desktop with Finder, Paint, Calculator, and Brickout open',
@@ -34,8 +45,8 @@ export const projects = [
   },
   {
     slug: 'windows98',
-    title: 'Windows 98 Setup Challenge',
-    description: 'Install Windows 98 from floppy and CD against the clock. Survive ScanDisk, dodge the blue screen, and earn the ME boot.',
+    title: 'Windows 98 — Setup Challenge',
+    description: 'Install Windows 98 against the clock. Swap disks, type setup, survive ScanDisk. Win and you get ME.',
     tags: ['Retro', 'Browser', 'Game'],
     image: '/images/portfolio/windows98.png',
     imageAlt: 'ScanDisk window with a grid of disk sectors and two bad sectors flagged in red',
@@ -44,8 +55,8 @@ export const projects = [
   },
   {
     slug: 'cad',
-    title: 'CAD',
-    description: 'A drawing board in the browser. Lines, layers, undo, and an export.',
+    title: 'CAD — Drafting Table',
+    description: 'Lines, layers, undo and a clean export. A drafting table that never runs out of paper.',
     tags: ['Drawing', 'Browser'],
     image: '/images/portfolio/cad.png',
     imageAlt: 'CAD drawing board mid-stroke, with a rectangle, a circle, and a line on the grid',
@@ -57,7 +68,7 @@ export const projects = [
   {
     slug: 'win311',
     title: 'Windows 3.11 — Folio Edition',
-    description: 'A working Windows 3.11 desktop in the browser. Drag windows, play Minesweeper and Solitaire, write in Notepad.',
+    description: 'Drag windows around Program Manager, clear Minesweeper, lose at Solitaire. 1993 never crashed this smoothly.',
     tags: ['Retro', 'Browser'],
     image: '/images/portfolio/win311.png',
     imageAlt: 'Windows 3.11 desktop with Program Manager and Minesweeper open',
@@ -70,7 +81,7 @@ export const projects = [
   {
     slug: 'winamp',
     title: 'Winamp 2 — Web Edition',
-    description: 'It really whips. Drop in your own MP3s and get a live spectrum visualizer, a 10-band EQ with presets, and a draggable playlist.',
+    description: 'Drop in your MP3s for a live spectrum visualizer, a 10-band EQ and a draggable playlist. It really whips.',
     tags: ['Retro', 'Browser', 'Audio'],
     image: '/images/portfolio/winamp.png',
     imageAlt: 'Winamp playing, with the spectrum visualizer, equalizer, and playlist centered',
@@ -80,8 +91,8 @@ export const projects = [
   },
   {
     slug: 'ipod',
-    title: 'iPod — Web Edition',
-    description: 'A click-wheel iPod in your browser. Spin the wheel through real menus, hit play on built-in demo tracks, add your own audio files, or connect Spotify.',
+    title: 'iPod — Classic Edition',
+    description: 'Spin the click wheel through real menus, play the demo tracks or your own, and connect Spotify. 1,000 songs in your pocket.',
     tags: ['Retro', 'Browser', 'Audio'],
     image: '/images/portfolio/ipod.png',
     imageAlt: 'Classic white click-wheel iPod showing its main menu, centered on a starfield',
@@ -92,7 +103,7 @@ export const projects = [
   {
     slug: 'bench',
     title: 'Next up',
-    description: 'Another toy is in pieces on the bench. It gets a link when you can open it and use it.',
+    description: 'On the bench now. It gets a link the day it actually works.',
     tags: [],
     status: 'soon',
     bg: 'sparkle',
@@ -121,7 +132,7 @@ export function byNewest(list = projects) {
       const ta = Date.parse(a.project.shippedAt || '') || 0;
       const tb = Date.parse(b.project.shippedAt || '') || 0;
       if (tb !== ta) return tb - ta;
-      return b.index - a.index;
+      return a.index - b.index;
     })
     .map(({ project }) => project);
 }
