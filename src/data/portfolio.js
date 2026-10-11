@@ -6,19 +6,42 @@
 // postHref    optional link to a blog post
 // image       a 16:10 screenshot in public/
 // shippedAt   ISO date (YYYY-MM-DD).
-// featured    pins the large slot on /portfolio. Default is Windows 3.11.
+// featured    pins the large slot on /portfolio. Goatshop 5.0 is the flagship.
 // status      'soon' is a teaser only. Not counted as live, no demo, off the homepage.
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
-    slug: 'defrag',
-    title: 'Disk Defragmenter — Game Edition',
-    description: 'The grid you stared at for hours, now a game. Pack every file toward the front, dodge bad sectors, and survive the classic restart at 10%.',
-    tags: ['Retro', 'Browser', 'Game'],
-    image: '/images/portfolio/defrag.png',
-    imageAlt: 'Defragmenting Drive C mid-pass, with blue optimized blocks, red fragments, a green read head, and the color legend on a starfield',
-    demoHref: '/demo/defrag/',
-    shippedAt: '2026-10-11',
+    slug: 'lotus',
+    title: 'Lotus 1-2-3 — Web Edition',
+    description: 'Type @SUM formulas, drive everything from the / menu, then pop a bar graph in amber phosphor. Spreadsheets were cool once.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/lotus.png',
+    imageAlt: 'Lotus 1-2-3 in amber phosphor on a beige IBM monitor, with the slash menu open over a budget sheet',
+    demoHref: '/demo/lotus/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+  },
+  {
+    slug: 'goatshop',
+    title: 'Goatshop 5.0 — 1998 Edition',
+    description: "Layers, History, Magic Wand and a Lens Flare you'll overuse. A full 1998 photo editor that really works.",
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/goatshop.png',
+    imageAlt: 'Goatshop 5.0 mid-edit with layers, a selection, and the lens flare dialog',
+    demoHref: '/demo/goatshop/',
+    shippedAt: '2026-10-10',
+    bg: 'starfield',
+    featured: true,
+  },
+  {
+    slug: 'napster',
+    title: 'Napster 2 — Web Edition',
+    description: 'Log in, search 220 late-90s tracks, watch the KB/s crawl, and chat in #lobby. Nobody gets sued this time.',
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/napster.png',
+    imageAlt: 'Napster search results for Metallica with a download crawling in File Transfers and #lobby chat open',
+    demoHref: '/demo/napster/',
+    shippedAt: '2026-10-10',
     bg: 'starfield',
   },
   {
@@ -98,7 +121,6 @@ export const projects = [
     postHref: '/blog/windows-311-folio',
     shippedAt: '2026-10-10',
     bg: 'construction',
-    featured: true,
   },
   {
     slug: 'winamp',
