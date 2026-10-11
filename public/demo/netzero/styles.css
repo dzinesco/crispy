@@ -1,0 +1,1087 @@
+/* =============================================================
+   NetZero v1.2 — Dial-up Experience
+   Period-accurate 1999 aesthetic: Win95 chrome, NetZero teal,
+   classic web. Single file, no images.
+   ============================================================= */
+
+:root {
+  /* Win95 surface palette */
+  --win-bg: #c3c3c3;
+  --win-face: #c0c0c0;
+  --win-face-light: #dcdad8;
+  --win-face-dark: #9b9a98;
+  --win-shadow: #4a4945;
+  --win-frame: #1f1e1c;
+  --win-text: #1f1e1c;
+
+  /* NetZero brand palette */
+  --nz-deep: #003366;
+  --nz-mid: #006699;
+  --nz-light: #3399cc;
+  --nz-bright: #66ccff;
+  --nz-bg: #e8f4ff;
+  --nz-banner: #ffff66;
+
+  /* Status display */
+  --term-bg: #000814;
+  --term-fg: #5fff5f;
+  --term-dim: #2a7a2a;
+
+  /* CRT effect */
+  --crt-line: rgba(0, 0, 0, 0.08);
+
+  /* Fonts */
+  --font-win: 'Tahoma', 'MS Sans Serif', system-ui, sans-serif;
+  --font-mono: 'Lucida Console', 'Courier New', monospace;
+  --font-serif: 'Times New Roman', Times, serif;
+  --font-sans: 'Arial', 'Helvetica', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-win);
+  font-size: 11px;
+  color: var(--win-text);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* =============================================================
+   CRT OVERLAY
+   ============================================================= */
+.crt {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.10) 0,
+      rgba(0, 0, 0, 0.10) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  opacity: 0.35;
+}
+
+/* =============================================================
+   DESKTOP
+   ============================================================= */
+.desktop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #008080;
+  overflow: hidden;
+}
+
+.desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 25% 35%, rgba(255, 255, 255, 0.06) 0 1px, transparent 2px),
+    radial-gradient(circle at 75% 65%, rgba(255, 255, 255, 0.05) 0 1px, transparent 2px),
+    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.04) 0 1px, transparent 2px);
+  background-size: 12px 12px, 18px 18px, 24px 24px;
+  pointer-events: none;
+}
+
+/* =============================================================
+   DESKTOP ICONS
+   ============================================================= */
+.desktop-icons {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 14px;
+  gap: 12px;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 76px;
+  padding: 4px;
+  border: 1px dotted transparent;
+  background: transparent;
+  color: #fff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.desktop-icon:hover,
+.desktop-icon:focus-visible {
+  outline: none;
+  border: 1px dotted #fff;
+}
+
+.desktop-icon:active .icon-label {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.icon-art {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+/* NetZero z logo */
+.z-circle {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #6cf 0%, #2a8fd6 50%, #003366 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.z-glyph {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-weight: bold;
+  font-style: italic;
+  font-size: 22px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.7);
+}
+
+.icon-folder {
+  background:
+    linear-gradient(180deg, #ffd64a 0%, #f0b000 100%);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+}
+.icon-folder::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 3px;
+  width: 12px;
+  height: 3px;
+  background: linear-gradient(180deg, #ffd64a, #f0b000);
+  border-radius: 2px 2px 0 0;
+}
+
+.icon-label {
+  font-size: 11px;
+  text-align: center;
+  padding: 0 2px;
+  line-height: 1.1;
+}
+
+/* =============================================================
+   TASKBAR
+   ============================================================= */
+.taskbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28px;
+  background: var(--win-face);
+  border-top: 2px solid var(--win-face-light);
+  box-shadow: inset 0 1px 0 var(--win-face-light);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  gap: 4px;
+  z-index: 100;
+}
+
+.start-btn {
+  display: flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  background: var(--win-face);
+  color: var(--win-text);
+  border: 2px outset var(--win-face-light);
+  font-weight: bold;
+  font-size: 11px;
+  gap: 4px;
+}
+.start-btn:active { border-style: inset; }
+
+.start-flag {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(45deg, transparent 45%, #f00 45%, #f00 55%, transparent 55%),
+    linear-gradient(135deg, #00aa00 0%, #00aa00 50%, #003366 50%, #003366 100%);
+  border-radius: 2px;
+}
+
+.taskbar-tray {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  border: 1px inset var(--win-shadow);
+  background: var(--win-face);
+  height: 22px;
+  font-size: 11px;
+}
+
+.tray-state { color: #006600; font-weight: bold; }
+.tray-mute {
+  width: 20px;
+  height: 18px;
+  border: 1px outset var(--win-face-light);
+  background: var(--win-face);
+  font-size: 11px;
+  padding: 0;
+}
+.tray-mute.muted { color: #999; text-decoration: line-through; }
+
+/* =============================================================
+   WINDOWS — Win95 chrome
+   ============================================================= */
+.window {
+  position: absolute;
+  background: var(--win-face);
+  border: 2px outset var(--win-face-light);
+  box-shadow:
+    inset 1px 1px 0 #fff,
+    inset -1px -1px 0 var(--win-shadow),
+    1px 1px 0 var(--win-frame);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.win-modal {
+  width: 380px;
+  box-shadow:
+    inset 1px 1px 0 #fff,
+    inset -1px -1px 0 var(--win-shadow),
+    2px 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 2px 0 4px;
+  background: linear-gradient(90deg,
+    var(--nz-deep) 0%,
+    var(--nz-mid) 60%,
+    var(--nz-deep) 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 11px;
+  cursor: move;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.titlebar-browser {
+  background: linear-gradient(90deg, #800000 0%, #b22 60%, #800000 100%);
+}
+
+.title-icon {
+  margin-right: 4px;
+  font-size: 12px;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.5));
+}
+
+.title-text {
+  flex: 1;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-buttons {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.btn-title {
+  width: 18px;
+  height: 16px;
+  border: 1px outset var(--win-face-light);
+  background: var(--win-face);
+  color: var(--win-text);
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-title:active { border-style: inset; }
+
+.window.minimized .titlebar + * { display: none; }
+
+/* =============================================================
+   LOGIN WINDOW (QuickStep)
+   ============================================================= */
+.win-login {
+  width: 360px;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.login-body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  background: linear-gradient(180deg,
+    var(--nz-bright) 0%,
+    var(--nz-light) 50%,
+    var(--nz-mid) 100%);
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--nz-deep);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.login-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg,
+      rgba(255, 255, 255, 0.05) 0 1px,
+      transparent 1px 3px);
+  pointer-events: none;
+}
+
+.logo-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-z {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.logo-z-big {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 10px;
+}
+
+.logo-z-tail {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #b6e6ff 0%, #6cc 35%, #006699 70%, #003366 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.5),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.logo-z-stem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: bold;
+  font-size: 22px;
+  color: #fff;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.5),
+    1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.logo-z-big .logo-z-stem { font-size: 44px; }
+
+.logo-z-stem::before {
+  content: 'z';
+}
+
+.logo-words {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow:
+    2px 2px 0 var(--nz-deep),
+    -1px -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.logo-net { color: #fff; }
+.logo-zero { color: var(--nz-banner); margin-left: -1px; }
+.logo-tm { font-size: 9px; color: #fff; margin-left: 1px; }
+
+.header-banner {
+  background: var(--nz-banner);
+  border: 1px solid #b6a000;
+  padding: 4px 8px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--nz-deep);
+  text-align: center;
+  position: relative;
+  box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 2px var(--nz-banner);
+}
+
+.blink {
+  display: inline-block;
+  margin-left: 1px;
+  animation: blink 1.2s steps(2) infinite;
+  color: var(--nz-deep);
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Form */
+.login-form {
+  padding: 12px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-row label {
+  width: 80px;
+  font-size: 11px;
+  color: var(--win-text);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.form-row input[type="text"],
+.form-row input[type="password"],
+.combo-wrap select {
+  flex: 1;
+  height: 20px;
+  padding: 2px 4px;
+  border: 2px inset var(--win-shadow);
+  background: #fff;
+  color: var(--win-text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  outline: none;
+}
+
+.combo-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.combo-wrap select {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 18px;
+  cursor: pointer;
+}
+
+.combo-arrow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: var(--win-face);
+  border: 1px outset var(--win-face-light);
+  font-size: 9px;
+}
+
+.form-row-check {
+  padding-left: 88px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  cursor: pointer;
+  text-align: left;
+  width: auto;
+}
+
+.check-label input[type="checkbox"] {
+  display: none;
+}
+
+.check-box {
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  border: 2px inset var(--win-shadow);
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.check-label input[type="checkbox"]:checked + .check-box::after {
+  content: '✓';
+  position: absolute;
+  inset: -2px -1px -3px -2px;
+  color: var(--win-text);
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.access-row input { font-family: var(--font-mono); font-size: 11px; }
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 11px;
+  padding: 2px 4px;
+  font-family: var(--font-win);
+}
+.link-btn:hover { color: #ff6600; }
+.link-btn:active { color: #990000; }
+
+.login-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 4px 14px 12px 0;
+  flex-wrap: wrap;
+}
+
+.btn {
+  min-width: 72px;
+  height: 24px;
+  padding: 0 12px;
+  background: var(--win-face);
+  color: var(--win-text);
+  border: 2px outset var(--win-face-light);
+  font-family: var(--font-win);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 var(--win-shadow);
+}
+
+.btn:active {
+  border-style: inset;
+  box-shadow: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 #fff;
+}
+
+.btn:disabled {
+  color: var(--win-shadow);
+  text-shadow: 1px 1px 0 var(--win-face-light);
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  font-weight: bold;
+  outline: 1px solid var(--win-text);
+  outline-offset: -4px;
+}
+
+.btn-primary:focus-visible,
+.btn:focus-visible {
+  outline: 1px dotted var(--win-text);
+  outline-offset: -5px;
+}
+
+/* Status bar */
+.login-status {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 6px;
+  border-top: 2px solid var(--win-shadow);
+  box-shadow: inset 1px 1px 0 var(--win-shadow);
+  background: var(--win-face);
+  font-size: 11px;
+  gap: 6px;
+}
+
+.status-light {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00cc00;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.6),
+    0 0 4px rgba(0, 200, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.status-light.connecting {
+  background: #ffcc00;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.6),
+    0 0 4px rgba(255, 200, 0, 0.5);
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.status-light.error {
+  background: #cc0000;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.6),
+    0 0 4px rgba(200, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.status-text {
+  flex-shrink: 0;
+  font-family: var(--font-win);
+}
+
+.status-spacer { flex: 1; }
+
+.status-meter {
+  border: 1px inset var(--win-shadow);
+  padding: 1px 6px;
+  background: var(--win-face);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* =============================================================
+   STATUS WINDOW (Dialing)
+   ============================================================= */
+.win-status {
+  width: 420px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+}
+
+.status-body {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 8px;
+}
+
+.dial-display {
+  background: var(--term-bg);
+  border: 2px inset var(--win-shadow);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signal-canvas {
+  display: block;
+  width: 100%;
+  height: 90px;
+  background: var(--term-bg);
+  image-rendering: pixelated;
+}
+
+.dial-log {
+  background: var(--term-bg);
+  color: var(--term-fg);
+  border: 2px inset var(--win-shadow);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 8px 10px;
+  height: 130px;
+  overflow-y: auto;
+  text-shadow: 0 0 4px rgba(95, 255, 95, 0.5);
+}
+
+.dial-log .log-line {
+  white-space: pre;
+  opacity: 0;
+  animation: log-in 0.15s forwards;
+}
+
+@keyframes log-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.dial-log .log-error { color: #ff5555; }
+.dial-log .log-info { color: var(--term-fg); }
+.dial-log .log-success { color: #66ffaa; font-weight: bold; }
+
+.dial-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.dial-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-track {
+  height: 14px;
+  border: 2px inset var(--win-shadow);
+  background: var(--win-face);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background:
+    repeating-linear-gradient(90deg,
+      #008000 0 12px,
+      #00a000 12px 24px);
+  transition: width 0.3s ease-out;
+}
+
+.progress-text {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--win-text);
+}
+
+/* =============================================================
+   BROWSER WINDOW (NetZero)
+   ============================================================= */
+.win-browser {
+  width: 760px;
+  height: 540px;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+}
+
+.browser-toolbar {
+  background: var(--win-face);
+  border-bottom: 1px solid var(--win-shadow);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-bottom: 1px solid var(--win-face-dark);
+}
+
+.nav-btn {
+  width: 24px;
+  height: 22px;
+  border: 2px outset var(--win-face-light);
+  background: var(--win-face);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.nav-btn:active { border-style: inset; }
+
+.url-bar {
+  flex: 1;
+  height: 20px;
+  border: 2px inset var(--win-shadow);
+  background: #fff;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--win-text);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.url-protocol { color: #888; }
+.url-host { color: #003366; font-weight: bold; }
+.url-path { color: var(--win-text); }
+
+.netzero-nav {
+  display: flex;
+  align-items: stretch;
+  background: var(--nz-mid);
+  border-top: 1px solid #fff;
+  padding: 0 4px;
+  height: 24px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 11px;
+  padding: 0 14px;
+  border-right: 1px solid var(--nz-deep);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+.tab-btn:hover { background: var(--nz-light); }
+.tab-btn.tab-active {
+  background: var(--nz-bg);
+  color: var(--nz-deep);
+  border-top: 1px solid var(--nz-bg);
+  border-left: 1px solid var(--nz-bg);
+  border-right: 1px solid var(--nz-bg);
+  margin-top: -1px;
+  text-shadow: none;
+}
+
+.nav-spacer { flex: 1; }
+
+.nav-greeting {
+  color: #fff;
+  font-size: 11px;
+  align-self: center;
+  padding-right: 6px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.browser-frame {
+  flex: 1;
+  background: #fff;
+  border-top: 1px solid var(--win-shadow);
+  border-bottom: 1px solid var(--win-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+#browser-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #fff;
+}
+
+.browser-statusbar {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  background: var(--win-face);
+  border-top: 1px solid var(--win-face-light);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.bs-left { flex: 1; }
+.bs-right {
+  border: 1px inset var(--win-shadow);
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* =============================================================
+   ACCESS NUMBER DIALOG
+   ============================================================= */
+.win-access {
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+}
+
+.access-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.access-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.access-row label {
+  width: 70px;
+  text-align: right;
+  font-size: 11px;
+}
+
+.access-row input,
+.access-row select {
+  flex: 1;
+  height: 20px;
+  padding: 2px 4px;
+  border: 2px inset var(--win-shadow);
+  background: #fff;
+  font-size: 11px;
+  font-family: var(--font-win);
+}
+
+.access-list-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.access-list-header {
+  font-weight: bold;
+  font-size: 11px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--win-shadow);
+}
+
+.access-list {
+  height: 110px;
+  border: 2px inset var(--win-shadow);
+  background: #fff;
+  overflow-y: auto;
+}
+
+.access-num-row {
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.access-num-row:hover { background: var(--nz-mid); color: #fff; }
+.access-num-row.selected { background: var(--nz-deep); color: #fff; }
+
+.access-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* =============================================================
+   ABOUT DIALOG
+   ============================================================= */
+.win-about {
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+}
+
+.about-body {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.about-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.about-body h3 {
+  margin: 4px 0 2px;
+  color: var(--nz-deep);
+  font-size: 16px;
+  font-family: var(--font-serif);
+}
+
+.about-tag {
+  margin: 0 0 8px;
+  color: var(--nz-mid);
+  font-style: italic;
+  font-size: 11px;
+}
+
+.about-body p {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.about-list {
+  text-align: left;
+  margin: 0 0 12px 18px;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.about-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* =============================================================
+   APP RESPONSIVENESS
+   ============================================================= */
+@media (max-width: 800px) {
+  .win-browser { width: calc(100vw - 20px); height: calc(100vh - 80px); }
+  .win-login, .win-status { width: calc(100vw - 40px); }
+}
+/* Fix: honor the hidden attribute on flex windows/taskbar */
+[hidden] { display: none !important; }
