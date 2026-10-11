@@ -14,6 +14,8 @@ import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
 import Admin from './pages/Admin.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Guestbook from './pages/Guestbook.jsx';
+import Tyler from './pages/Tyler.jsx';
 import { Privacy, Terms } from './pages/Legal.jsx';
 
 export default function App() {
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/packages" element={<Packages />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/tyler" element={<Tyler />} />
+        <Route path="/guestbook" element={<Guestbook />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/kits/:slug" element={<KitDetail />} />

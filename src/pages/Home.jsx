@@ -1,133 +1,147 @@
 import { Link } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
-import WorkHero from '../components/WorkHero.jsx';
-import LatestStrip from '../components/LatestStrip.jsx';
-import { projects } from '../data/portfolio.js';
-import { leadProject } from '../lib/latest.js';
-import { useKits, usePosts } from '../lib/api.js';
+import HitCounter from '../components/HitCounter.jsx';
+import GuestbookForm from '../components/GuestbookForm.jsx';
+import GuestbookList from '../components/GuestbookList.jsx';
+import ButtonWall from '../components/ButtonWall.jsx';
+import Webring from '../components/Webring.jsx';
+import { usePosts } from '../lib/api.js';
+import {
+  projects,
+  byNewest,
+  featuredProject,
+  soonProjects,
+  shortName,
+} from '../data/portfolio.js';
 
-const steps = [
-  { t: 'You send a brief', d: 'Form, not a call. Facts, not a deck.' },
-  { t: 'We say yes or no', d: 'If it fits, you get a price and a date. If not, silence.' },
-  { t: 'You pay a deposit', d: 'That locks the week. Still no meetings.' },
-  { t: 'We ship', d: 'Working site, on the date we named.' },
-];
+function when(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
 
 export default function Home() {
-  const { data: kitsData } = useKits();
-  const { data: postsData } = usePosts();
-  const kits = kitsData?.kits || [];
-  const posts = postsData?.posts || [];
-  const featured = kits.find((kit) => kit.slug === 'farm-stand') || kits[0];
-  const lead = leadProject(projects);
+  const { data, isLoading, error } = usePosts();
+  const posts = (data?.posts || []).slice(0, 4);
+  const featured = featuredProject(projects);
+  const newest = byNewest(projects)[0];
+  const apps = byNewest(projects).filter((project) => project.slug !== featured?.slug);
+  const defrag = soonProjects(projects).find((project) => project.slug === 'defrag');
 
   return (
-    <>
+    <div className="pw">
       <Seo
-        title="Ship sites without the agency theater"
-        description="Productized site kits you can buy today — plus selective custom builds when the brief is sharp."
+        title="A personal homepage"
+        description="Crispy Goat, est. 2024. Apps, a guestbook, and notes. A personal homepage, like the internet used to make."
+        path="/"
       />
 
-      <WorkHero project={lead} featured={featured} />
-      <LatestStrip posts={posts} projects={projects} />
+      <header className="pw-hero">
+        <p className="pixel">EST. 2024</p>
+        <div className="pw-hero-row">
+          <h1>A personal homepage, like the internet used to make.</h1>
+          <HitCounter />
+        </div>
+      </header>
 
-      <section className="border-b border-ink/10 py-16 sm:py-24">
-        <div className="mx-auto grid max-w-6xl items-start gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <div>
-            <p className="text-[13px] font-medium text-brass">The kit</p>
-            <h2 className="mt-3 max-w-[12ch] text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">
-              Packed. Priced. Ready to open.
-            </h2>
-            <p className="mt-5 max-w-measure text-[17px] leading-7 text-ink/70">
-              A site kit is a finished starting point: structure, type, checkout if you need it. You buy it, you ship it. Custom work is a separate conversation.
-            </p>
-            <Link to="/packages" className="btn-primary mt-8">See starter packs</Link>
-            <div className="product-tilt mt-10 hidden max-w-sm lg:block">
-              <img
-                src="/images/kit-box.jpg"
-                alt="Kraft kit box with a small metal mark"
-                className="w-full"
-                decoding="async"
-              />
+      {featured && (
+        <section className="pw-flag" id="goatshop" aria-labelledby="goatshop-title">
+          <div className="pw-flag-copy">
+            <p className="pixel">Goatshop 5.0</p>
+            <h2 id="goatshop-title">{featured.title}</h2>
+            <p>{featured.description}</p>
+            <div className="pw-flag-actions">
+              <a className="btn-primary" href={featured.demoHref}>Open {shortName(featured)}</a>
+              {featured.postHref && <Link className="btn-ghost" to={featured.postHref}>Read the build</Link>}
             </div>
           </div>
-
-          {kits.length === 0 ? (
-            <div className="divide-y divide-ink/10 border border-ink/10 bg-cream">
-              {[
-                { name: 'Billy Basic', price: '$1,200', note: 'One page. You exist online today.' },
-                { name: 'Grumpy Grazer', price: '$3,800', note: '5–7 pages, a blog, basic SEO.' },
-                { name: 'Alpha Horn', price: 'From $8,500', note: 'Custom. Auth, payments, the works.' },
-              ].map((row) => (
-                <Link key={row.name} to="/packages" className="flex min-h-[72px] flex-col justify-center gap-1 px-5 py-5 hover:text-brass sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                  <div>
-                    <p className="text-xl font-semibold tracking-[-0.02em]">{row.name}</p>
-                    <p className="mt-1 text-[15px] text-ink/60">{row.note}</p>
-                  </div>
-                  <p className="shrink-0 text-lg text-brass">{row.price}</p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="divide-y divide-ink/10 border border-ink/10 bg-cream">
-              {kits.slice(0, 4).map((kit) => (
-                <Link
-                  key={kit.slug}
-                  to={`/kits/${kit.slug}`}
-                  className="flex min-h-[72px] flex-col justify-center gap-1 px-5 py-5 hover:text-brass sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-                >
-                  <div>
-                    <p className="text-xl font-semibold tracking-[-0.02em]">{kit.title}</p>
-                    {kit.tagline && <p className="mt-1 text-[15px] text-ink/60">{kit.tagline}</p>}
-                  </div>
-                  <p className="shrink-0 text-lg text-brass">${(kit.price_cents / 100).toFixed(0)}</p>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="overflow-hidden bg-ink py-16 text-cream sm:py-24">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
-          <div className="order-2 lg:order-1">
+          <a className="pw-flag-shot" href={featured.demoHref}>
             <img
-              src="/images/laptop.jpg"
-              alt="A finished site on a laptop"
-              className="w-full border border-white/10"
+              src={featured.image}
+              alt={featured.imageAlt || ''}
+              width="1280"
+              height="800"
               decoding="async"
             />
-          </div>
-          <div className="order-1 lg:order-2">
-            <p className="text-[13px] font-medium text-cream">How a custom job runs</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">Four steps. No kickoff.</h2>
-            <ol className="mt-10 space-y-6">
-              {steps.map((step, index) => (
-                <li key={step.t} className="flex gap-5">
-                  <span className="w-8 shrink-0 pt-0.5 text-[13px] text-cream">{String(index + 1).padStart(2, '0')}</span>
-                  <div>
-                    <h3 className="text-xl font-semibold tracking-[-0.02em]">{step.t}</h3>
-                    <p className="mt-1 text-[15px] leading-6 text-cream/75">{step.d}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
+          </a>
+        </section>
+      )}
+
+      <section className="pw-apps" aria-labelledby="apps-title">
+        <div className="pw-section-head">
+          <p className="pixel">Newest first</p>
+          <h2 id="apps-title">Apps</h2>
         </div>
+        <ul className="pw-grid">
+          {apps.map((project) => {
+            const fresh = project.slug === newest?.slug;
+            return (
+              <li key={project.slug}>
+                <a className="pw-app" href={project.demoHref}>
+                  {fresh && <span className="blinkie">New</span>}
+                  <img
+                    src={project.image}
+                    alt=""
+                    width="1280"
+                    height="800"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <h3>{shortName(project)}</h3>
+                  <p>{project.description}</p>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
-      <section className="bg-cream py-16 sm:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="max-w-[14ch] text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">Ready when you are.</h2>
-          <p className="mt-4 max-w-measure text-lg text-ink/70">
-            Grab a pack, or send a brief. We don’t do kickoff workshops.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link to="/packages" className="btn-primary">See starter packs</Link>
-            <Link to="/apply" className="btn-accent">Pitch a build</Link>
+      {defrag && (
+        <section className="pw-defrag" aria-labelledby="defrag-title">
+          <div className="pw-defrag-card">
+            <p className="pixel">Under construction</p>
+            <h2 id="defrag-title">{defrag.title}</h2>
+            <p>{defrag.description}</p>
           </div>
+        </section>
+      )}
+
+      <section className="pw-split" aria-labelledby="gb-title">
+        <div>
+          <p className="pixel">Sign it</p>
+          <h2 id="gb-title">Guestbook</h2>
+          <GuestbookList page="guestbook" limit={3} empty="Be the first name in the book." />
+          <GuestbookForm page="guestbook" />
+          <p className="pw-more"><Link to="/guestbook">Open the guestbook</Link></p>
         </div>
+        <Webring />
       </section>
-    </>
+
+      <section className="pw-buttons" aria-labelledby="buttons-title">
+        <h2 id="buttons-title" className="pixel">88×31</h2>
+        <ButtonWall />
+      </section>
+
+      <section className="pw-notes" aria-labelledby="notes-title">
+        <div className="pw-section-head">
+          <p className="pixel">Latest</p>
+          <h2 id="notes-title">Notes</h2>
+        </div>
+        {isLoading && <p className="gb-empty">Loading notes…</p>}
+        {error && <p className="gb-empty">Notes aren’t loading.</p>}
+        {!isLoading && !error && posts.length === 0 && <p className="gb-empty">Nothing published yet.</p>}
+        <ul className="pw-post-list">
+          {posts.map((post) => (
+            <li key={post.slug}>
+              <Link to={`/blog/${post.slug}`}>
+                {post.published_at && <time className="pixel" dateTime={post.published_at}>{when(post.published_at)}</time>}
+                <span>{post.title}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
   );
 }

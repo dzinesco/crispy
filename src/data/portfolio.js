@@ -1,6 +1,8 @@
 // Projects on /portfolio. One object is one app. See PORTFOLIO.md.
-// The homepage hero features `cad` when it is present, otherwise the first
-// shipped entry. The homepage Latest strip mixes shipped apps with posts.
+// The homepage flagship (Goatshop 5.0) shows featuredProject().
+// Shipped apps fill the rest of the homepage grid, newest first.
+// status: 'soon' stays off /portfolio. The Defrag teaser is the only
+// "under construction" block, and it is only on the homepage.
 //
 // demoHref    full navigation to a static app in public/demo/<slug>/
 // postHref    optional link to a blog post
@@ -79,12 +81,11 @@ export const projects = [
     bg: 'starfield',
   },
   {
-    slug: 'bench',
-    title: 'Next up',
-    description: 'Another toy is in pieces on the bench. It gets a link when you can open it and use it.',
+    slug: 'defrag',
+    title: 'Defrag',
+    description: 'A disk defrag toy. The sectors are still scattered.',
     tags: [],
     status: 'soon',
-    bg: 'sparkle',
   },
 ];
 

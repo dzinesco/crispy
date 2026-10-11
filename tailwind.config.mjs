@@ -13,20 +13,14 @@ export default {
         cream: '#FFFFFF',
         paper: '#F4F4F5',
         bone: '#F4F4F5',
-        brass: '#E1064A',
-        gold: '#E1064A',
+        // Darkened from #E1064A so rose text clears 6:1 on white.
+        brass: '#9F1239',
+        gold: '#9F1239',
+        magenta: '#86104E',
       },
       fontFamily: {
-        sans: [
-          '-apple-system',
-          'BlinkMacSystemFont',
-          '"SF Pro Display"',
-          '"SF Pro Text"',
-          '"Helvetica Neue"',
-          'Helvetica',
-          'Arial',
-          'sans-serif',
-        ],
+        sans: ['Inter', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        pixel: ['Silkscreen', 'ui-monospace', 'monospace'],
       },
       letterSpacing: {
         tightish: '-0.03em',

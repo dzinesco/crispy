@@ -153,6 +153,7 @@ export function useAdminActions() {
     qc.invalidateQueries({ queryKey: ['kits'] });
     qc.invalidateQueries({ queryKey: ['demos'] });
     qc.invalidateQueries({ queryKey: ['admin'] });
+    qc.invalidateQueries({ queryKey: ['guestbook'] });
   };
   return {
     createPost: useMutation({
@@ -194,12 +195,34 @@ export function useAdminActions() {
       mutationFn: (slug) => request(`/admin/demos/${slug}`, { method: 'DELETE' }),
       onSuccess: invalidate,
     }),
+    approveGuestbook: useMutation({
+      mutationFn: (id) => request(`/admin/guestbook/${id}/approve`, { method: 'POST', body: '{}' }),
+      onSuccess: invalidate,
+    }),
+    deleteGuestbook: useMutation({
+      mutationFn: (id) => request(`/admin/guestbook/${id}`, { method: 'DELETE' }),
+      onSuccess: invalidate,
+    }),
   };
 }
 
 export function useSubmitApplication() {
   return useMutation({
     mutationFn: (body) => request('/applications', { method: 'POST', body: JSON.stringify(body) }),
+  });
+}
+
+export function useGuestbook(page = 'guestbook', limit = 20) {
+  return useQuery({
+    queryKey: ['guestbook', page, limit],
+    queryFn: () => request(`/guestbook?page=${encodeURIComponent(page)}&limit=${limit}`),
+  });
+}
+
+export function useAdminGuestbook() {
+  return useQuery({
+    queryKey: ['admin', 'guestbook'],
+    queryFn: () => request('/admin/guestbook'),
   });
 }
 

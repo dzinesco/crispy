@@ -3,17 +3,17 @@ import { Link, NavLink } from 'react-router-dom';
 import Mark from './Mark.jsx';
 
 const links = [
-  { to: '/packages', label: 'Packs' },
-  { to: '/portfolio', label: 'Portfolio' },
+  { to: '/', label: 'Home', end: true },
+  { to: '/portfolio', label: 'Apps' },
   { to: '/blog', label: 'Blog' },
-  { to: '/apply', label: 'Pitch' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/tyler', label: 'Tyler' },
+  { to: '/guestbook', label: 'Guestbook' },
 ];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 text-cream backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink text-white">
       <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:h-12 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <Mark />
@@ -25,10 +25,11 @@ export default function Header() {
             <NavLink
               key={l.to}
               to={l.to}
+              end={l.end}
               className={({ isActive }) =>
                 isActive
-                  ? 'font-medium text-cream underline decoration-brass decoration-2 underline-offset-8'
-                  : 'text-cream/60 hover:text-cream'
+                  ? 'inline-flex min-h-[44px] items-center font-medium text-white underline decoration-[#9f1239] decoration-2 underline-offset-8'
+                  : 'inline-flex min-h-[44px] items-center text-[#e4e4e7] hover:text-white'
               }
             >
               {l.label}
@@ -60,9 +61,10 @@ export default function Header() {
               <NavLink
                 key={l.to}
                 to={l.to}
+                end={l.end}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `min-h-[44px] border-l-2 py-3 pl-3 text-[15px] ${isActive ? 'border-brass font-medium text-cream' : 'border-transparent text-cream/70'}`
+                  `min-h-[44px] border-l-2 py-3 pl-3 text-[15px] ${isActive ? 'border-[#9f1239] font-medium text-white' : 'border-transparent text-[#e4e4e7]'}`
                 }
               >
                 {l.label}

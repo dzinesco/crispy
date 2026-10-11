@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
 
 export default function Contact() {
@@ -15,6 +16,11 @@ export default function Contact() {
         >
           tm@crispygoat.com
         </a>
+        <p className="mt-12 text-[15px] text-[#3f3f46]">
+          <Link className="underline decoration-[#9f1239] underline-offset-4" to="/packages">Starter packs</Link>
+          <span aria-hidden="true"> · </span>
+          <Link className="underline decoration-[#9f1239] underline-offset-4" to="/apply">Pitch a build</Link>
+        </p>
       </section>
     </>
   );
