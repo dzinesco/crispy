@@ -1,0 +1,945 @@
+/* =====================================================================
+   LOTUS 1-2-3 — browser recreation, IBM PC/XT aesthetic
+   styles.css is split into five sections:
+     1. Page / dark room
+     2. IBM PC/XT tower (case, bays, floppy, badges)
+     3. CRT monitor (bezel, screen, overlays, Lotus surface)
+     4. Spreadsheet grid, indicator, mode strip, key line
+     5. Legend, soft-keys
+   ===================================================================== */
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: "IBM Plex Mono", "VT323", "Courier New", monospace;
+  background: #050505;
+  color: #ffb000;
+  overflow-x: hidden;
+}
+
+/* =====================================================================
+   1. PAGE — dim office with warm desk-lamp highlight
+   ===================================================================== */
+
+body {
+  background:
+    radial-gradient(
+      ellipse at 50% 38%,
+      rgba(60, 50, 30, 0.45) 0%,
+      rgba(20, 16, 10, 0.9) 70%
+    ),
+    #050505;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px 14px 0;
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
+  gap: 10px;
+}
+
+.room {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 360px);
+  grid-template-rows: auto;
+  align-items: end;
+  gap: 18px;
+  flex: 1;
+  padding: 20px 8px 0;
+}
+
+.desk-shadow {
+  position: absolute;
+  inset: 70% 0 0 0;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.floor-shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 78%;
+  height: 16px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0) 75%
+  );
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* =====================================================================
+   2. IBM PC/XT TOWER — beige, two-tone plastic, drive bays
+   ===================================================================== */
+
+.tower {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 280px;
+  justify-self: end;
+  filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.7));
+}
+
+.tower-front {
+  position: relative;
+  aspect-ratio: 220 / 380;
+  border-radius: 10px 10px 4px 4px;
+  background:
+    linear-gradient(180deg, #d8c8a3 0%, #cdb98c 60%, #b9a372 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.tower-bezel-top,
+.tower-bezel-bottom {
+  height: 8px;
+  background: linear-gradient(180deg, #bea672, #b39862);
+  border-radius: 3px;
+}
+
+.tower-front::before {
+  /* Subtle vertical seam */
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* 5.25" floppy drive slot */
+.floppy {
+  position: relative;
+  background: #1c1c1c;
+  height: 50px;
+  border-radius: 3px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.floppy-slot {
+  flex: 1;
+  height: 28px;
+  background: #050505;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.floppy-slot::before {
+  content: "";
+  position: absolute;
+  inset: 4px 6px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+}
+
+.floppy-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #250;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.floppy-label {
+  position: absolute;
+  bottom: 3px;
+  left: 8px;
+  font-size: 8px;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "IBM Plex Mono", monospace;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Drive bays */
+.tower-bays {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.bay {
+  height: 12px;
+  background: #6f5e36;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.bay::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  background: #1c1c1c;
+  transform: translateY(-50%);
+  border-radius: 1px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.tower-power {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: auto auto auto auto 1fr;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+}
+
+.tower-led,
+.tower-led-label {
+  font-size: 8px;
+  letter-spacing: 0.5px;
+}
+
+.tower-led {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+#power-led {
+  background: radial-gradient(circle at 30% 30%, #ffd058, #b07c1a);
+  box-shadow: 0 0 6px rgba(255, 180, 60, 0.55);
+  animation: pulse 3.5s ease-in-out infinite;
+}
+
+#hdd-led {
+  background: #0f2206;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+#hdd-led.on {
+  background: radial-gradient(circle at 30% 30%, #6fff38, #2a940f);
+  box-shadow: 0 0 6px rgba(120, 255, 70, 0.55);
+  transition: background 60ms linear, box-shadow 60ms linear;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+
+.tower-led-label {
+  color: #4a3b1d;
+  font-weight: 600;
+}
+
+.tower-keylock {
+  justify-self: end;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg, #b9a372 0%, #6f5e36 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.tower-keylock::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #3a2f15;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.tower-keylock::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 2px;
+  background: #1a1306;
+  transform: translate(-50%, -50%) rotate(35deg);
+  border-radius: 1px;
+}
+
+.tower-badge {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Times New Roman", serif;
+  font-style: italic;
+  font-size: 12px;
+  color: #4a3b1d;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.tower-badge-small {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a3b1d;
+  letter-spacing: 0.6px;
+  background: #bea672;
+  padding: 2px 6px;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.tower-shadow {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: -16px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7), transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* =====================================================================
+   3. CRT MONITOR — beige casing, deep bezel, amber CRT
+   ===================================================================== */
+
+.monitor {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 24px 32px rgba(0, 0, 0, 0.7));
+}
+
+.monitor-casing {
+  width: 100%;
+  position: relative;
+  border-radius: 18px 18px 8px 8px;
+  background:
+    linear-gradient(180deg, #e1d2a8 0%, #d2bf8c 60%, #b9a372 100%);
+  padding: 28px 28px 14px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.monitor-casing::before {
+  /* Brand strip on top */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10px;
+  height: 6px;
+  background: linear-gradient(180deg, #b39862, #9c8452);
+  border-radius: 4px;
+  margin: 0 16px;
+  opacity: 0.55;
+}
+
+.bezel {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #14110a;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 0 0 2px #3a2f15;
+}
+
+.bezel-inner {
+  width: 100%;
+  height: 100%;
+  background: #050401;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0a0904;
+  color: #ffb000;
+  font-family: "IBM Plex Mono", "VT323", monospace;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* CRT phosphor overlays */
+body[data-phosphor="amber"] .screen {
+  color: #ffb000;
+}
+body[data-phosphor="green"] .screen {
+  color: #6cff5a;
+}
+body[data-phosphor="white"] .screen {
+  color: #d8d8d8;
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  z-index: 50;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  z-index: 51;
+}
+
+.reflection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 35%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 100%
+  );
+  z-index: 52;
+  transform: skewX(-10deg);
+}
+
+.caret {
+  position: absolute;
+  pointer-events: none;
+  font-family: inherit;
+  font-size: inherit;
+  background: currentColor;
+  color: currentColor;
+  line-height: 1;
+  z-index: 60;
+  display: none;
+  animation: blink 1.06s steps(2) infinite;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* =====================================================================
+   4. LOTUS SURFACE — titlebar, grid, indicator, mode strip, key line
+   ===================================================================== */
+
+.lotus {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto auto;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(10px, 1.55vmin, 16px);
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.lotus-titlebar {
+  background: currentColor;
+  color: #0a0904;
+  padding: 2px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.titlebar-text {
+  display: block;
+  font-size: 1em;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lotus-grid {
+  background: #0a0904;
+  color: inherit;
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  border: 0;
+}
+
+.lotus-indicator {
+  background: #0a0904;
+  color: inherit;
+  border-top: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  padding: 1px 6px;
+  font-size: 1em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.cell-coord {
+  background: currentColor;
+  color: #0a0904;
+  padding: 0 4px;
+  margin-right: 4px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.cell-sep {
+  color: inherit;
+  margin-right: 4px;
+}
+
+.cell-contents {
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.lotus-mode {
+  background: #0a0904;
+  color: inherit;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 6px;
+  font-size: 0.95em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.mode-label {
+  background: currentColor;
+  color: #0a0904;
+  padding: 0 4px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.mode-menus {
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lotus-keys {
+  background: #0a0904;
+  color: inherit;
+  padding: 1px 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 6px;
+  font-size: 0.93em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.lotus-keys .key-row {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- GRID ---- */
+
+.grid-row {
+  display: grid;
+  position: relative;
+}
+
+.grid-row.header-row {
+  background: #050401;
+  color: inherit;
+  border-bottom: 1px solid currentColor;
+  font-weight: 600;
+}
+
+.grid-row.header-row .cell {
+  text-align: center;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.col-header,
+.row-header {
+  background: #050401;
+  color: inherit;
+  font-weight: 600;
+  user-select: none;
+}
+
+.row-header {
+  text-align: right;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-right: 1px solid currentColor;
+}
+
+.row-header.wide {
+  background: #0a0904;
+}
+
+.cell {
+  padding: 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  border-right: 1px dotted rgba(255, 176, 0, 0.18);
+  display: flex;
+  align-items: center;
+}
+
+.cell.label {
+  justify-content: flex-start;
+}
+
+.cell.number {
+  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell.formula {
+  justify-content: flex-end;
+}
+
+.cell.current {
+  background: currentColor;
+  color: #0a0904 !important;
+  font-weight: 700;
+}
+
+.cell.in-range {
+  background: rgba(255, 176, 0, 0.18);
+}
+
+body[data-phosphor="green"] .cell.in-range {
+  background: rgba(108, 255, 90, 0.18);
+}
+
+.cell.anchor {
+  outline: 1px dashed currentColor;
+  outline-offset: -1px;
+}
+
+/* Chart overlay */
+.chart-overlay {
+  position: absolute;
+  inset: 0;
+  background: #0a0904;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  z-index: 70;
+}
+
+.chart-frame {
+  width: 100%;
+  height: 100%;
+  border: 1px solid currentColor;
+  padding: 4px 6px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 4px;
+}
+
+.chart-title {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  font-size: 0.95em;
+}
+
+.chart-hint {
+  text-align: center;
+  font-size: 0.85em;
+  border-top: 1px solid currentColor;
+  padding-top: 2px;
+}
+
+#chart-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #0a0904;
+  image-rendering: pixelated;
+}
+
+/* =====================================================================
+   5. LEGEND (F-key hints) and soft-keys
+   ===================================================================== */
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #b9a372 0%, #9c8452 100%);
+  color: #2a2010;
+  font-size: 14px;
+  font-family: "IBM Plex Mono", "VT323", monospace;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
+  overflow-x: auto;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+
+.legend-title {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 2px 6px;
+  background: #2a2010;
+  color: #d8c8a3;
+  border-radius: 3px;
+}
+
+.legend-keys {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.legend-keys .key {
+  background: #2a2010;
+  color: #d8c8a3;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.softkeys {
+  display: none;
+  width: 100%;
+  gap: 6px;
+  padding: 6px 4px 8px;
+  overflow-x: auto;
+}
+
+.softkey {
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #d8c8a3, #b9a372);
+  color: #2a2010;
+  border: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.softkey:active {
+  transform: translateY(1px);
+}
+
+/* =====================================================================
+   6. RESPONSIVE — stack the room on small viewports, switch to soft-keys
+   ===================================================================== */
+
+@media (max-width: 880px) {
+  body {
+    font-size: 14px;
+  }
+  .room {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 8px 0;
+  }
+  .monitor,
+  .tower {
+    max-width: 100%;
+  }
+  .tower {
+    max-width: 200px;
+    justify-self: center;
+  }
+  .legend {
+    display: none;
+  }
+  .softkeys {
+    display: flex;
+  }
+  .lotus-keys {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    font-size: 0.88em;
+  }
+}
+
+@media (max-width: 560px) {
+  .monitor-casing {
+    padding: 18px 18px 10px;
+  }
+  .bezel {
+    padding: 10px;
+    aspect-ratio: 5 / 4;
+  }
+  .lotus-keys {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grid-row {
+    grid-template-columns: 28px repeat(8, 1fr);
+  }
+  .col-header:first-child,
+  .row-header {
+    width: 28px;
+    min-width: 28px;
+  }
+}
+
+/* Focus / accessibility */
+.screen:focus-visible,
+.lotus :focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+.softkey:focus {
+  outline: 2px solid #ffb000;
+}
+
+/* Fix: monitor takes the wide column, the XT tower sits to its right (DOM order put the tower first). */
+@media (min-width: 881px) {
+  .room > .monitor { grid-column: 1; grid-row: 1; justify-self: center; }
+  .room > .tower   { grid-column: 2; grid-row: 1; }
+}
+/* Fix: the Graph overlay is display:flex, which overrode [hidden]. */
+.chart-overlay[hidden] { display: none; }
+/* Fix: inverse-video blocks used `background: currentColor` next to `color: #0a0904`,
+   so currentColor resolved to the dark text color and the title bar, cell pointer,
+   cell address and mode indicator all rendered dark-on-dark. Use the phosphor color. */
+body[data-phosphor="amber"] .screen { --phosphor: #ffb000; }
+body[data-phosphor="green"] .screen { --phosphor: #6cff5a; }
+body[data-phosphor="white"] .screen { --phosphor: #d8d8d8; }
+.lotus-titlebar, .cell-coord, .mode-label, .cell.current { background: var(--phosphor, #ffb000); }
+/* Fix: the 20 rows sat in the top half of the screen with the rest blank; spread header + 20 rows over the full grid area. */
+.lotus-grid { display: grid; grid-template-rows: repeat(21, 1fr); }
