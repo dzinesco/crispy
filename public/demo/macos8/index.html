@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Mac OS 8 — Crispy Goat</title>
+    <meta name="description" content="A 1997 Platinum desktop in the browser. Finder, paint, desk accessories, and games — drawn from scratch for Crispy Goat." />
+    <base href="/demo/macos8/" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/os.css" />
+    <script>
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('reduce-motion');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="viewport">
+      <div id="stage" data-stage>
+        <div id="desktop" data-region="desktop"></div>
+        <div id="windows" data-region="windows"></div>
+        <div id="marquee" hidden></div>
+        <header id="menubar" data-region="menubar" role="menubar">
+          <button type="button" class="menu-title goat" data-menu="goat" role="menuitem" aria-haspopup="true" aria-label="Goat menu"></button>
+          <button type="button" class="menu-title" data-menu="file" role="menuitem" aria-haspopup="true">File</button>
+          <button type="button" class="menu-title" data-menu="edit" role="menuitem" aria-haspopup="true">Edit</button>
+          <button type="button" class="menu-title" data-menu="view" role="menuitem" aria-haspopup="true">View</button>
+          <button type="button" class="menu-title" data-menu="special" role="menuitem" aria-haspopup="true">Special</button>
+          <span class="menu-spacer"></span>
+          <button type="button" class="menu-title" data-menu="help" role="menuitem" aria-haspopup="true">Help</button>
+          <button type="button" class="menu-title appmenu" data-menu="apps" role="menuitem" aria-haspopup="true" aria-label="Application menu">
+            <span id="front-app">Finder</span>
+          </button>
+          <button type="button" id="clock" class="clock" aria-label="Clock">12:00 PM</button>
+        </header>
+        <div id="menu-pop" hidden role="menu"></div>
+        <div id="dialogs"></div>
+        <div id="sleep" hidden>
+          <p>Asleep. Click or press a key to wake.</p>
+        </div>
+        <div id="startup" data-startup>
+          <div class="startup-mid">
+            <div class="happy" aria-hidden="true">
+              <svg viewBox="0 0 120 120" width="96" height="96">
+                <rect x="18" y="24" width="84" height="66" rx="3" fill="#f2f2f2" stroke="#161616" stroke-width="2"/>
+                <rect x="28" y="34" width="64" height="42" fill="#d5e4e8" stroke="#161616"/>
+                <path d="M32 36 L24 16 L44 32" fill="#f2f2f2" stroke="#161616" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M88 36 L96 16 L76 32" fill="#f2f2f2" stroke="#161616" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M42 38 L38 18" stroke="#161616" stroke-width="2" fill="none"/>
+                <path d="M78 38 L82 18" stroke="#161616" stroke-width="2" fill="none"/>
+                <ellipse cx="60" cy="55" rx="20" ry="15" fill="#fff" stroke="#161616"/>
+                <circle cx="52" cy="53" r="2" fill="#161616"/>
+                <circle cx="68" cy="53" r="2" fill="#161616"/>
+                <path d="M51 61 Q60 68 69 61" fill="none" stroke="#161616" stroke-width="1.6" stroke-linecap="round"/>
+                <rect x="50" y="90" width="20" height="5" fill="#e6e6e6" stroke="#161616"/>
+                <rect x="38" y="95" width="44" height="6" rx="1" fill="#cfcfcf" stroke="#161616"/>
+              </svg>
+            </div>
+            <div class="welcome" role="dialog" aria-label="Welcome to Mac OS 8">
+              <p class="welcome-title">Welcome to Mac OS 8</p>
+              <div class="progress" aria-hidden="true"><div class="progress-fill" id="boot-bar"></div></div>
+              <p class="welcome-sub" id="boot-sub">Starting up…</p>
+            </div>
+          </div>
+          <div class="extensions" id="boot-ext"></div>
+        </div>
+        <div id="shutdown" hidden>
+          <p>It is now safe to switch off your computer.</p>
+          <button type="button" id="restart-btn" class="btn default">Restart</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
