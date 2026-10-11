@@ -1,8 +1,9 @@
 // Homepage "Latest" rail. Posts come from the API; projects from src/data/portfolio.js.
 
 export function leadProject(projects = []) {
-  if (!projects.length) return null;
-  return projects.find((project) => project.slug === 'cad') || projects[0];
+  const shipped = (projects || []).filter((project) => project?.status !== 'soon');
+  if (!shipped.length) return null;
+  return shipped.find((project) => project.slug === 'cad') || shipped[0];
 }
 
 export function mergeLatest(posts = [], projects = [], limit = 6) {
@@ -22,7 +23,7 @@ export function mergeLatest(posts = [], projects = [], limit = 6) {
     }));
 
   const work = (projects || [])
-    .filter((project) => project?.slug && project?.title)
+    .filter((project) => project?.slug && project?.title && project.status !== 'soon')
     .map((project) => ({
       id: `work:${project.slug}`,
       kind: 'work',
