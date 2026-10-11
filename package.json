@@ -7,11 +7,10 @@
     "dev": "concurrently -n web,api -c blue,green \"npm:dev:web\" \"npm:dev:api\"",
     "dev:web": "vite",
     "dev:api": "npm --prefix server run dev",
-    "build": "npm run build:goatshop && vite build",
-    "build:goatshop": "vite build --config apps/goatshop/vite.config.js",
+    "build": "vite build",
     "lint": "node scripts/lint.mjs",
     "test:macos8": "node tests/macos8.spec.mjs",
-    "test:goatshop": "node tests/goatshop.spec.mjs",
+    "test:deskmate": "node tests/deskmate.spec.mjs",
     "preview": "vite preview",
     "install:all": "npm install && npm --prefix server install"
   },
