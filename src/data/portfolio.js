@@ -6,10 +6,22 @@
 // postHref    optional link to a blog post
 // image       a 16:10 screenshot in public/
 // shippedAt   ISO date (YYYY-MM-DD).
-// featured    pins the large slot on /portfolio. Default is Windows 3.11.
+// featured    pins the large slot on /portfolio. Goatshop 5.0 is the flagship.
 // status      'soon' is a teaser only. Not counted as live, no demo, off the homepage.
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
+  {
+    slug: 'goatshop',
+    title: 'Goatshop 5.0 — 1998 Edition',
+    description: "Layers, History, Magic Wand and a Lens Flare you'll overuse. A full 1998 photo editor that really works.",
+    tags: ['Retro', 'Browser'],
+    image: '/images/portfolio/goatshop.png',
+    imageAlt: 'Goatshop 5.0 mid-edit with layers, a selection, and the lens flare dialog',
+    demoHref: '/demo/goatshop/',
+    shippedAt: '2026-10-11',
+    bg: 'starfield',
+    featured: true,
+  },
   {
     slug: 'macos8',
     title: 'Mac OS 8',
@@ -54,7 +66,6 @@ export const projects = [
     postHref: '/blog/windows-311-folio',
     shippedAt: '2026-10-10',
     bg: 'construction',
-    featured: true,
   },
   {
     slug: 'winamp',
