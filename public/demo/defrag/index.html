@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/defrag/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Disk Defragmenter</title>
+    <meta
+      name="description"
+      content="A Windows 98-style disk defragmenter you can stare at, or play. Pack the files, dodge bad sectors, and survive the restart at 10%."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+  </head>
+  <body class="gc-starfield">
+    <div id="app">
+      <section class="win" data-screen="launcher">
+        <header class="titlebar">
+          <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span>Disk Defragmenter</span>
+          <span class="title-gap"></span>
+          <button class="tbtn" type="button" data-action="help" aria-label="Help">?</button>
+        </header>
+        <div class="client">
+          <p class="lead">The squares march until the drive is one clean run of blue. Watch them, or pack the files yourself.</p>
+          <label class="field">
+            Drive
+            <select id="drive"></select>
+          </label>
+          <fieldset>
+            <legend>How</legend>
+            <label><input type="radio" name="mode" value="zen" checked /> Zen mode — sit back and stare</label>
+            <label><input type="radio" name="mode" value="game" /> Game mode — you are the head</label>
+          </fieldset>
+          <ul class="scores" data-scores></ul>
+          <p class="mute-row">
+            <label><input id="mute" type="checkbox" /> Mute drive sounds</label>
+          </p>
+          <div class="buttons">
+            <button class="btn" type="button" data-action="achievements">Achievements</button>
+            <span class="spacer"></span>
+            <button class="btn default" type="button" data-action="start">OK</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="win" data-screen="defrag" hidden>
+        <header class="titlebar">
+          <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span data-title>Defragmenting Drive C</span>
+          <span class="title-gap"></span>
+          <button class="tbtn" type="button" data-action="min" aria-label="Hide details">_</button>
+          <button class="tbtn" type="button" data-action="close" aria-label="Close">×</button>
+        </header>
+        <div class="client">
+          <p class="status" data-status aria-live="polite">Defragmenting Drive C…</p>
+          <div class="meter-row">
+            <div class="meter sunken" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Percent complete">
+              <i data-meter></i>
+            </div>
+            <p class="pct"><span data-progress>0%</span> complete</p>
+          </div>
+          <div data-details hidden>
+            <div class="map-frame sunken">
+              <canvas id="grid" width="640" height="280" aria-label="Disk cluster map"></canvas>
+            </div>
+            <ul class="legend" data-legend></ul>
+            <ul class="files" data-files hidden></ul>
+            <div class="powers" data-powers hidden></div>
+            <p class="stats" data-stats></p>
+            <div class="pad" data-pad aria-label="Move the head">
+              <button type="button" data-dir="up" aria-label="Move head up">▲</button>
+              <button type="button" data-dir="left" aria-label="Move head left">◀</button>
+              <button type="button" data-use aria-label="Pick up or drop">●</button>
+              <button type="button" data-dir="right" aria-label="Move head right">▶</button>
+              <button type="button" data-dir="down" aria-label="Move head down">▼</button>
+            </div>
+          </div>
+          <div class="buttons">
+            <button class="btn" type="button" data-action="legend">Legend</button>
+            <button class="btn" type="button" data-action="hint" hidden>Hint</button>
+            <button class="btn" type="button" data-action="saver" hidden>Screensaver</button>
+            <button class="btn" type="button" data-action="mute" aria-pressed="false">Mute</button>
+            <span class="spacer"></span>
+            <button class="btn" type="button" data-action="stop">Stop</button>
+            <button class="btn" type="button" data-action="pause">Pause</button>
+            <button class="btn" type="button" data-action="details" aria-expanded="false">Show Details</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="shade" data-dialog hidden>
+      <div class="win dialog" data-dialog-card role="dialog" aria-modal="true" hidden>
+        <header class="titlebar">
+          <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span data-dialog-title>Disk Defragmenter</span>
+        </header>
+        <div class="client">
+          <div data-dialog-body></div>
+          <div class="buttons" data-dialog-actions></div>
+        </div>
+      </div>
+      <div class="win dialog" id="tutorial" role="dialog" aria-modal="true" aria-labelledby="tutorial-title" hidden>
+        <header class="titlebar">
+          <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span id="tutorial-title">First time on this drive</span>
+        </header>
+        <div class="client">
+          <p><b>Zen mode</b> is the stare. Press play, then Show Details, and watch the blocks march.</p>
+          <p><b>Game mode</b> is the job. Arrows or WASD move the head. Space picks up a block and drops it on free space. Dragging works. So does a finger.</p>
+          <p>Pack every file into one solid run at the front. Unmovable blocks and bad sectors stay put. Finish a file without wandering off for a combo.</p>
+          <p>Sometimes the drive changes under you and the job restarts at 10%. That part is not a bug.</p>
+          <div class="buttons">
+            <button class="btn default" type="button" data-tutorial="zen">Watch the blocks</button>
+            <button class="btn" type="button" data-tutorial="game">I'll defrag it</button>
+            <button class="btn" type="button" data-tutorial="later">Not now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dim" data-dim hidden>
+      <p>Monitor power saving</p>
+      <p>Move the mouse or press a key.</p>
+    </div>
+    <p class="toast" data-toast hidden role="status"></p>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
