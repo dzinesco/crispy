@@ -8,17 +8,6 @@
 // shippedAt  ISO date (YYYY-MM-DD) so Latest can sort this beside posts
 export const projects = [
   {
-    slug: 'macos8',
-    title: 'Mac OS 8',
-    description: 'A 1997 Mac desktop in your browser. Finder, MacPaint-style paint, games and all.',
-    tagline: 'A 1997 Mac desktop in your browser. Finder, MacPaint-style paint, games and all.',
-    tags: ['Retro'],
-    image: '/images/portfolio/macos8.png',
-    imageAlt: 'Mac OS 8 desktop with Finder, Paint, Calculator, and Brickout open',
-    demoHref: '/demo/macos8/',
-    shippedAt: '2026-10-11',
-  },
-  {
     slug: 'cad',
     title: 'CAD',
     description: 'A drawing board in the browser. Lines, layers, undo, and an export.',
