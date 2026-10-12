@@ -1,6 +1,6 @@
 // Projects on /portfolio. One object is one app. See PORTFOLIO.md.
-// The homepage flagship (Goatshop 5.0) shows featuredProject().
-// Shipped apps fill the rest of the homepage grid, newest first.
+// The homepage flagship shows featuredProject(). homeGridProjects() is the
+// short newest list under it (the full set stays on /portfolio).
 // status: 'soon' stays off /portfolio. The Defrag teaser is the only
 // "under construction" block, and it is only on the homepage.
 //
@@ -257,6 +257,21 @@ export function featuredProject(list = projects) {
   const flagged = live.find((project) => project.featured);
   if (flagged) return flagged;
   return live.find((project) => project.slug === 'win311') || byNewest(list)[0] || null;
+}
+
+// Homepage shows the flagship separately, then this many other apps.
+export const HOME_APP_LIMIT = 6;
+
+export function homeGridProjects(list = projects) {
+  const featured = featuredProject(list);
+  return byNewest(list)
+    .filter((project) => project.slug !== featured?.slug)
+    .slice(0, HOME_APP_LIMIT);
+}
+
+export function homeAppsLabel(count) {
+  const n = Math.max(0, Number(count) || 0);
+  return `See all ${n} ${n === 1 ? 'app' : 'apps'}`;
 }
 
 export function portfolioTags(list = projects) {
