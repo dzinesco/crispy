@@ -7,7 +7,7 @@ export default function Blog() {
   const posts = data?.posts || [];
 
   return (
-    <div className="pw">
+    <div className="pw blog-read">
       <Seo title="Blog" description="Notes from Crispy Goat." path="/blog" />
       <header className="pw-hero">
         <p className="pixel">Notes</p>
@@ -21,6 +21,9 @@ export default function Blog() {
         {posts.map((p) => (
           <li key={p.slug}>
             <Link to={`/blog/${p.slug}`}>
+              {p.cover_image && (
+                <img className="blog-card-cover" src={p.cover_image} alt={`Screenshot: ${p.title}`} width="1280" height="800" loading="lazy" decoding="async" />
+              )}
               {p.published_at && (
                 <time className="pixel" dateTime={p.published_at}>
                   {new Date(p.published_at).toLocaleDateString('en-US', {
