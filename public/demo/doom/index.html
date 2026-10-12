@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/doom/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="DOOM — a first-person shooter built in vanilla JavaScript, HTML, and CSS. No build, no dependencies." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23100810'/%3E%3Cpath d='M3 4h6v4H7v4H3z' fill='%23c44a2a'/%3E%3Cpath d='M9 8h4v6H9z' fill='%23a73a20'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>/* Crispy Goat: starfield frame around the stage only */
+      body.gc-starfield .stage { background: transparent; }
+    </style>
+    <title>DOOM — Web Edition</title>
+  </head>
+  <body class="gc-starfield">
+    <!-- ===================== STAGE ===================== -->
+    <main id="stage" class="stage">
+      <div class="crt-bezel">
+        <div class="crt-frame">
+          <div class="title-bar">
+            <span class="title-tag">●</span>
+            <span class="title-name">DOOM</span>
+            <span class="title-sep">·</span>
+            <span class="title-level" id="title-level">E1M1: HANGAR</span>
+            <span class="title-spacer"></span>
+            <span class="title-stats" id="title-stats">KILLS 0 / 0</span>
+          </div>
+
+          <div class="viewport">
+            <canvas id="game" width="640" height="400"></canvas>
+            <div class="scanlines"></div>
+            <div class="vignette"></div>
+
+            <!-- HUD overlay -->
+            <div class="hud" id="hud">
+              <div class="hud-health">
+                <span class="hud-label">HEALTH</span>
+                <span class="hud-number" id="hud-health">100</span>
+                <div class="hud-bar"><div class="hud-bar-fill" id="hud-health-bar"></div></div>
+              </div>
+              <div class="hud-armor">
+                <span class="hud-label">ARMOR</span>
+                <span class="hud-number" id="hud-armor">0</span>
+                <div class="hud-bar"><div class="hud-bar-fill armor" id="hud-armor-bar"></div></div>
+              </div>
+              <div class="hud-weapons">
+                <span class="hud-label">WEAPON</span>
+                <span class="hud-number" id="hud-weapon">PISTOL</span>
+              </div>
+              <div class="hud-ammo">
+                <span class="hud-label">AMMO</span>
+                <span class="hud-number" id="hud-ammo">50</span>
+              </div>
+              <div class="hud-facedown"></div>
+              <div class="hud-message" id="hud-message"></div>
+            </div>
+
+            <!-- Damage flash overlay -->
+            <div class="damage-flash" id="damage-flash"></div>
+          </div>
+
+          <div class="controls-bar">
+            <span><b>WASD</b> move</span>
+            <span><b>MOUSE</b> look</span>
+            <span><b>CLICK</b> fire</span>
+            <span><b>SPACE</b> fire</span>
+            <span><b>1–4</b> weapon</span>
+            <span><b>R</b> restart</span>
+            <span><b>ESC</b> free cursor</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===================== START SCREEN ===================== -->
+    <div id="start-screen" class="overlay overlay-start">
+      <h1 class="logo">D<span class="logo-o">OO</span>M</h1>
+      <p class="subtitle">WEB EDITION · VANILLA JAVASCRIPT</p>
+      <button id="start-btn" class="big-btn">
+        <span>► CLICK TO ENTER</span>
+      </button>
+      <ul class="controls-list">
+        <li><b>WASD</b> move &nbsp;·&nbsp; <b>MOUSE</b> look</li>
+        <li><b>LEFT CLICK</b> or <b>SPACE</b> fire &nbsp;·&nbsp; <b>1–4</b> weapons</li>
+        <li><b>R</b> restart on death &nbsp;·&nbsp; type <b>IDDQD</b> for god mode</li>
+      </ul>
+    </div>
+
+    <!-- ===================== DEATH SCREEN ===================== -->
+    <div id="death-screen" class="overlay overlay-death" hidden>
+      <h1 class="big">YOU DIED.</h1>
+      <p id="death-fight" class="blink">Fight on! Press R to restart.</p>
+    </div>
+
+    <!-- ===================== WIN SCREEN ===================== -->
+    <div id="win-screen" class="overlay overlay-win" hidden>
+      <h1 class="big">MISSION COMPLETE.</h1>
+      <p id="win-stats"></p>
+      <p class="blink">Press R to play again.</p>
+    </div>
+
+    <!-- ===================== LEVEL TRANSITION ===================== -->
+    <div id="level-screen" class="overlay overlay-level" hidden>
+      <h2 class="big-2" id="level-name">E1M2</h2>
+      <p class="blink">Loading...</p>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

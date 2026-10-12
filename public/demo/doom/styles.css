@@ -1,0 +1,435 @@
+/* =============================================================
+   DOOM — Web Edition
+   Vanilla CSS, no images. CRT-monitor vibe, period-accurate red.
+   ============================================================= */
+
+:root {
+  --bg-deep:    #08080c;
+  --bg-mid:     #141018;
+  --bezel:      #1a1a22;
+  --bezel-edge: #0a0a10;
+  --red:        #c44a2a;
+  --red-bright: #ff5530;
+  --red-deep:   #6a1a10;
+  --gold:       #ffb13b;
+  --gold-deep:  #7a5418;
+  --txt:        #d6cfc4;
+  --txt-dim:    #847a6e;
+
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --font-pix:  'VT323', 'Share Tech Mono', monospace;
+  --font-ui:   'Inter', -apple-system, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  color: var(--txt);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+/* ===================== STAGE / CRT BEZEL ===================== */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 35%, #1c1014 0%, #08060a 70%, #000 100%);
+}
+
+.crt-bezel {
+  padding: 28px;
+  background:
+    radial-gradient(ellipse at center,
+      #2a242a 0%,
+      #14101a 60%,
+      #06040a 100%);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 4px 0 rgba(255,255,255,0.04),
+    inset 0 -4px 0 rgba(0,0,0,0.6),
+    0 20px 60px rgba(0,0,0,0.85),
+    0 0 0 1px #000;
+}
+
+.crt-frame {
+  background: var(--bg-deep);
+  border: 1px solid #000;
+  border-radius: 6px;
+  padding: 10px 12px 12px;
+  box-shadow: inset 0 0 0 1px #2a2a32;
+}
+
+/* ===================== TITLE BAR ===================== */
+
+.title-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: linear-gradient(180deg, #1c1c22 0%, #0a0a10 100%);
+  border: 1px solid #000;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--txt);
+  text-shadow: 0 0 6px rgba(255, 80, 60, 0.4);
+}
+
+.title-tag   { color: var(--red); font-size: 8px; }
+.title-name  { color: var(--red-bright); font-weight: 700; letter-spacing: 0.18em; }
+.title-sep   { color: var(--txt-dim); }
+.title-level { color: var(--gold); }
+.title-spacer { flex: 1; }
+.title-stats { color: var(--txt-dim); }
+
+/* ===================== VIEWPORT ===================== */
+
+.viewport {
+  position: relative;
+  width: 640px;
+  height: 400px;
+  background: #000;
+  overflow: hidden;
+  border: 1px solid #000;
+  box-shadow:
+    inset 0 0 80px rgba(196, 74, 42, 0.18),
+    0 0 0 1px rgba(255, 80, 60, 0.12);
+  image-rendering: pixelated;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* CRT scanlines */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.32) 0 1px,
+    rgba(255,255,255,0.025) 1px 2px
+  );
+  mix-blend-mode: multiply;
+  z-index: 4;
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center,
+      transparent 55%,
+      rgba(0,0,0,0.65) 100%);
+  z-index: 5;
+}
+
+/* ===================== HUD ===================== */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 6px 26px;
+  font-family: var(--font-pix);
+  color: var(--txt);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.hud-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--txt-dim);
+  text-shadow: 1px 1px 0 #000;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.hud-number {
+  font-size: 32px;
+  line-height: 1;
+  font-weight: 400;
+  text-shadow:
+    2px 2px 0 #000,
+    -1px -1px 0 #000,
+    0 0 8px rgba(255, 90, 60, 0.4);
+  color: var(--red-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-health  .hud-number { color: var(--red-bright); }
+.hud-armor   .hud-number { color: #7ab8ff; }
+.hud-ammo    .hud-number { color: var(--gold); }
+.hud-weapons .hud-number { color: var(--txt); font-size: 22px; }
+
+.hud-bar {
+  margin-top: 4px;
+  height: 4px;
+  width: 110px;
+  background: rgba(0,0,0,0.65);
+  border: 1px solid #000;
+  position: relative;
+}
+
+.hud-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--red-deep), var(--red-bright));
+  transition: width 120ms linear;
+}
+
+.hud-bar-fill.armor {
+  background: linear-gradient(90deg, #1a3a66, #7ab8ff);
+}
+
+.hud-ammo   { text-align: right; }
+.hud-weapons{ text-align: right; }
+
+.hud-facedown {
+  grid-column: 1 / span 2;
+  align-self: end;
+}
+
+.hud-message {
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 22px;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 #000, 0 0 6px rgba(255,180,40,0.5);
+  opacity: 0;
+  transition: opacity 200ms;
+  pointer-events: none;
+}
+
+.hud-message.show { opacity: 1; }
+
+/* ===================== DAMAGE FLASH ===================== */
+
+.damage-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 30%,
+    rgba(255, 30, 30, 0.55) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+  z-index: 7;
+}
+
+.damage-flash.hit { opacity: 1; }
+
+/* ===================== OVERLAYS ===================== */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  text-align: center;
+  padding: 20px;
+}
+
+.overlay[hidden] { display: none; }
+
+.overlay-start {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(140, 30, 20, 0.4) 0%, #06040a 70%, #000 100%);
+  cursor: pointer;
+}
+
+.overlay-death {
+  background: rgba(60, 0, 0, 0.85);
+}
+
+.overlay-win {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(180, 100, 30, 0.5) 0%, rgba(40, 10, 0, 0.95) 70%, #000 100%);
+}
+
+.overlay-level {
+  background: rgba(0,0,0,0.92);
+  transition: opacity 400ms;
+}
+
+.logo {
+  font-family: var(--font-pix);
+  font-size: 96px;
+  font-weight: 400;
+  margin: 0;
+  color: var(--red-bright);
+  letter-spacing: 0.06em;
+  text-shadow:
+    4px 4px 0 #000,
+    0 0 24px rgba(255, 80, 50, 0.7),
+    0 0 60px rgba(255, 60, 30, 0.35);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.logo-o { letter-spacing: 0; }
+
+.subtitle {
+  font-family: var(--font-mono);
+  letter-spacing: 0.4em;
+  color: var(--txt-dim);
+  font-size: 13px;
+  margin: 8px 0 36px;
+  text-transform: uppercase;
+}
+
+.big-btn {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  color: var(--txt);
+  background: linear-gradient(180deg, #2a1a16 0%, #0c0606 100%);
+  border: 1px solid var(--red);
+  padding: 14px 36px;
+  cursor: pointer;
+  border-radius: 0;
+  text-shadow: 0 0 8px rgba(255, 100, 60, 0.6);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.05),
+    0 0 24px rgba(196, 74, 42, 0.4);
+  transition: transform 80ms, box-shadow 120ms;
+}
+
+.big-btn:hover {
+  background: linear-gradient(180deg, #3a201a 0%, #14080a 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 0 36px rgba(255, 100, 60, 0.55);
+}
+
+.big-btn:active { transform: translateY(1px); }
+
+.controls-list {
+  list-style: none;
+  margin: 36px 0 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--txt-dim);
+  line-height: 2;
+}
+
+.controls-list b { color: var(--gold); font-weight: 400; }
+
+.overlay .big {
+  font-family: var(--font-pix);
+  font-size: 88px;
+  margin: 0;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.overlay-death .big {
+  color: #ff2a2a;
+  text-shadow:
+    0 0 30px rgba(255, 30, 30, 0.8),
+    0 0 80px rgba(255, 0, 0, 0.4);
+}
+
+.overlay-win .big {
+  color: var(--gold);
+  text-shadow:
+    0 0 30px rgba(255, 177, 59, 0.6),
+    0 0 80px rgba(255, 150, 30, 0.35);
+}
+
+.overlay .big-2 {
+  font-family: var(--font-pix);
+  font-size: 64px;
+  color: var(--red-bright);
+  margin: 0;
+  letter-spacing: 0.04em;
+  text-shadow: 4px 4px 0 #000, 0 0 30px rgba(255, 80, 50, 0.5);
+}
+
+.overlay p {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--txt-dim);
+  margin: 16px 0 0;
+  text-transform: uppercase;
+}
+
+.overlay .blink {
+  animation: blink 1s steps(2) infinite;
+  color: var(--txt);
+  font-size: 18px;
+  margin-top: 28px;
+}
+
+/* ===================== CONTROLS BAR ===================== */
+
+.controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 10px;
+  padding: 6px 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--txt-dim);
+}
+
+.controls-bar b { color: var(--gold); font-weight: 400; }
+
+/* ===================== ANIMATIONS ===================== */
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { text-shadow: 4px 4px 0 #000, 0 0 24px rgba(255,80,50,0.7); }
+  50%      { text-shadow: 4px 4px 0 #000, 0 0 36px rgba(255,80,50,1.0), 0 0 80px rgba(255,60,30,0.5); }
+}
+
+/* ===================== RESPONSIVE ===================== */
+
+@media (max-width: 740px) {
+  .crt-bezel { padding: 14px; }
+  .viewport  { width: 100vw; height: 62vw; max-width: 640px; }
+  .logo      { font-size: 64px; }
+}
+
+@media (max-height: 480px) {
+  .controls-bar { display: none; }
+}

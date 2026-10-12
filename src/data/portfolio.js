@@ -13,6 +13,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'doom',
+    title: 'DOOM — Web Edition',
+    description: 'A raycast first-person shooter in plain JavaScript. WASD to move, mouse to look, click to fire through E1M1 with a pistol and a CRT glow.',
+    tags: ['Retro', 'Browser', 'Game'],
+    image: '/images/portfolio/doom.png',
+    imageAlt: 'DOOM Web Edition in-game on E1M1 Hangar, pistol drawn, with health 100, armor 0, and ammo 30 in the HUD inside a CRT bezel on a starfield',
+    demoHref: '/demo/doom/',
+    shippedAt: '2026-10-12',
+    bg: 'starfield',
+  },
+  {
     slug: 'defrag',
     title: 'Disk Defragmenter — Game Edition',
     description: 'The grid you stared at for hours, now a game. Pack every file toward the front, dodge bad sectors, and survive the classic restart at 10%.',
