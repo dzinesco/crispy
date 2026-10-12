@@ -13,6 +13,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'cg-os',
+    title: 'CG-OS — A Full Windows 98 Desktop',
+    description: 'A whole Windows 98 desktop in plain JavaScript. Boot it, drag windows around, and open Word, Excel, Paint, Minesweeper, Solitaire, Winamp and more from the Start menu.',
+    tags: ['Retro', 'Browser', 'Desktop'],
+    image: '/images/portfolio/cg-os.png',
+    imageAlt: 'CG-OS on a teal Windows 98 desktop: Word 2000, Minesweeper and Winamp open side by side, desktop icons on the left and a taskbar with a Start button and clock',
+    demoHref: '/demo/cg-os/',
+    shippedAt: '2026-10-12',
+    bg: 'starfield',
+  },
+  {
     slug: 'mavisbeacon',
     title: 'Mavis Beacon Teaches Typing — 1987 Edition',
     description: 'A typing tutor in plain JavaScript. Twenty home-row lessons, timed tests, a falling-letter game and progress reports on a color-coded EGA keyboard.',
