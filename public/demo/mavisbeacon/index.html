@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Mavis Beacon Teaches Typing — browser recreation of the 1987 EGA classic."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23008080'/%3E%3Crect x='2' y='2' width='12' height='2' fill='%2300ffff'/%3E%3Crect x='2' y='4' width='12' height='1' fill='%23ffffff'/%3E%3Crect x='2' y='6' width='12' height='1' fill='%23ffffff' opacity='.7'/%3E%3Crect x='2' y='8' width='12' height='1' fill='%23ffffff' opacity='.5'/%3E%3Crect x='2' y='10' width='12' height='1' fill='%23ffff00'/%3E%3Crect x='2' y='12' width='12' height='1' fill='%23ff00ff'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Mavis Beacon Teaches Typing — 1987 Edition</title>
+  </head>
+  <body data-palette="ega-teal">
+    <!-- ============================================================
+         CRT OVERLAYS — scanlines + flicker
+         ============================================================ -->
+    <div class="crt-scanlines" aria-hidden="true"></div>
+    <div class="crt-flicker" aria-hidden="true"></div>
+    <div class="crt-vignette" aria-hidden="true"></div>
+
+    <!-- ============================================================
+         MONITOR — the EGA screen frame
+         ============================================================ -->
+    <div class="monitor">
+      <div class="monitor-inner">
+        <div class="screen" id="screen">
+
+          <!-- =========================== TITLE / BOOT =========================== -->
+          <section class="scene scene-boot" data-phase="boot">
+            <div class="boot-logo">
+              <div class="boot-mavis">
+                <!-- Pixel Mavis character -->
+                <svg viewBox="0 0 32 40" aria-hidden="true">
+                  <!-- hair (top) -->
+                  <rect x="9" y="2" width="14" height="2" fill="#1a0d05"/>
+                  <rect x="8" y="3" width="16" height="3" fill="#1a0d05"/>
+                  <rect x="9" y="5" width="14" height="2" fill="#2d1a0a"/>
+                  <!-- face -->
+                  <rect x="11" y="6" width="10" height="6" fill="#8b5a3c"/>
+                  <!-- eyes -->
+                  <rect x="12" y="8" width="2" height="2" fill="#ffffff"/>
+                  <rect x="18" y="8" width="2" height="2" fill="#ffffff"/>
+                  <rect x="13" y="9" width="1" height="1" fill="#1a0d05"/>
+                  <rect x="19" y="9" width="1" height="1" fill="#1a0d05"/>
+                  <!-- mouth -->
+                  <rect x="14" y="11" width="4" height="1" fill="#cc4040"/>
+                  <!-- earrings -->
+                  <rect x="10" y="10" width="1" height="2" fill="#ffd700"/>
+                  <rect x="21" y="10" width="1" height="2" fill="#ffd700"/>
+                  <!-- neck -->
+                  <rect x="14" y="12" width="4" height="2" fill="#6b3a1c"/>
+                  <!-- blouse (white) -->
+                  <rect x="12" y="14" width="8" height="8" fill="#ffffff"/>
+                  <!-- collar / v-neck -->
+                  <rect x="14" y="14" width="4" height="2" fill="#008b8b"/>
+                  <!-- blazer (navy) -->
+                  <rect x="9" y="15" width="3" height="11" fill="#000080"/>
+                  <rect x="20" y="15" width="3" height="11" fill="#000080"/>
+                  <rect x="12" y="16" width="8" height="1" fill="#000080"/>
+                  <!-- gold pin -->
+                  <rect x="11" y="18" width="1" height="2" fill="#ffd700"/>
+                  <rect x="20" y="18" width="1" height="2" fill="#ffd700"/>
+                  <!-- arms -->
+                  <rect x="8" y="22" width="2" height="6" fill="#000080"/>
+                  <rect x="22" y="22" width="2" height="6" fill="#000080"/>
+                  <!-- hands (on keyboard) -->
+                  <rect x="8" y="28" width="2" height="3" fill="#8b5a3c"/>
+                  <rect x="22" y="28" width="2" height="3" fill="#8b5a3c"/>
+                </svg>
+              </div>
+              <div class="boot-title">
+                <div class="boot-title-1">Mavis Beacon</div>
+                <div class="boot-title-2">Teaches Typing</div>
+                <div class="boot-title-3">— 1987 EDITION —</div>
+              </div>
+            </div>
+            <div class="boot-copyright">
+              <span>© 1987 The Software Toolworks · Recreational Software, Inc.</span>
+            </div>
+            <div class="boot-prompt">
+              <span class="cursor">▮</span> Press ENTER to begin
+            </div>
+          </section>
+
+          <!-- =========================== MAIN MENU =========================== -->
+          <section class="scene scene-menu hidden" data-phase="menu">
+            <div class="menu-header">
+              <div class="menu-title">Mavis Beacon — Main Menu</div>
+              <div class="menu-subtitle">Where would you like to start today?</div>
+            </div>
+            <div class="menu-grid">
+              <button class="menu-item" data-action="lessons" data-hotkey="1">
+                <div class="menu-num">1</div>
+                <div class="menu-text">
+                  <div class="menu-label">Lessons</div>
+                  <div class="menu-desc">Step-by-step typing curriculum</div>
+                </div>
+              </button>
+              <button class="menu-item" data-action="practice" data-hotkey="2">
+                <div class="menu-num">2</div>
+                <div class="menu-text">
+                  <div class="menu-label">Practice</div>
+                  <div class="menu-desc">Free typing on any text</div>
+                </div>
+              </button>
+              <button class="menu-item" data-action="tests" data-hotkey="3">
+                <div class="menu-num">3</div>
+                <div class="menu-text">
+                  <div class="menu-label">Tests</div>
+                  <div class="menu-desc">Timed 1, 3, or 5 minute tests</div>
+                </div>
+              </button>
+              <button class="menu-item" data-action="reports" data-hotkey="4">
+                <div class="menu-num">4</div>
+                <div class="menu-text">
+                  <div class="menu-label">Reports</div>
+                  <div class="menu-desc">Your progress and certificates</div>
+                </div>
+              </button>
+              <button class="menu-item" data-action="game" data-hotkey="5">
+                <div class="menu-num">5</div>
+                <div class="menu-text">
+                  <div class="menu-label">Game</div>
+                  <div class="menu-desc">Key-Board Hero — falling letters</div>
+                </div>
+              </button>
+              <button class="menu-item" data-action="options" data-hotkey="6">
+                <div class="menu-num">6</div>
+                <div class="menu-text">
+                  <div class="menu-label">Options</div>
+                  <div class="menu-desc">Sound, palette, goals</div>
+                </div>
+              </button>
+            </div>
+            <div class="menu-hint">
+              <span class="kbd">1-6</span> select &nbsp;·&nbsp;
+              <span class="kbd">ESC</span> back &nbsp;·&nbsp;
+              <span class="kbd">F10</span> menu
+            </div>
+          </section>
+
+          <!-- =========================== LESSONS OVERVIEW =========================== -->
+          <section class="scene scene-lessons hidden" data-phase="lessons">
+            <div class="panel">
+              <div class="panel-title">═══ Lesson Plan ═══</div>
+              <div class="lessons-list" id="lessons-list"></div>
+              <div class="panel-footer">
+                <span class="kbd">↑↓</span> move &nbsp;·&nbsp;
+                <span class="kbd">ENTER</span> start &nbsp;·&nbsp;
+                <span class="kbd">ESC</span> menu
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================== LESSON PLAY =========================== -->
+          <section class="scene scene-lesson hidden" data-phase="lesson">
+            <div class="lesson-header">
+              <div class="lesson-info">
+                <span class="lesson-num" id="lesson-num">Lesson 1</span>
+                <span class="lesson-title" id="lesson-title">Home Row: J and F</span>
+              </div>
+              <div class="lesson-instr" id="lesson-instr">
+                Keep your fingers on the home row. Press the highlighted key.
+              </div>
+            </div>
+
+            <div class="lesson-target" id="lesson-target" aria-live="polite">
+              <div class="target-key" id="target-key">J</div>
+              <div class="target-finger" id="target-finger">right index</div>
+            </div>
+
+            <div class="lesson-prompt" id="lesson-prompt"></div>
+            <div class="lesson-typed" id="lesson-typed"></div>
+
+            <div class="lesson-stats">
+              <div class="stat"><span class="stat-label">WPM</span><span class="stat-val" id="stat-wpm">0</span></div>
+              <div class="stat"><span class="stat-label">ACC</span><span class="stat-val" id="stat-acc">100%</span></div>
+              <div class="stat"><span class="stat-label">TIME</span><span class="stat-val" id="stat-time">0:00</span></div>
+              <div class="stat"><span class="stat-label">ERR</span><span class="stat-val" id="stat-err">0</span></div>
+              <div class="stat"><span class="stat-label">PROG</span><span class="stat-val" id="stat-prog">0/0</span></div>
+            </div>
+
+            <div class="lesson-feedback" id="lesson-feedback"></div>
+          </section>
+
+          <!-- =========================== PRACTICE =========================== -->
+          <section class="scene scene-practice hidden" data-phase="practice">
+            <div class="practice-header">
+              <span class="practice-title">Free Practice</span>
+              <span class="practice-hint">Type the text below. ESC to return.</span>
+            </div>
+            <div class="practice-text" id="practice-text"></div>
+            <div class="practice-stats">
+              <div class="stat"><span class="stat-label">WPM</span><span class="stat-val" id="prac-wpm">0</span></div>
+              <div class="stat"><span class="stat-label">ACC</span><span class="stat-val" id="prac-acc">100%</span></div>
+              <div class="stat"><span class="stat-label">TIME</span><span class="stat-val" id="prac-time">0:00</span></div>
+              <div class="stat"><span class="stat-label">ERR</span><span class="stat-val" id="prac-err">0</span></div>
+            </div>
+          </section>
+
+          <!-- =========================== TESTS OVERVIEW =========================== -->
+          <section class="scene scene-tests hidden" data-phase="tests">
+            <div class="panel">
+              <div class="panel-title">═══ Timed Tests ═══</div>
+              <div class="test-list" id="test-list"></div>
+              <div class="panel-footer">
+                <span class="kbd">1-3</span> pick &nbsp;·&nbsp;
+                <span class="kbd">ESC</span> menu
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================== TEST RUN =========================== -->
+          <section class="scene scene-test hidden" data-phase="test">
+            <div class="test-header">
+              <span class="test-title" id="test-title">1 Minute Test</span>
+              <span class="test-time" id="test-time">1:00</span>
+            </div>
+            <div class="test-prompt" id="test-prompt"></div>
+            <div class="test-typed" id="test-typed"></div>
+            <div class="test-stats">
+              <div class="stat"><span class="stat-label">WPM</span><span class="stat-val" id="test-wpm">0</span></div>
+              <div class="stat"><span class="stat-label">ACC</span><span class="stat-val" id="test-acc">100%</span></div>
+              <div class="stat"><span class="stat-label">ERR</span><span class="stat-val" id="test-err">0</span></div>
+              <div class="stat"><span class="stat-label">CHARS</span><span class="stat-val" id="test-chars">0</span></div>
+            </div>
+          </section>
+
+          <!-- =========================== RESULTS =========================== -->
+          <section class="scene scene-results hidden" data-phase="results">
+            <div class="results-card">
+              <div class="results-title" id="results-title">═══ Test Results ═══</div>
+              <div class="results-grid">
+                <div class="results-stat">
+                  <div class="results-num" id="results-wpm">0</div>
+                  <div class="results-label">words per minute</div>
+                </div>
+                <div class="results-stat">
+                  <div class="results-num" id="results-acc">100%</div>
+                  <div class="results-label">accuracy</div>
+                </div>
+                <div class="results-stat">
+                  <div class="results-num" id="results-err">0</div>
+                  <div class="results-label">errors</div>
+                </div>
+                <div class="results-stat">
+                  <div class="results-num" id="results-grade">F</div>
+                  <div class="results-label">grade</div>
+                </div>
+              </div>
+              <div class="results-message" id="results-message">
+                Keep practicing — you'll get there!
+              </div>
+              <div class="results-actions">
+                <button class="retro-btn" data-action="results-retry">Retry</button>
+                <button class="retro-btn" data-action="results-tests">Pick another</button>
+                <button class="retro-btn" data-action="results-menu">Main menu</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================== REPORTS =========================== -->
+          <section class="scene scene-reports hidden" data-phase="reports">
+            <div class="reports-grid">
+              <div class="report-card">
+                <div class="report-title">═══ Progress Chart ═══</div>
+                <canvas id="progress-canvas" width="540" height="180"></canvas>
+                <div class="report-legend">
+                  <span class="legend-item"><span class="dot dot-wpm"></span> WPM</span>
+                  <span class="legend-item"><span class="dot dot-acc"></span> Accuracy %</span>
+                </div>
+              </div>
+              <div class="report-card">
+                <div class="report-title">═══ History ═══</div>
+                <div class="report-table" id="history-table"></div>
+              </div>
+              <div class="report-card">
+                <div class="report-title">═══ Per-Key Errors ═══</div>
+                <div class="report-keys" id="report-keys"></div>
+              </div>
+              <div class="report-card">
+                <div class="report-title">═══ Goals ═══</div>
+                <div class="report-goals" id="report-goals"></div>
+              </div>
+            </div>
+            <div class="panel-footer">
+              <span class="kbd">ESC</span> menu &nbsp;·&nbsp;
+              <span class="kbd">R</span> reset stats
+            </div>
+          </section>
+
+          <!-- =========================== GAME =========================== -->
+          <section class="scene scene-game hidden" data-phase="game">
+            <div class="game-header">
+              <span class="game-title">Key-Board Hero</span>
+              <span class="game-score">Score: <b id="game-score">0</b></span>
+              <span class="game-lives">Lives: <b id="game-lives">♥♥♥</b></span>
+              <span class="game-time">Time: <b id="game-time">60</b>s</span>
+            </div>
+            <canvas id="game-canvas" width="700" height="280"></canvas>
+            <div class="game-overlay hidden" id="game-overlay">
+              <div class="game-overlay-title" id="game-overlay-title">Game Over</div>
+              <div class="game-overlay-score">Score: <span id="game-overlay-score">0</span></div>
+              <button class="retro-btn" data-action="game-retry">Play again</button>
+              <button class="retro-btn" data-action="game-menu">Main menu</button>
+            </div>
+            <div class="game-footer">
+              <span class="kbd">A-Z</span> shoot falling letters &nbsp;·&nbsp;
+              <span class="kbd">P</span> pause &nbsp;·&nbsp;
+              <span class="kbd">ESC</span> quit
+            </div>
+          </section>
+
+          <!-- =========================== OPTIONS =========================== -->
+          <section class="scene scene-options hidden" data-phase="options">
+            <div class="panel">
+              <div class="panel-title">═══ Options ═══</div>
+              <div class="options-list" id="options-list"></div>
+              <div class="panel-footer">
+                <span class="kbd">↑↓</span> move &nbsp;·&nbsp;
+                <span class="kbd">ENTER</span> toggle &nbsp;·&nbsp;
+                <span class="kbd">ESC</span> menu
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================== CERTIFICATE (bonus) =========================== -->
+          <section class="scene scene-cert hidden" data-phase="cert">
+            <div class="cert-card">
+              <div class="cert-border">
+                <div class="cert-corner cert-tl"></div>
+                <div class="cert-corner cert-tr"></div>
+                <div class="cert-corner cert-bl"></div>
+                <div class="cert-corner cert-br"></div>
+                <div class="cert-title">Certificate of Accomplishment</div>
+                <div class="cert-sub">This certifies that</div>
+                <div class="cert-name" id="cert-name">A Mavis Beacon Student</div>
+                <div class="cert-sub">has successfully completed</div>
+                <div class="cert-detail" id="cert-detail">All Lessons · 60 WPM · 95% accuracy</div>
+                <div class="cert-mavis">— Mavis Beacon —</div>
+              </div>
+              <div class="cert-actions">
+                <button class="retro-btn" data-action="cert-menu">Main menu</button>
+              </div>
+            </div>
+          </section>
+
+        </div><!-- /.screen -->
+
+        <!-- ============================================================
+             KEYBOARD — pixel-rendered QWERTY with finger zones
+             ============================================================ -->
+        <div class="keyboard" id="keyboard" aria-label="On-screen keyboard">
+          <div class="kb-row kb-row-fingers" aria-hidden="true">
+            <div class="finger-zone finger-pinky-l">L-Pinky</div>
+            <div class="finger-zone finger-ring-l">L-Ring</div>
+            <div class="finger-zone finger-mid-l">L-Middle</div>
+            <div class="finger-zone finger-index-l">L-Index</div>
+            <div class="finger-zone finger-thumb">Thumb</div>
+            <div class="finger-zone finger-index-r">R-Index</div>
+            <div class="finger-zone finger-mid-r">R-Middle</div>
+            <div class="finger-zone finger-ring-r">R-Ring</div>
+            <div class="finger-zone finger-pinky-r">R-Pinky</div>
+          </div>
+          <div class="kb-row kb-num">
+            <button class="key" data-key="`"><span>~</span>`</button>
+            <button class="key" data-key="1"><span>!</span>1</button>
+            <button class="key" data-key="2"><span>@</span>2</button>
+            <button class="key" data-key="3"><span>#</span>3</button>
+            <button class="key" data-key="4"><span>$</span>4</button>
+            <button class="key" data-key="5"><span>%</span>5</button>
+            <button class="key" data-key="6"><span>^</span>6</button>
+            <button class="key" data-key="7"><span>&amp;</span>7</button>
+            <button class="key" data-key="8"><span>*</span>8</button>
+            <button class="key" data-key="9"><span>(</span>9</button>
+            <button class="key" data-key="0"><span>)</span>0</button>
+            <button class="key" data-key="-"><span>_</span>-</button>
+            <button class="key" data-key="="><span>+</span>=</button>
+            <button class="key key-wide" data-key="Backspace">⌫ BKSP</button>
+          </div>
+          <div class="kb-row kb-q">
+            <button class="key key-tab" data-key="Tab">⇥ TAB</button>
+            <button class="key" data-key="q" data-finger="L-Pinky">Q</button>
+            <button class="key" data-key="w" data-finger="L-Ring">W</button>
+            <button class="key" data-key="e" data-finger="L-Middle">E</button>
+            <button class="key" data-key="r" data-finger="L-Index">R</button>
+            <button class="key" data-key="t" data-finger="L-Index">T</button>
+            <button class="key" data-key="y" data-finger="R-Index">Y</button>
+            <button class="key" data-key="u" data-finger="R-Index">U</button>
+            <button class="key" data-key="i" data-finger="R-Middle">I</button>
+            <button class="key" data-key="o" data-finger="R-Ring">O</button>
+            <button class="key" data-key="p" data-finger="R-Pinky">P</button>
+            <button class="key" data-key="["><span>{</span>[</button>
+            <button class="key" data-key="]"><span>}</span>]</button>
+            <button class="key" data-key="\\"><span>|</span>\</button>
+          </div>
+          <div class="kb-row kb-home">
+            <button class="key key-caps" data-key="CapsLock">CAPS</button>
+            <button class="key" data-key="a" data-finger="L-Pinky">A</button>
+            <button class="key" data-key="s" data-finger="L-Ring">S</button>
+            <button class="key" data-key="d" data-finger="L-Middle">D</button>
+            <button class="key" data-key="f" data-finger="L-Index">F</button>
+            <button class="key" data-key="g" data-finger="L-Index">G</button>
+            <button class="key" data-key="h" data-finger="R-Index">H</button>
+            <button class="key" data-key="j" data-finger="R-Index">J</button>
+            <button class="key" data-key="k" data-finger="R-Middle">K</button>
+            <button class="key" data-key="l" data-finger="R-Ring">L</button>
+            <button class="key" data-key=";"><span>:</span>;</button>
+            <button class="key" data-key="'"><span>"</span>'</button>
+            <button class="key key-enter" data-key="Enter">⏎ ENTER</button>
+          </div>
+          <div class="kb-row kb-bottom">
+            <button class="key key-shift" data-key="Shift">⇧ SHIFT</button>
+            <button class="key" data-key="z" data-finger="L-Pinky">Z</button>
+            <button class="key" data-key="x" data-finger="L-Ring">X</button>
+            <button class="key" data-key="c" data-finger="L-Middle">C</button>
+            <button class="key" data-key="v" data-finger="L-Index">V</button>
+            <button class="key" data-key="b" data-finger="L-Index">B</button>
+            <button class="key" data-key="n" data-finger="R-Index">N</button>
+            <button class="key" data-key="m" data-finger="R-Index">M</button>
+            <button class="key" data-key=","><span>&lt;</span>,</button>
+            <button class="key" data-key="."><span>&gt;</span>.</button>
+            <button class="key" data-key="/"><span>?</span>/</button>
+            <button class="key key-shift" data-key="Shift">⇧ SHIFT</button>
+          </div>
+          <div class="kb-row kb-bottom2">
+            <button class="key key-wide" data-key="Control">CTRL</button>
+            <button class="key" data-key="Meta">WIN</button>
+            <button class="key" data-key="Alt">ALT</button>
+            <button class="key key-space" data-key=" " data-finger="Thumb">&nbsp;&nbsp;&nbsp;SPACE&nbsp;&nbsp;&nbsp;</button>
+            <button class="key" data-key="Alt">ALT</button>
+            <button class="key" data-key="Meta">WIN</button>
+            <button class="key" data-key="Context">MENU</button>
+            <button class="key key-wide" data-key="Control">CTRL</button>
+          </div>
+        </div>
+
+        <!-- Status bar -->
+        <div class="status-bar">
+          <span class="status-left" id="status-left">READY</span>
+          <span class="status-center" id="status-center">F1 Help · F10 Menu</span>
+          <span class="status-right" id="status-right">©1987</span>
+        </div>
+      </div><!-- /.monitor-inner -->
+    </div><!-- /.monitor -->
+
+    <!-- ============================================================
+         MUTE TOGGLE + KEYBOARD LEGEND (modern conveniences)
+         ============================================================ -->
+    <div class="modern-hud">
+      <button id="mute-toggle" type="button" class="modern-btn">SOUND: ON</button>
+      <button id="palette-toggle" type="button" class="modern-btn">PALETTE: EGA</button>
+      <button id="reset-stats" type="button" class="modern-btn modern-btn-danger">RESET STATS</button>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
