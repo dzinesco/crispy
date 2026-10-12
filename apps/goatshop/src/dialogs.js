@@ -581,7 +581,7 @@ export function openShortcuts() {
       <li>D default colors · X swap · [ ] brush size</li>
       <li>Ctrl+Z undo · Ctrl+Alt+Z redo · Ctrl+T transform</li>
       <li>Ctrl+J duplicate · Ctrl+D deselect · Ctrl+Shift+I inverse</li>
-      <li>Ctrl+A all · Tab hide palettes · Space hand</li>
+      <li>Ctrl+A all · Ctrl+R rulers · Tab hide palettes · Space hand</li>
     </ul>`,
   });
 }

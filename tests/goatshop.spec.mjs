@@ -44,6 +44,15 @@ async function settle(page) {
   }));
 }
 
+async function setMenuCheck(page, menuId, itemId, want) {
+  await page.click(`[data-menu=${menuId}]`);
+  const entry = page.locator(`[data-menu-item="${itemId}"]`);
+  await entry.waitFor({ state: 'visible' });
+  const on = (await entry.innerText()).includes('✓');
+  if (on !== want) await entry.click();
+  else await page.click(`[data-menu=${menuId}]`);
+}
+
 async function menu(page, id, item) {
   await page.click(`[data-menu=${id}]`);
   const entry = page.locator(`[data-menu-item="${item}"]`);
@@ -113,6 +122,42 @@ async function main() {
   await menu(page, 'file', 'file.savePng');
   const download = await downloadPromise;
   assert.ok(download.suggestedFilename().endsWith('.png'), download.suggestedFilename());
+
+  await page.evaluate(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'r', ctrlKey: true, bubbles: true, cancelable: true,
+    }));
+  });
+  await settle(page);
+  assert.equal(await page.evaluate(() => window.goatshop.state.showRulers), false);
+  await setMenuCheck(page, 'view', 'view.rulers', true);
+  await page.waitForFunction(() => {
+    const ruler = document.querySelector('[data-ruler-x]');
+    if (!ruler || ruler.hidden) return false;
+    const box = ruler.getBoundingClientRect();
+    if (box.width < 40 || box.height < 8 || ruler.width < 40) return false;
+    const data = ruler.getContext('2d').getImageData(0, 0, ruler.width, ruler.height).data;
+    let dark = 0;
+    for (let i = 0; i < data.length; i += 16) {
+      if (data[i] < 40 && data[i + 1] < 40 && data[i + 2] < 40) dark += 1;
+    }
+    return dark > 4;
+  });
+
+  const ruler = await page.locator('[data-ruler-x]').boundingBox();
+  const canvasBox = await page.locator('[data-doc-canvas]').boundingBox();
+  assert.ok(ruler && canvasBox, 'ruler and canvas should be on screen');
+  await page.mouse.move(ruler.x + ruler.width * 0.45, ruler.y + ruler.height * 0.5);
+  await page.mouse.down();
+  await page.mouse.move(canvasBox.x + canvasBox.width * 0.4, canvasBox.y + Math.min(70, canvasBox.height * 0.35), { steps: 12 });
+  await page.mouse.up();
+  await settle(page);
+  const guides = await page.evaluate(() => window.goatshop.state.docs[0].guides.map((guide) => guide.axis));
+  assert.deepEqual(guides, ['h'], `expected one horizontal guide, got ${guides.join(',') || 'none'}`);
+
+  await menu(page, 'view', 'view.clearGuides');
+  await settle(page);
+  assert.equal(await page.evaluate(() => window.goatshop.state.docs[0].guides.length), 0);
 
   await context.close();
   await browser.close();

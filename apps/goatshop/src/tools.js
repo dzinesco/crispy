@@ -22,6 +22,7 @@ import {
   toolOpts,
   wandSelect,
 } from './engine/doc.js';
+import { snapOffset } from './guides.js';
 import {
   changed,
   clamp,
@@ -179,8 +180,10 @@ const tools = {
         dest.globalCompositeOperation = 'destination-out';
         dest.drawImage(doc.selection, 0, 0);
         dest.restore();
+        const bounds = opaqueBounds(doc.selection);
         doc.gesture = {
-          kind: 'float', layerId: layer.id, float, dx: 0, dy: 0, ox: p.x, oy: p.y, label: 'Move',
+          kind: 'float', layerId: layer.id, float, dx: 0, dy: 0, ox: p.x, oy: p.y,
+          bx: bounds.x, by: bounds.y, bw: bounds.w, bh: bounds.h, label: 'Move',
         };
       } else {
         doc.gesture = {
@@ -193,12 +196,20 @@ const tools = {
       const gesture = doc.gesture;
       if (!gesture) return;
       if (gesture.kind === 'float') {
-        gesture.dx = p.x - gesture.ox;
-        gesture.dy = p.y - gesture.oy;
+        let dx = p.x - gesture.ox;
+        let dy = p.y - gesture.oy;
+        dx = snapOffset(doc, gesture.bx + dx, gesture.bw, 'v') - gesture.bx;
+        dy = snapOffset(doc, gesture.by + dy, gesture.bh, 'h') - gesture.by;
+        gesture.dx = dx;
+        gesture.dy = dy;
       } else if (gesture.kind === 'nudge') {
         const layer = doc.layers.find((item) => item.id === gesture.layerId);
-        layer.x = Math.round(gesture.lx + (p.x - gesture.ox));
-        layer.y = Math.round(gesture.ly + (p.y - gesture.oy));
+        let x = gesture.lx + (p.x - gesture.ox);
+        let y = gesture.ly + (p.y - gesture.oy);
+        x = snapOffset(doc, x, doc.width, 'v');
+        y = snapOffset(doc, y, doc.height, 'h');
+        layer.x = Math.round(x);
+        layer.y = Math.round(y);
       }
       doc.flatDirty = true;
       requestRender();
@@ -1097,8 +1108,12 @@ function transformMove(doc, p, event) {
   const drag = tr.drag;
   if (!drag) return;
   if (drag.name === 'move') {
-    tr.x = drag.x + (p.x - drag.px);
-    tr.y = drag.y + (p.y - drag.py);
+    let x = drag.x + (p.x - drag.px);
+    let y = drag.y + (p.y - drag.py);
+    x = snapOffset(doc, x, drag.w, 'v');
+    y = snapOffset(doc, y, drag.h, 'h');
+    tr.x = x;
+    tr.y = y;
   } else if (drag.name === 'rot') {
     const cx = drag.x + drag.w / 2;
     const cy = drag.y + drag.h / 2;

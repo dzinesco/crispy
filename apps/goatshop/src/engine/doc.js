@@ -59,6 +59,9 @@ export const state = {
   },
   palettesHidden: false,
   showGrid: false,
+  showRulers: true,
+  snapGuides: true,
+  guideDrag: null,
   status: 'Ready',
   busy: false,
   cloneSource: null,
@@ -151,6 +154,7 @@ export function createDocument({
     qm: null,
     paths: [],
     activePathId: null,
+    guides: [],
     zoom: 1,
     panX: 16,
     panY: 16,
@@ -380,6 +384,7 @@ function capture(doc, dirty) {
       points: path.points.map((point) => ({ ...point })),
     })),
     activePathId: doc.activePathId,
+    guides: (doc.guides || []).map((guide) => ({ id: guide.id, axis: guide.axis, pos: guide.pos })),
     layers: doc.layers.map((layer) => {
       const prevLayer = prev?.layers.find((item) => item.id === layer.id);
       const isDirty = !prevLayer || dirty?.has(layer.id);
@@ -431,6 +436,9 @@ function restore(doc, entry) {
     points: path.points.map((point) => ({ ...point })),
   }));
   doc.activePathId = entry.activePathId || null;
+  doc.guides = Array.isArray(entry.guides)
+    ? entry.guides.map((guide) => ({ id: guide.id, axis: guide.axis, pos: guide.pos }))
+    : (doc.guides || []);
   doc.layers = entry.layers.map((layer) => ({
     ...layer,
     text: layer.text ? { ...layer.text } : null,
@@ -1074,11 +1082,28 @@ function resample(canvas, w, h, dx = 0, dy = 0) {
   return next;
 }
 
+function rotateGuide(guide, turns, w, h) {
+  if (turns === 2) return { ...guide, pos: guide.axis === 'v' ? w - guide.pos : h - guide.pos };
+  if (turns === 1) {
+    return guide.axis === 'v'
+      ? { ...guide, axis: 'h', pos: w - guide.pos }
+      : { ...guide, axis: 'v', pos: guide.pos };
+  }
+  return guide.axis === 'v'
+    ? { ...guide, axis: 'h', pos: guide.pos }
+    : { ...guide, axis: 'v', pos: h - guide.pos };
+}
+
 export function resizeImage(doc, width, height) {
   const w = clamp(Math.round(width), 1, 4096);
   const h = clamp(Math.round(height), 1, 4096);
   const sx = w / doc.width;
   const sy = h / doc.height;
+  if (doc.guides?.length) {
+    doc.guides = doc.guides.map((guide) => (
+      guide.axis === 'v' ? { ...guide, pos: guide.pos * sx } : { ...guide, pos: guide.pos * sy }
+    ));
+  }
   for (const layer of doc.layers) {
     const next = createCanvas(w, h);
     const ctx = getCtx(next);
@@ -1109,6 +1134,11 @@ export function resizeCanvas(doc, width, height, anchor = 'center') {
   const ay = anchor.includes('n') ? 0 : anchor.includes('s') ? 1 : 0.5;
   const dx = Math.round((w - doc.width) * ax);
   const dy = Math.round((h - doc.height) * ay);
+  if (doc.guides?.length) {
+    doc.guides = doc.guides.map((guide) => (
+      guide.axis === 'v' ? { ...guide, pos: guide.pos + dx } : { ...guide, pos: guide.pos + dy }
+    ));
+  }
   for (const layer of doc.layers) {
     layer.canvas = resample(layer.canvas, w, h, dx + layer.x, dy + layer.y);
     layer.x = 0;
@@ -1152,6 +1182,12 @@ function transformDoc(doc, nw, nh, draw) {
 }
 
 export function rotateDoc(doc, turns) {
+  const w = doc.width;
+  const h = doc.height;
+  const quarter = ((turns % 4) + 4) % 4;
+  if (quarter && doc.guides?.length) {
+    doc.guides = doc.guides.map((guide) => rotateGuide(guide, quarter, w, h));
+  }
   const swap = Math.abs(turns) === 1;
   const nw = swap ? doc.height : doc.width;
   const nh = swap ? doc.width : doc.height;
@@ -1165,6 +1201,15 @@ export function rotateDoc(doc, turns) {
 }
 
 export function flipDoc(doc, axis) {
+  const w = doc.width;
+  const h = doc.height;
+  if (doc.guides?.length) {
+    doc.guides = doc.guides.map((guide) => {
+      if (axis === 'h' && guide.axis === 'v') return { ...guide, pos: w - guide.pos };
+      if (axis === 'v' && guide.axis === 'h') return { ...guide, pos: h - guide.pos };
+      return guide;
+    });
+  }
   transformDoc(doc, doc.width, doc.height, (ctx, src, w, h) => {
     resetCtx(ctx);
     if (axis === 'h') {
@@ -1185,6 +1230,11 @@ export function cropTo(doc, rect) {
   y = clamp(Math.round(y), 0, doc.height - 1);
   w = clamp(Math.round(w), 1, doc.width - x);
   h = clamp(Math.round(h), 1, doc.height - y);
+  if (doc.guides?.length) {
+    doc.guides = doc.guides.map((guide) => (
+      guide.axis === 'v' ? { ...guide, pos: guide.pos - x } : { ...guide, pos: guide.pos - y }
+    ));
+  }
   for (const layer of doc.layers) {
     const next = createCanvas(w, h);
     getCtx(next).drawImage(layer.canvas, layer.x - x, layer.y - y);
