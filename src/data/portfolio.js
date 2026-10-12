@@ -13,6 +13,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'mavisbeacon',
+    title: 'Mavis Beacon Teaches Typing — 1987 Edition',
+    description: 'A typing tutor in plain JavaScript. Twenty home-row lessons, timed tests, a falling-letter game and progress reports on a color-coded EGA keyboard.',
+    tags: ['Retro', 'Browser', 'Education'],
+    image: '/images/portfolio/mavisbeacon.png',
+    imageAlt: 'Mavis Beacon Lesson 1 of 20: the F key highlighted in magenta, the jjj fff drill half typed in green, 46 WPM at 100% accuracy, above a finger-colored on-screen keyboard',
+    demoHref: '/demo/mavisbeacon/',
+    shippedAt: '2026-10-12',
+    bg: 'starfield',
+  },
+  {
     slug: 'geogoated',
     title: 'GeoGoated — GeoCities, Rebuilt',
     description: 'A working GeoCities clone. Sign up, claim your ~handle, and drag-and-drop a homepage with marquees, hit counters, guestbooks and under-construction signs.',
