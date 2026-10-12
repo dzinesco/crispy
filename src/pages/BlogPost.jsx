@@ -19,9 +19,9 @@ export default function BlogPost() {
     );
   }
 
-  const html = marked.parse(post.post.body_md || '');
+  const html = marked.parse(post.post.body_md || '').replace(/<img /g, '<img loading="lazy" decoding="async" ');
   return (
-    <article className="pw">
+    <article className="pw blog-read">
       <Seo title={post.post.title} description={post.post.excerpt} path={`/blog/${post.post.slug}`} />
       <p className="pixel"><Link to="/blog">Blog</Link></p>
       <h1 className="pw-post-title">{post.post.title}</h1>
@@ -35,6 +35,9 @@ export default function BlogPost() {
             })}
           </time>
         </p>
+      )}
+      {post.post.cover_image && (
+        <img className="blog-cover" src={post.post.cover_image} alt={`Screenshot: ${post.post.title}`} width="1280" height="800" decoding="async" />
       )}
       {post.post.excerpt && <p className="pw-lead">{post.post.excerpt}</p>}
       <div className="prose-cg" dangerouslySetInnerHTML={{ __html: html }} />
