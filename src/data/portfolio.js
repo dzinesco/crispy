@@ -13,6 +13,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'dusknet',
+    title: 'DuskNet BBS',
+    description: 'A late-90s bulletin board in plain JavaScript. Five boards, 25+ seeded threads, BBCode, quote-to-reply, sticky and locked threads, and an LED hit counter. Pick a handle and post.',
+    tags: ['Retro', 'Browser', 'Community'],
+    image: '/images/portfolio/dusknet.png',
+    imageAlt: 'The DuskNet BBS home page: a neon DUSKNET BBS logo with an LED calls counter, Home, Boards, Online, Staff and Help buttons, and Enter the Boards, Start a New Thread and See Who\'s Online buttons above the latest threads',
+    demoHref: '/demo/dusknet/',
+    shippedAt: '2026-10-12',
+    bg: 'starfield',
+  },
+  {
     slug: 'cg-os',
     title: 'CG-OS — A Full Windows 98 Desktop',
     description: 'A whole Windows 98 desktop in plain JavaScript. Boot it, drag windows around, and open Word, Excel, Paint, Minesweeper, Solitaire, Winamp and more from the Start menu.',

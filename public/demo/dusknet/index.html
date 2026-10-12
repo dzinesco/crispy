@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="DUSKNET BBS — A 90s style threaded message board with cyberdelic flair." />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23120a24'/%3E%3Crect x='2' y='2' width='12' height='2' fill='%2300f6ff'/%3E%3Crect x='2' y='5' width='12' height='1' fill='%23ff2bd6'/%3E%3Crect x='4' y='9' width='8' height='1' fill='%2300f6ff'/%3E%3Crect x='4' y='11' width='6' height='1' fill='%23ff2bd6'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700;800&family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>DUSKNET BBS — Welcome</title>
+  </head>
+  <body>
+    <!-- Tiled wallpaper layers -->
+    <div class="wallpaper" aria-hidden="true"></div>
+    <div class="wallpaper-glow" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <div class="frame">
+      <!-- =================== Marquee strip =================== -->
+      <div class="marquee-strip" aria-hidden="true">
+        <div class="marquee-track" id="marquee-track">
+          <span class="m-item">★ WELCOME TO DUSKNET BBS · est. 1996 ★</span>
+          <span class="m-item">12 ACTIVE CALLERS ★</span>
+          <span class="m-item">LATEST CALLER: xX_Ph4nt0m_Xx ★</span>
+          <span class="m-item">SYSOP ONLINE: cyberangel ★</span>
+          <span class="m-item">SERVER UPTIME: 47d 13h ★</span>
+          <span class="m-item">NOW STREAMING ON THE MODEM: The Prodigy — Firestarter ★</span>
+          <span class="m-item">NEW POSTS IN MP3s &amp; MEDIA BOARD ★</span>
+          <span class="m-item">REMINDER: BE COOL ON THE BBS ★</span>
+          <span class="m-item">★ WELCOME TO DUSKNET BBS · est. 1996 ★</span>
+          <span class="m-item">12 ACTIVE CALLERS ★</span>
+          <span class="m-item">LATEST CALLER: xX_Ph4nt0m_Xx ★</span>
+          <span class="m-item">SYSOP ONLINE: cyberangel ★</span>
+          <span class="m-item">SERVER UPTIME: 47d 13h ★</span>
+          <span class="m-item">NOW STREAMING ON THE MODEM: The Prodigy — Firestarter ★</span>
+          <span class="m-item">NEW POSTS IN MP3s &amp; MEDIA BOARD ★</span>
+          <span class="m-item">REMINDER: BE COOL ON THE BBS ★</span>
+        </div>
+      </div>
+
+      <!-- =================== Header banner =================== -->
+      <header class="hud">
+        <div class="logo-block">
+          <h1 class="logo-title" aria-label="DUSKNET BBS">DUSKNET&nbsp;BBS</h1>
+          <p class="logo-sub">BULLETIN&nbsp;BOARD&nbsp;SYSTEM</p>
+          <p class="logo-meta">est. 1996 · v1.97 · sysop: cyberangel</p>
+          <pre class="logo-art" aria-hidden="true">+-----------------------------------+
+|   > ENTER > POST > CHAT > LOG     |
+|   sysop: cyberangel  v1.97 final  |
++-----------------------------------+</pre>
+        </div>
+
+        <div class="hud-meta">
+          <div class="led-counter" aria-label="visitor counter">
+            <span class="led-label">CALLS</span>
+            <span class="led-cells" id="hit-digits"></span>
+          </div>
+          <div class="sys-stats">
+            <div><span class="stat-key">USERS ON:</span> <span class="stat-val" id="stat-users">—</span></div>
+            <div><span class="stat-key">THREADS:</span> <span class="stat-val" id="stat-threads">—</span></div>
+            <div><span class="stat-key">POSTS:</span> <span class="stat-val" id="stat-posts">—</span></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =================== Nav rail =================== -->
+      <nav class="nav-rail">
+        <a href="#/" class="nav-btn" data-route="home">⌂ HOME</a>
+        <a href="#/boards" class="nav-btn" data-route="boards">▤ BOARDS</a>
+        <a href="#/online" class="nav-btn" data-route="online">◉ ONLINE</a>
+        <a href="#/staff" class="nav-btn" data-route="staff">★ STAFF</a>
+        <a href="#/help" class="nav-btn" data-route="help">? HELP</a>
+        <span class="rail-spacer"></span>
+        <span class="handle-pill" id="handle-pill" tabindex="0" role="button">Sign In ▾</span>
+      </nav>
+
+      <!-- =================== Routed views =================== -->
+      <main id="app" class="app-stage"></main>
+
+      <!-- =================== Webring footer =================== -->
+      <section class="webring" aria-label="Webring awards">
+        <span class="wr-label">▶ MEMBER OF:</span>
+        <div class="badge" tabindex="0" title="Cool Site of the Day">
+          <div class="badge-top">COOL</div>
+          <div class="badge-bot">SITE 97</div>
+        </div>
+        <div class="badge cyan" tabindex="0" title="Best of the Web">
+          <div class="badge-top">BEST OF</div>
+          <div class="badge-bot">WWW</div>
+        </div>
+        <div class="badge amber" tabindex="0" title="Y2K Ready">
+          <div class="badge-top">Y2K</div>
+          <div class="badge-bot">READY</div>
+        </div>
+        <div class="badge lime" tabindex="0" title="DUSKNET Ring">
+          <div class="badge-top">DUSKNET</div>
+          <div class="badge-bot">RING</div>
+        </div>
+        <div class="badge rose" tabindex="0" title="HTML 4.0">
+          <div class="badge-top">HTML</div>
+          <div class="badge-bot">4.0</div>
+        </div>
+        <div class="badge fudge" tabindex="0" title="Made with Notepad">
+          <div class="badge-top">NOTEPAD</div>
+          <div class="badge-bot">POWERED</div>
+        </div>
+        <span class="wr-trailer">| prev | random | next |</span>
+      </section>
+
+      <footer class="underfoot">
+        <div class="uc-stripe" aria-hidden="true">
+          <span class="uc-icon">🚧</span>
+          <span class="uc-stripe-text">UNDER CONSTRUCTION · LAST UPDATED 11/14/1998 · CHECK BACK SOON</span>
+          <span class="uc-icon">🚧</span>
+        </div>
+        <div class="disclaim">
+          <p>Best viewed at <b>800×600</b> resolution with Netscape Navigator 4 or Internet Explorer 5.</p>
+          <p>© 1996–1999 DUSKNET BBS — sysop: <b>cyberangel</b> — staff: NeoTerra, ctrl-alt-del, omega_red</p>
+          <p>
+            All handles are pseudonyms. No real BBS, just vibes.
+            <a href="#/help">Read the rules</a> before posting.
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- =================== Modal root =================== -->
+    <div id="modal-root" class="modal-root" hidden>
+      <div class="modal-backdrop" data-modal-close></div>
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-titlebar">
+          <span id="modal-title">Sign In to DUSKNET</span>
+          <button class="modal-close" data-modal-close aria-label="close">×</button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+    </div>
+
+    <!-- =================== Toast =================== -->
+    <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
