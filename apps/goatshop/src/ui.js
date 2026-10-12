@@ -55,6 +55,20 @@ import {
   undo,
 } from './engine/doc.js';
 import { hasSession, openImageFile, openSample, restoreSession, saveGoat, saveJpeg, savePng, scheduleAutosave } from './engine/io.js';
+import {
+  RULER,
+  bindRuler,
+  clearGuides,
+  drawGuides,
+  drawRulers,
+  guideCursor,
+  guidePointerDown,
+  guidePointerMove,
+  guidePointerUp,
+  loadViewPrefs,
+  toggleRulers,
+  toggleSnap,
+} from './guides.js';
 import { TOOL_BUTTONS, icon } from './icons.js';
 import {
   actualPixels,
@@ -98,6 +112,7 @@ let historySig = '';
 const antPats = [];
 
 export function mount() {
+  loadViewPrefs();
   const app = document.getElementById('app');
   app.innerHTML = `
     <header class="titlebar"><span class="goat-mark" aria-hidden="true"></span><span>Goatshop 5.0</span><a href="/">crispygoat.com</a></header>
@@ -179,6 +194,9 @@ const commands = {
   'view.zoomOut': () => { const d = activeDoc(); if (d) stepZoom(d, -1); },
   'view.fit': () => { const d = activeDoc(); if (d) fitDoc(d); },
   'view.actual': () => { const d = activeDoc(); if (d) actualPixels(d); },
+  'view.rulers': () => toggleRulers(),
+  'view.snapGuides': () => toggleSnap(),
+  'view.clearGuides': () => clearGuides(),
   'view.grid': () => { state.showGrid = !state.showGrid; changed(); },
   'window.reset': () => resetPanels(),
   'help.about': openAbout,
@@ -294,6 +312,10 @@ function menuDef() {
       item('view.fit', 'Fit on Screen', 'Ctrl+0'),
       item('view.actual', 'Actual Pixels', 'Ctrl+1'),
       { sep: true },
+      { id: 'view.rulers', label: 'Rulers', accel: 'Ctrl+R', checked: state.showRulers },
+      { id: 'view.snapGuides', label: 'Snap to Guides', checked: state.snapGuides },
+      { id: 'view.clearGuides', label: 'Clear Guides', enabled: () => (activeDoc()?.guides?.length || 0) > 0 },
+      { sep: true },
       { id: 'view.grid', label: 'Show Grid', accel: "Ctrl+'" },
     ] },
     { id: 'window', label: 'Window', items: [
@@ -325,7 +347,7 @@ function buildMenus() {
       event.stopPropagation();
       const open = document.querySelector(`.menu-pop[data-menu-pop="${menu.id}"]`);
       closeMenus();
-      if (!open) showMenu(menu, btn);
+      if (!open) showMenu(menuDef().find((item) => item.id === menu.id), btn);
     });
     bar.append(btn);
   }
@@ -354,7 +376,9 @@ function menuNode(item) {
   el.className = 'menu-item';
   el.dataset.menuItem = item.id;
   if (item.enabled && !item.enabled()) el.disabled = true;
-  el.innerHTML = `<span>${item.label}</span><em>${item.accel || (item.children ? '▸' : '')}</em>`;
+  if (item.checked) el.classList.add('checked');
+  const mark = item.checked ? '✓ ' : '';
+  el.innerHTML = `<span>${mark}${item.label}</span><em>${item.accel || (item.children ? '▸' : '')}</em>`;
   if (item.children) {
     const open = () => showSub(el, item.children);
     el.addEventListener('mouseenter', open);
@@ -644,6 +668,11 @@ function bindOptions(root) {
 
 function sync() {
   const doc = activeDoc();
+  const ruler = state.showRulers ? `${RULER}px` : '0px';
+  if (document.documentElement.style.getPropertyValue('--ruler') !== ruler) {
+    document.documentElement.style.setProperty('--ruler', ruler);
+    requestRender();
+  }
   document.querySelectorAll('.tool').forEach((btn) => btn.classList.toggle('on', btn.dataset.tool === state.tool));
   document.querySelector('[data-slot=fg]').style.background = state.fg;
   document.querySelector('[data-slot=bg]').style.background = state.bg;
@@ -704,6 +733,8 @@ function syncWindows() {
     el.style.zIndex = String(doc.win.z);
     el.classList.toggle('active', doc.id === state.activeId);
     el.querySelector('.doc-name').textContent = `${doc.name}${doc.dirty ? ' *' : ''} @ ${Math.round(doc.zoom * 100)}%`;
+    el.querySelector('.doc-body')?.classList.toggle('show-rulers', !!state.showRulers);
+    for (const node of el.querySelectorAll('[data-ruler]')) node.hidden = !state.showRulers;
   }
 }
 
@@ -711,16 +742,29 @@ function buildWindow(doc) {
   const el = document.createElement('section');
   el.className = 'docwin';
   el.dataset.docId = doc.id;
-  el.innerHTML = `<header class="doc-title"><span class="doc-name"></span><button type="button" data-win-close aria-label="Close">×</button></header><div class="doc-body"><canvas data-doc-canvas></canvas></div><i class="doc-resize"></i>`;
-  const canvas = el.querySelector('canvas');
+  const rulerHidden = state.showRulers ? '' : ' hidden';
+  el.innerHTML = `<header class="doc-title"><span class="doc-name"></span><button type="button" data-win-close aria-label="Close">×</button></header><div class="doc-body${state.showRulers ? ' show-rulers' : ''}"><div class="ruler-corner" data-ruler${rulerHidden}></div><canvas class="ruler-x" data-ruler data-ruler-x${rulerHidden}></canvas><canvas class="ruler-y" data-ruler data-ruler-y${rulerHidden}></canvas><canvas data-doc-canvas></canvas></div><i class="doc-resize"></i>`;
+  const canvas = el.querySelector('[data-doc-canvas]');
   doc.view = canvas;
+  bindRuler(doc, el.querySelector('[data-ruler-x]'), 'h');
+  bindRuler(doc, el.querySelector('[data-ruler-y]'), 'v');
   canvas.addEventListener('pointerdown', (event) => {
     if (state.activeId !== doc.id) focusDoc(doc.id);
+    if (guidePointerDown(doc, event)) {
+      canvas.setPointerCapture(event.pointerId);
+      return;
+    }
     canvas.setPointerCapture(event.pointerId);
     onPointerDown(event);
   });
-  canvas.addEventListener('pointermove', onPointerMove);
-  canvas.addEventListener('pointerup', onPointerUp);
+  canvas.addEventListener('pointermove', (event) => {
+    if (guidePointerMove(doc, event)) return;
+    onPointerMove(event);
+  });
+  canvas.addEventListener('pointerup', (event) => {
+    if (guidePointerUp(doc)) return;
+    onPointerUp(event);
+  });
   canvas.addEventListener('dblclick', (event) => {
     if (doc.crop) applyCrop();
     else onDoubleClick(event);
@@ -926,15 +970,13 @@ function renderFrame() {
 function drawDoc(doc) {
   const canvas = doc.view;
   if (!canvas) return;
-  const body = canvas.parentElement;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const w = Math.max(1, body.clientWidth);
-  const h = Math.max(1, body.clientHeight);
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  if (w < 2 || h < 2) return;
   if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
-    canvas.style.width = `${w}px`;
-    canvas.style.height = `${h}px`;
   }
   const ctx = canvas.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -980,7 +1022,9 @@ function drawDoc(doc) {
   }
   drawOverlay(ctx, doc);
   if (doc.channel !== 'rgb') tintChannel(canvas, doc.channel);
-  canvas.style.cursor = currentTool().cursor || 'crosshair';
+  drawGuides(ctx, doc, w, h);
+  drawRulers(doc);
+  canvas.style.cursor = guideCursor(doc, doc.cursor) || currentTool().cursor || 'crosshair';
 }
 
 let checkerPat;

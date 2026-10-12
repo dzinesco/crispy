@@ -54,6 +54,7 @@ export async function serializeDoc(doc) {
     height: doc.height,
     resolution: doc.resolution,
     activeId: doc.activeId,
+    guides: (doc.guides || []).map((guide) => ({ id: guide.id, axis: guide.axis, pos: guide.pos })),
     layers,
   };
 }
@@ -127,6 +128,10 @@ export async function openGoatText(text, filename) {
     draw(created) {
       created.layers = built;
       created.activeId = built.some((layer) => layer.id === data.activeId) ? data.activeId : built.at(-1).id;
+      created.guides = (Array.isArray(data.guides) ? data.guides : []).flatMap((guide, index) => {
+        if (!guide || (guide.axis !== 'h' && guide.axis !== 'v') || !Number.isFinite(Number(guide.pos))) return [];
+        return [{ id: String(guide.id || `g${index + 1}`), axis: guide.axis, pos: Number(guide.pos) }];
+      });
     },
   });
 }

@@ -28,6 +28,7 @@ import {
   nudgeBrush,
   stepZoom,
 } from './tools.js';
+import { cancelGuideDrag, toggleRulers } from './guides.js';
 import { cycleVariant, mount } from './ui.js';
 
 const TOOL_KEYS = {
@@ -70,6 +71,7 @@ function onKeyDown(event) {
     }
     const doc = activeDoc();
     if (doc?.crop) doc.crop = null;
+    cancelGuideDrag();
     cancelGesture(doc);
     event.preventDefault();
     return;
@@ -107,6 +109,7 @@ function onKeyDown(event) {
   if (ctrl && key === '-') { const d = activeDoc(); if (d) stepZoom(d, -1); event.preventDefault(); return; }
   if (ctrl && key === '0') { const d = activeDoc(); if (d) fitDoc(d); event.preventDefault(); return; }
   if (ctrl && key === '1') { const d = activeDoc(); if (d) actualPixels(d); event.preventDefault(); return; }
+  if (ctrl && key === 'r') { toggleRulers(); event.preventDefault(); return; }
   if (event.key === 'Tab') {
     state.palettesHidden = !state.palettesHidden;
     changed();
