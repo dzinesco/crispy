@@ -13,6 +13,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'geogoated',
+    title: 'GeoGoated — GeoCities, Rebuilt',
+    description: 'A working GeoCities clone. Sign up, claim your ~handle, and drag-and-drop a homepage with marquees, hit counters, guestbooks and under-construction signs.',
+    tags: ['Retro', 'Web App', 'Next.js'],
+    image: '/images/portfolio/geogoated.png',
+    imageAlt: 'The GeoGoated homepage: a purple Welcome to crispygoat banner with Sign up free and Browse the directory buttons, the newest member sites, and Y2K feature cards',
+    demoHref: '/geogoated/',
+    shippedAt: '2026-10-12',
+    bg: 'starfield',
+  },
+  {
     slug: 'doom',
     title: 'DOOM — Web Edition',
     description: 'A raycast first-person shooter in plain JavaScript. WASD to move, mouse to look, click to fire through E1M1 with a pistol and a CRT glow.',
