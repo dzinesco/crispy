@@ -1023,49 +1023,6 @@ footer a:visited,
   color: #fff;
 }
 
-.marquee {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  background: #101014;
-  color: #fff;
-  padding-right: 8px;
-}
-.marquee-viewport {
-  overflow: hidden;
-  flex: 1;
-  min-width: 0;
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: pw-marquee 48s linear infinite;
-}
-.marquee-track span {
-  padding-right: 2rem;
-  font-size: 15px;
-  line-height: 44px;
-  white-space: nowrap;
-}
-.marquee-track.is-still {
-  animation: none;
-}
-.marquee-pause {
-  flex: none;
-  min-height: 36px;
-  border: 1px solid #fff;
-  background: #101014;
-  color: #fff;
-  padding: 0 12px;
-  font-size: 13px;
-  font-weight: 600;
-}
-@keyframes pw-marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
 .pw {
   width: min(960px, 100%);
   margin: 0 auto;
@@ -1601,7 +1558,6 @@ a.b88:visited .is-magenta { color: #ff8ad4; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track,
   .blinkie,
   .song-bars span {
     animation: none !important;
