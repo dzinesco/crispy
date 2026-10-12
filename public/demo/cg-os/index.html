@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#008080" />
+    <meta
+      name="description"
+      content="Crispy Goat OS — a living Windows 98-style desktop environment that runs in the browser. Drag, click, and play."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23008080'/%3E%3Crect x='3' y='3' width='10' height='10' fill='%23c0c0c0' stroke='%23fff' stroke-width='.5'/%3E%3Crect x='3' y='3' width='10' height='2' fill='%23ff0000'/%3E%3Ctext x='8' y='12' font-size='6' font-family='monospace' fill='%23000' text-anchor='middle'%3ECG%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&family=VT323&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Crispy Goat OS</title>
+  </head>
+  <body>
+    <!-- ===================== BOOT SEQUENCE ===================== -->
+    <div id="boot" class="boot" data-stage="bios">
+      <div class="boot-stage" data-stage-screen="bios">
+        <pre class="boot-text" id="boot-bios"></pre>
+      </div>
+      <div class="boot-stage boot-splash" data-stage-screen="splash" hidden>
+        <div class="boot-splash-inner">
+          <div class="boot-flag">
+            <span class="boot-flag-stripe"></span>
+            <span class="boot-flag-stripe"></span>
+            <span class="boot-flag-stripe"></span>
+            <span class="boot-flag-stripe"></span>
+          </div>
+          <div class="boot-splash-name">
+            Crispy&nbsp;Goat&nbsp;<sup>OS</sup>
+          </div>
+          <div class="boot-splash-tag">Windows&nbsp;Edition</div>
+          <div class="boot-splash-build" id="boot-splash-build">
+            Build 98.012345-OS
+          </div>
+          <div class="boot-splash-bar"><div class="boot-splash-fill"></div></div>
+          <div class="boot-splash-hint">Starting Crispy Goat OS&hellip;</div>
+        </div>
+      </div>
+      <div class="boot-stage boot-loading" data-stage-screen="loading" hidden>
+        <div class="boot-loading-list" id="boot-loading-list"></div>
+      </div>
+      <div class="boot-stage boot-login" data-stage-screen="login" hidden>
+        <div class="boot-login-window">
+          <div class="boot-login-title">
+            <span class="boot-login-flag"></span>
+            <span>Welcome to Crispy Goat OS</span>
+          </div>
+          <div class="boot-login-body">
+            <div class="boot-login-avatar"></div>
+            <div class="boot-login-fields">
+              <div class="boot-login-user">Guest</div>
+              <div class="boot-login-pw-row">
+                <input
+                  id="boot-login-pw"
+                  class="boot-login-pw"
+                  type="password"
+                  placeholder="(no password — press Enter)"
+                />
+                <button id="boot-login-go" class="boot-login-ok" type="button">
+                  OK
+                </button>
+                <button
+                  id="boot-login-cancel"
+                  class="boot-login-cancel"
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+              <div class="boot-login-tip">
+                <label
+                  ><input type="checkbox" id="boot-skip" /> Don't show this
+                  again</label
+                >
+                <button id="boot-skip-btn" class="boot-login-skip" type="button">
+                  Skip boot screens
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== DESKTOP ===================== -->
+    <main id="desktop" class="desktop" hidden>
+      <!-- desktop icons container -->
+      <div id="desktop-icons" class="desktop-icons"></div>
+
+      <!-- right-click menu -->
+      <div id="context-menu" class="ctx-menu" hidden></div>
+
+      <!-- selection rectangle -->
+      <div id="selection-rect" class="selection-rect" hidden></div>
+
+      <!-- ===================== TASKBAR ===================== -->
+      <div id="taskbar" class="taskbar">
+        <button id="start-btn" class="start-btn" type="button" aria-haspopup="menu">
+          <span class="start-btn-flag" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span class="start-btn-text">Start</span>
+        </button>
+
+        <div id="taskbar-buttons" class="taskbar-buttons" role="tablist"></div>
+
+        <div class="taskbar-tray">
+          <button
+            id="tray-clipboard"
+            class="tray-icon"
+            title="Clipboard"
+            type="button"
+          >
+            <span class="tray-icon-glyph">✄</span>
+          </button>
+          <button
+            id="tray-volume"
+            class="tray-icon"
+            title="Volume"
+            type="button"
+          >
+            <span class="tray-icon-glyph">🔊</span>
+          </button>
+          <button
+            id="tray-network"
+            class="tray-icon"
+            title="Network"
+            type="button"
+          >
+            <span class="tray-icon-glyph">🛜</span>
+          </button>
+          <div id="tray-clock" class="tray-clock" aria-live="off">--:--</div>
+        </div>
+      </div>
+
+      <!-- ===================== START MENU ===================== -->
+      <div id="start-menu" class="start-menu" hidden role="menu">
+        <div class="start-menu-side">
+          <div class="start-menu-side-inner">
+            <span class="start-menu-side-text">Crispy</span>
+            <span class="start-menu-side-text">Goat</span>
+            <span class="start-menu-side-text">OS</span>
+          </div>
+        </div>
+        <div class="start-menu-body" id="start-menu-body"></div>
+      </div>
+
+      <!-- ===================== WINDOW HOST ===================== -->
+      <div id="window-host" class="window-host"></div>
+    </main>
+
+    <!-- ===================== CLIPBOARD PEEK ===================== -->
+    <div id="clipboard-peek" class="clipboard-peek" hidden>
+      <div class="clipboard-peek-title">
+        Clipboard
+        <button id="clipboard-close" class="clipboard-peek-close" type="button">
+          ×
+        </button>
+      </div>
+      <pre id="clipboard-content" class="clipboard-peek-content"></pre>
+    </div>
+
+    <!-- Scripts: load in dependency order -->
+    <script src="js/clipboard.js"></script>
+    <script src="js/fs.js"></script>
+    <script src="js/persistence.js"></script>
+    <script src="js/wm.js"></script>
+    <script src="js/boot.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/apps/notepad.js"></script>
+    <script src="js/apps/calculator.js"></script>
+    <script src="js/apps/paint.js"></script>
+    <script src="js/apps/minesweeper.js"></script>
+    <script src="js/apps/solitaire.js"></script>
+    <script src="js/apps/winamp.js"></script>
+    <script src="js/apps/explorer.js"></script>
+    <script src="js/apps/doom-stub.js"></script>
+    <script src="js/apps/ipod-stub.js"></script>
+    <script src="js/apps/lotus-stub.js"></script>
+    <script src="js/apps/about.js"></script>
+    <script src="js/office-chrome.js"></script>
+    <script src="js/apps/word.js"></script>
+    <script src="js/apps/excel.js"></script>
+    <script src="js/apps/powerpoint.js"></script>
+    <script src="js/apps/outlook.js"></script>
+    <script src="js/apps.js"></script>
+    <script src="js/desktop.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
