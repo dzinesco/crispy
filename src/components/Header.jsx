@@ -5,6 +5,8 @@ import Mark from './Mark.jsx';
 const links = [
   { to: '/', label: 'Home', end: true },
   { to: '/portfolio', label: 'Apps' },
+  // External app route served by nginx (Next.js on pm2), so a plain <a>.
+  { href: '/geogoated/', label: 'GeoGoated' },
   { to: '/blog', label: 'Blog' },
   { to: '/tyler', label: 'Tyler' },
   { to: '/guestbook', label: 'Guestbook' },
@@ -21,7 +23,11 @@ export default function Header() {
         </Link>
 
         <nav className="hidden items-center gap-7 text-[13px] md:flex">
-          {links.map((l) => (
+          {links.map((l) => l.href ? (
+            <a key={l.href} href={l.href} className="inline-flex min-h-[44px] items-center text-[#e4e4e7] hover:text-white">
+              {l.label}
+            </a>
+          ) : (
             <NavLink
               key={l.to}
               to={l.to}
@@ -57,7 +63,11 @@ export default function Header() {
       {open && (
         <nav className="border-t border-white/10 bg-ink md:hidden">
           <div className="flex flex-col px-4 py-2">
-            {links.map((l) => (
+            {links.map((l) => l.href ? (
+              <a key={l.href} href={l.href} className="min-h-[44px] border-l-2 border-transparent py-3 pl-3 text-[15px] text-[#e4e4e7]">
+                {l.label}
+              </a>
+            ) : (
               <NavLink
                 key={l.to}
                 to={l.to}
