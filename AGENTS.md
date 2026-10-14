@@ -69,3 +69,9 @@ git push origin main     # runner on the box builds + scps + pm2 restart
 - `server/migrations/001_initial.sql` — schema. Add a new `00X_*.sql` for changes; never edit a landed migration.
 - `.github/workflows/deploy.yml` — uses `appleboy/scp-action` and `appleboy/ssh-action` with `DEPLOY_SSH_KEY` secret.
 - `docs/nginx-crispygoat.conf` — vhost to copy to `/etc/nginx/sites-available/crispygoat`.
+
+## Cursor Cloud specific instructions
+
+- Install from lockfiles: `npm ci && npm --prefix server ci`. `better-sqlite3` uses the compiler already on the default image. `npx playwright install --with-deps chromium` is what `scripts/verify.mjs` launches.
+- `npm run dev` is the whole app: Vite on port 5173 (already bound to `0.0.0.0`) and the API on port 3102. Vite proxies `/api`. `npm run build` is the production build. `node scripts/verify.mjs http://127.0.0.1:5173` is the end-to-end check.
+- The API boots with no `server/.env`. Local admin is `admin@crispygoat.com` / `changeme` (fallbacks in `server/src/config.js`). Stripe Checkout returns 503 until real `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set — leave that as 503.
