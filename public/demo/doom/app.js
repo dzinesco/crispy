@@ -391,6 +391,18 @@ const WEAPONS = [
   { name: 'CHAINGUN', damage: 9,  fireRate: 0.09, range: 18,  ammo: 'chaingun', pellets: 1, spread: 0.05, kickback: 2, kickY: 1, color: '#666a72' },
 ];
 
+// Score awarded per enemy kill (multiplied by current score multiplier)
+const SCORE_TABLE = {
+  zombie:      50,
+  imp:         75,
+  demon:       150,
+  baron:       250,
+  cyberdemon:  1000,
+  cacodemon:   200,
+  lost_soul:   100,
+  mancubus:    300,
+};
+
 // ============================================================
 // INPUT
 // ============================================================
@@ -679,6 +691,14 @@ const Audio = {
     g.connect(dest);
     src.start(now);
     if (src.stop) src.stop(now + dur);
+  },
+
+  // Killstreak tier jingle — pitched higher per tier (2..6)
+  streakBeep(tier) {
+    if (!this.ctx) return;
+    const base = 660 + (tier - 2) * 110;     // 660, 770, 880, 990, 1100
+    this.tone(base, 0.10, 'square', 0.32, 0);
+    setTimeout(() => this.tone(base * 1.5, 0.12, 'square', 0.28, 0), 70);
   },
 };
 
@@ -1408,6 +1428,158 @@ const Renderer = {
 // GAME — state, enemies, weapons, AI, levels
 // ============================================================
 
+// ============================================================
+// ADDICTIVE FIXES — personal bests, score / multiplier, killstreak
+// ============================================================
+
+const PersonalBests = {
+  KEY: 'doom.pb.v1',
+  BEST_SCORE_KEY: 'doom.bestScore.v1',
+
+  // Stored: { levelIdx: { best: seconds, last: seconds } }
+  data: {},
+  bestScore: 0,
+
+  load() {
+    try {
+      const raw = localStorage.getItem(this.KEY);
+      this.data = raw ? JSON.parse(raw) : {};
+    } catch (e) { this.data = {}; }
+    try {
+      const s = localStorage.getItem(this.BEST_SCORE_KEY);
+      this.bestScore = s ? Number(s) || 0 : 0;
+    } catch (e) { this.bestScore = 0; }
+  },
+
+  save() {
+    try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch (e) {}
+  },
+
+  saveBestScore() {
+    try { localStorage.setItem(this.BEST_SCORE_KEY, String(this.bestScore)); } catch (e) {}
+  },
+
+  // Get best time for a level (or null if no record)
+  get(idx) {
+    const r = this.data[idx];
+    return r && typeof r.best === 'number' ? r.best : null;
+  },
+
+  // Returns { prevBest, isNewRecord, delta } given a completed time
+  record(idx, seconds) {
+    const prev = this.get(idx);
+    const isNew = prev === null || seconds < prev;
+    this.data[idx] = {
+      best: isNew ? seconds : prev,
+      last: seconds,
+    };
+    this.save();
+    return {
+      prevBest: prev,
+      isNewRecord: isNew,
+      delta: prev === null ? null : (prev - seconds), // positive = faster
+    };
+  },
+};
+
+const HUD = {
+  // Score popups near the crosshair. Each entry { el, exp } expires after ~0.6s.
+  popups: [],
+
+  // ---- Format helpers ----
+  formatTime(seconds) {
+    if (!isFinite(seconds) || seconds < 0) seconds = 0;
+    const m = Math.floor(seconds / 60);
+    const s = seconds - m * 60;
+    return `${m}:${s.toFixed(s < 10 ? 1 : 1).padStart(4, '0')}`;
+  },
+  formatTimeShort(seconds) {
+    if (!isFinite(seconds) || seconds < 0) seconds = 0;
+    const m = Math.floor(seconds / 60);
+    const s = seconds - m * 60;
+    return `${m}:${s.toFixed(1).padStart(4, '0')}`;
+  },
+  formatDelta(delta) {
+    if (delta === null || delta === undefined) return '';
+    const sign = delta >= 0 ? '−' : '+';   // faster = minus on watch
+    return `${sign}${Math.abs(delta).toFixed(1)}s`;
+  },
+
+  // ---- Score popup ----
+  spawnScorePopup(amount, multiplier) {
+    const host = document.getElementById('score-popups');
+    if (!host) return;
+    const el = document.createElement('div');
+    el.className = 'score-popup' + (multiplier > 1 ? ' mult' : '') +
+                   (multiplier >= 5 ? ' big' : '');
+    el.textContent = multiplier > 1
+      ? `+${amount} ×${multiplier}!`
+      : `+${amount}`;
+    // small horizontal jitter so successive popups don't perfectly overlap
+    const jitter = (Math.random() - 0.5) * 18;
+    el.style.left = `calc(50% + ${24 + jitter}px)`;
+    host.appendChild(el);
+    // Schedule removal — animation duration is 0.55s
+    setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 700);
+  },
+
+  // ---- Multiplier badge ----
+  showMultiplier(tier, opts = {}) {
+    const el = document.getElementById('mult-badge');
+    if (!el) return;
+    const prev = Number(el.dataset.tier || 1);
+    el.dataset.tier = String(tier);
+    el.textContent = tier > 1 ? `×${tier}` : '';
+    if (tier > 1) {
+      el.classList.add('show');
+      // Only bump on tier changes (or when forced).
+      if (opts.bump !== false && tier !== prev) {
+        el.classList.remove('bump');
+        void el.offsetWidth;
+        el.classList.add('bump');
+        setTimeout(() => el.classList.remove('bump'), 140);
+      }
+    } else {
+      el.classList.remove('show');
+    }
+  },
+  hideMultiplier() {
+    const el = document.getElementById('mult-badge');
+    if (!el) return;
+    el.classList.remove('show');
+    el.dataset.tier = '1';
+    el.textContent = '';
+  },
+
+  // ---- Killstreak message ----
+  showStreak(tier) {
+    const el = document.getElementById('streak-msg');
+    if (!el) return;
+    const labels = {
+      2: 'DOUBLE KILL!',
+      3: 'TRIPLE KILL!',
+      4: 'MULTI KILL!',
+      5: 'MONSTER KILL!',
+      6: 'ULTRA KILL!',
+    };
+    el.textContent = labels[tier] || `${tier}× KILL!`;
+    el.dataset.tier = String(tier);
+    el.classList.remove('show');
+    void el.offsetWidth;  // restart animation
+    el.classList.add('show');
+  },
+
+  // ---- Screen shake ----
+  shake() {
+    const vp = document.querySelector('.viewport');
+    if (!vp) return;
+    vp.classList.remove('shake');
+    void vp.offsetWidth;
+    vp.classList.add('shake');
+    setTimeout(() => vp.classList.remove('shake'), 320);
+  },
+};
+
 const Game = {
   state: 'menu',     // 'menu' | 'playing' | 'dead' | 'win' | 'level'
   level: 0,
@@ -1422,6 +1594,21 @@ const Game = {
   godMode: false,
   totalKills: 0,
   levelKills: 0,
+  // ---- Addictive fixes state ----
+  score: 0,
+  multiplier: 1,
+  multiplierMax: 8,
+  multiplierWindow: 2.5,   // seconds with no kill before multiplier resets
+  multiplierT: 0,
+  lastKillT: -10,
+  killStreakCount: 0,
+  killStreakWindow: 1.5,
+  lastDamagedBy: 'UNKNOWN', // enemy type of last damaging source
+  lastDamage: 0,            // amount of last hit
+  pendingLevelComplete: null, // { time, isNew, delta } filled when win() fires
+  levelTimes: [],            // [{idx, name, time}] across a session
+  perLevelKills: [],         // kills per level across a session
+  pbFlashShown: false,
 
   init() {
     this.player = {
@@ -1437,6 +1624,7 @@ const Game = {
       kickAnim: 0,
       lastFire: 0,
     };
+    PersonalBests.load();
   },
 
   hasAmmoFor(w) {
@@ -1468,6 +1656,9 @@ const Game = {
     this.init();
     Input.init();
     this.hideOverlays();
+    this.levelTimes = [];
+    this.perLevelKills = [];
+    this.score = 0;
     this.loadLevel(0);
     this.state = 'playing';
   },
@@ -1476,6 +1667,9 @@ const Game = {
     this.init();
     this.totalKills = 0;
     this.hideOverlays();
+    this.levelTimes = [];
+    this.perLevelKills = [];
+    this.score = 0;
     this.loadLevel(0);
     this.state = 'playing';
   },
@@ -1488,6 +1682,11 @@ const Game = {
     this.projectiles = [];
     this.pickups = [];
     this.spawnPoints = [];
+    this.killStreakCount = 0;
+    this.multiplier = 1;
+    this.multiplierT = 0;
+    this.lastKillT = -10;
+    HUD.hideMultiplier();
 
     const lv = LEVELS[idx];
     this.player.x = lv.spawn.x;
@@ -1524,6 +1723,20 @@ const Game = {
     if (idx > 0) Audio.levelUp();
     Audio.setTrack(lv.music);
     this.message('ENTERING ' + lv.name);
+
+    // Personal best flash on level start — show briefly after the
+    // "ENTERING …" message has had a moment to settle.
+    const pb = PersonalBests.get(idx);
+    setTimeout(() => {
+      if (this.state !== 'playing' || this.level !== idx) return;
+      if (pb !== null) {
+        this.message(`YOUR BEST: ${HUD.formatTime(pb)}`);
+      } else if (idx > 0) {
+        this.message('NO RECORD');
+      } else {
+        this.message('NO RECORD — SET A TIME');
+      }
+    }, 1800);
   },
 
   makeEnemy(type, x, y) {
@@ -1583,6 +1796,20 @@ const Game = {
     this.spawnWaves(dt);
     this.messageTimer = Math.max(0, this.messageTimer - dt);
     this.levelTimer += dt;
+
+    // ---- Addictive fixes: multiplier + killstreak windows ----
+    if (this.multiplier > 1) {
+      this.multiplierT -= dt;
+      if (this.multiplierT <= 0) {
+        this.multiplier = 1;
+        this.multiplierT = 0;
+        HUD.hideMultiplier();
+      }
+    }
+    if (this.killStreakCount > 0 && this.levelTimer - (this._lastStreakKillT || -10) > this.killStreakWindow) {
+      this.killStreakCount = 0;
+    }
+    // -------------------------------------------
 
     // Win: all enemies (and wave-spawned) are gone
     if (this.enemies.length === 0) {
@@ -1776,6 +2003,35 @@ const Game = {
       Audio.enemyDie();
       this.totalKills++;
       this.levelKills++;
+      // ---- Score / multiplier / killstreak (addictive fixes) ----
+      const baseScore = SCORE_TABLE[e.type] || 50;
+      const tier = Math.min(this.multiplier, this.multiplierMax);
+      const earned = baseScore * tier;
+      this.score += earned;
+      HUD.spawnScorePopup(baseScore, tier);
+
+      // Multiplier: increment up to max, reset window timer
+      this.multiplier = Math.min(this.multiplier + 1, this.multiplierMax);
+      this.multiplierT = this.multiplierWindow;
+      this.lastKillT = this.levelTimer;
+      HUD.showMultiplier(this.multiplier, { bump: true });
+
+      // Killstreak: count kills within the streak window
+      if (this.levelTimer - this.lastKillT <= this.killStreakWindow + 0.001 ||
+          this.killStreakCount === 0) {
+        // Already counted the current kill below; reset window first
+      }
+      // Use a dedicated last-streak-kill-time:
+      this._lastStreakKillT = this.levelTimer;
+      this.killStreakCount += 1;
+      const streakTier = Math.min(this.killStreakCount, 6);
+      if (streakTier >= 2) {
+        HUD.showStreak(streakTier);
+        HUD.shake();
+        Audio.streakBeep(streakTier);
+      }
+      // -------------------------------------------
+
       // Small chance of ammo drop
       if (Math.random() < 0.18) {
         const drop = Math.random() < 0.5 ? 'ammo_pistol' :
@@ -1908,7 +2164,7 @@ const Game = {
   enemyAttack(e, p, d) {
     if (e.melee) {
       // Touch damage
-      this.damagePlayer(e.damage);
+      this.damagePlayer(e.damage, e.type);
       Audio.hurt();
     } else if (e.shoots === 'fireball') {
       this.spawnEnemyProjectile(e, 'fireball', 6);
@@ -1931,6 +2187,7 @@ const Game = {
           kind, x: e.x, y: e.y,
           vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
           life: 2.0, damage: e.damage, friendly: false, size: 0.25,
+          sourceType: e.type,
         });
       }
     } else {
@@ -1938,6 +2195,7 @@ const Game = {
         kind, x: e.x, y: e.y,
         vx: dx/d * speed, vy: dy/d * speed,
         life: 2.0, damage: e.damage, friendly: false, size: 0.25,
+        sourceType: e.type,
       });
     }
   },
@@ -1977,7 +2235,7 @@ const Game = {
         // Hit player
         const dx = this.player.x - pr.x, dy = this.player.y - pr.y;
         if (dx*dx + dy*dy < 0.4 * 0.4) {
-          this.damagePlayer(pr.damage);
+          this.damagePlayer(pr.damage, pr.sourceType || pr.kind);
           pr.life = 0;
         }
       }
@@ -2029,7 +2287,7 @@ const Game = {
     }
   },
 
-  damagePlayer(dmg) {
+  damagePlayer(dmg, byType) {
     if (this.godMode) return;
     const p = this.player;
     if (p.invuln > 0) return;
@@ -2038,6 +2296,8 @@ const Game = {
     const hpDmg = dmg - armorAbsorb;
     p.hp -= hpDmg;
     p.invuln = 0.4;
+    if (byType) this.lastDamagedBy = byType;
+    this.lastDamage = Math.max(this.lastDamage || 0, Math.round(hpDmg));
     Audio.hurt();
     Renderer.flash(0.35);
     if (p.hp <= 0) {
@@ -2050,6 +2310,23 @@ const Game = {
     this.state = 'dead';
     Audio.stopMusic();
     this.hideOverlays();
+    // Clear HUD message so it doesn't bleed through the death overlay.
+    this.messageText = '';
+    this.messageTimer = 0;
+    const hudMsg = document.getElementById('hud-message');
+    if (hudMsg) { hudMsg.textContent = ''; hudMsg.classList.remove('show'); }
+
+    // Populate death card with killer info + stats.
+    const killerName = (this.lastDamagedBy || 'UNKNOWN').toUpperCase().replace(/_/g, ' ');
+    const elKiller = document.getElementById('death-killer');
+    const elDamage = document.getElementById('death-damage');
+    const elTime   = document.getElementById('death-time');
+    const elKills  = document.getElementById('death-kills');
+    if (elKiller) elKiller.textContent = killerName;
+    if (elDamage) elDamage.textContent = String(this.lastDamage || '?');
+    if (elTime)   elTime.textContent   = HUD.formatTime(this.levelTimer);
+    if (elKills)  elKills.textContent  = String(this.totalKills);
+
     document.getElementById('death-screen').style.display = 'flex';
   },
 
@@ -2059,12 +2336,38 @@ const Game = {
     Audio.stopMusic();
     Audio.levelUp();
     this.hideOverlays();
+    // Clear HUD message so it doesn't bleed through the win overlay.
+    this.messageText = '';
+    this.messageTimer = 0;
+    const hudMsg = document.getElementById('hud-message');
+    if (hudMsg) { hudMsg.textContent = ''; hudMsg.classList.remove('show'); }
+    // Hide multiplier + streak so they don't show under the overlay
+    HUD.hideMultiplier();
+    const streakEl = document.getElementById('streak-msg');
+    if (streakEl) streakEl.classList.remove('show');
+
+    // Record this level's time + compare vs PB.
+    const time = this.levelTimer;
+    const lvl = LEVELS[this.level];
+    const pbResult = PersonalBests.record(this.level, time);
+    this.levelTimes.push({ idx: this.level, name: lvl.name, time });
+    this.perLevelKills.push(this.levelKills);
+
+    if (PersonalBests.bestScore === 0 || this.score > PersonalBests.bestScore) {
+      PersonalBests.bestScore = this.score;
+      PersonalBests.saveBestScore();
+    }
 
     const nextLevel = this.level + 1;
     if (nextLevel < LEVELS.length) {
-      // Mid-campaign: show stats briefly, then auto-advance
+      // Mid-campaign: show per-level stats briefly, then auto-advance
+      const deltaTxt = pbResult.isNewRecord
+        ? (pbResult.prevBest === null ? 'FIRST RUN' : `NEW RECORD!  ${HUD.formatDelta(pbResult.delta)}`)
+        : (pbResult.prevBest === null ? 'FIRST RUN' : `+${(time - pbResult.prevBest).toFixed(1)}s from PB`);
       document.getElementById('win-stats').textContent =
-        `KILLS: ${this.totalKills}  ·  NEXT ${LEVELS[nextLevel].name}`;
+        `${lvl.name}  ·  TIME ${HUD.formatTimeShort(time)}  ·  ${deltaTxt}  ·  NEXT ${LEVELS[nextLevel].name}`;
+      // Render a tiny breakdown for the level that just finished
+      this._renderWinBreakdown(/*final*/ false);
       document.getElementById('win-screen').style.display = 'flex';
       setTimeout(() => {
         if (this.state === 'win') {
@@ -2075,9 +2378,53 @@ const Game = {
       }, 2500);
     } else {
       // Final level complete: full mission complete screen
+      const deltaTxt = pbResult.isNewRecord
+        ? (pbResult.prevBest === null ? 'FIRST COMPLETION' : `NEW RECORD!  ${HUD.formatDelta(pbResult.delta)}`)
+        : (pbResult.prevBest === null ? 'FIRST COMPLETION' : `+${(time - pbResult.prevBest).toFixed(1)}s from PB`);
       document.getElementById('win-stats').textContent =
-        `KILLS: ${this.totalKills}`;
+        `${lvl.name}  ·  TIME ${HUD.formatTimeShort(time)}  ·  ${deltaTxt}  ·  TOTAL SCORE ${this.score}`;
+      this._renderWinBreakdown(/*final*/ true);
       document.getElementById('win-screen').style.display = 'flex';
+    }
+  },
+
+  _renderWinBreakdown(isFinal) {
+    const host = document.getElementById('win-breakdown');
+    if (!host) return;
+    host.innerHTML = '';
+    const head = document.createElement('div');
+    head.className = 'lv-row head';
+    head.innerHTML = '<span>LEVEL</span><span>TIME</span><span>KILLS</span><span>DELTA</span>';
+    host.appendChild(head);
+    for (const rec of this.levelTimes) {
+      const pb = PersonalBests.get(rec.idx);
+      const isPbRow = pb !== null && Math.abs(pb - rec.time) < 0.05;
+      const row = document.createElement('div');
+      row.className = 'lv-row';
+      let deltaCell;
+      if (isFinal && isPbRow) {
+        deltaCell = '<span class="delta-new">★ BEST</span>';
+      } else if (pb === null) {
+        deltaCell = '<span class="delta-first">—</span>';
+      } else {
+        const d = pb - rec.time;
+        if (d > 0.05) deltaCell = `<span class="delta-better">−${d.toFixed(1)}s</span>`;
+        else if (d < -0.05) deltaCell = `<span class="delta-worse">+${Math.abs(d).toFixed(1)}s</span>`;
+        else deltaCell = '<span class="delta-first">PB</span>';
+      }
+      row.innerHTML = `<span>${rec.name}</span><span>${HUD.formatTimeShort(rec.time)}</span><span>${this.perLevelKills[rec.idx] ?? ''}</span>${deltaCell}`;
+      host.appendChild(row);
+    }
+    if (isFinal) {
+      const total = document.createElement('div');
+      total.className = 'lv-row';
+      total.style.marginTop = '8px';
+      total.innerHTML = `<span>TOTAL</span><span>${HUD.formatTimeShort(this.levelTimes.reduce((s, r) => s + r.time, 0))}</span><span>${this.totalKills}</span><span></span>`;
+      host.appendChild(total);
+      const scoreRow = document.createElement('div');
+      scoreRow.className = 'lv-row';
+      scoreRow.innerHTML = `<span>SCORE</span><span></span><span></span><span>${this.score}${PersonalBests.bestScore === this.score ? ' ★' : ''}</span>`;
+      host.appendChild(scoreRow);
     }
   },
 
@@ -2091,7 +2438,7 @@ const Game = {
     document.getElementById('hud-ammo').textContent =
       p.weapon === 0 ? 'INF' : (p.ammo[WEAPONS[p.weapon].ammo] || 0);
     document.getElementById('title-stats').textContent =
-      `KILLS ${this.totalKills}`;
+      `KILLS ${this.totalKills}  ·  SCORE ${this.score}`;
 
     if (this.messageTimer > 0) {
       const msg = document.getElementById('hud-message');
@@ -2099,6 +2446,11 @@ const Game = {
       msg.classList.add('show');
     } else {
       document.getElementById('hud-message').classList.remove('show');
+    }
+
+    // Show multiplier badge if multiplier > 1 (without bumping every frame)
+    if (this.multiplier > 1) {
+      HUD.showMultiplier(this.multiplier, { bump: false });
     }
   },
 };
@@ -2203,5 +2555,8 @@ window.Renderer = Renderer;
 window.Input = Input;
 window.Audio = Audio;
 window.LEVELS = LEVELS;
+window.PersonalBests = PersonalBests;
+window.HUD = HUD;
+window.SCORE_TABLE = SCORE_TABLE;
 
 })();

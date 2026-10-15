@@ -12,8 +12,8 @@
       href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
     <style>/* Crispy Goat: starfield frame around the stage only */
       body.gc-starfield .stage { background: transparent; }
     </style>
@@ -60,6 +60,10 @@
               </div>
               <div class="hud-facedown"></div>
               <div class="hud-message" id="hud-message"></div>
+              <!-- Addictive fixes: multiplier badge, killstreak msg, score popups -->
+              <div class="mult-badge" id="mult-badge" data-tier="1"></div>
+              <div class="streak-msg" id="streak-msg"></div>
+              <div class="score-popups" id="score-popups"></div>
             </div>
 
             <!-- Damage flash overlay -->
@@ -95,14 +99,21 @@
 
     <!-- ===================== DEATH SCREEN ===================== -->
     <div id="death-screen" class="overlay overlay-death" hidden>
-      <h1 class="big">YOU DIED.</h1>
-      <p id="death-fight" class="blink">Fight on! Press R to restart.</p>
+      <div class="death-card" id="death-card">
+        <h1 class="big">YOU DIED.</h1>
+        <div class="death-line death-killer"><span class="death-label">KILLED BY</span> <span id="death-killer">UNKNOWN</span></div>
+        <div class="death-line"><span class="death-label">DAMAGE</span> <span id="death-damage">0</span></div>
+        <div class="death-line"><span class="death-label">SURVIVED</span> <span id="death-time">0:00.0</span></div>
+        <div class="death-line"><span class="death-label">KILLS</span> <span id="death-kills">0</span></div>
+        <p id="death-fight" class="blink">Press R to retry.</p>
+      </div>
     </div>
 
     <!-- ===================== WIN SCREEN ===================== -->
     <div id="win-screen" class="overlay overlay-win" hidden>
       <h1 class="big">MISSION COMPLETE.</h1>
       <p id="win-stats"></p>
+      <div id="win-breakdown" class="win-breakdown"></div>
       <p class="blink">Press R to play again.</p>
     </div>
 

@@ -1379,3 +1379,550 @@ body {
 
 /* Prevent horizontal overflow globally from oversize elements. */
 .ascii-logo { max-width: 100%; overflow-x: auto; }
+
+/* =============================================================
+   ADDICTIVE FIXES — streak box, achievements, likes, trivia
+   ============================================================= */
+
+/* --- Daily Streak box (home page) --- */
+.streak-box {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  border: 2px solid var(--neon-am);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 157, 46, 0.04) 0 10px, transparent 10px 20px),
+    linear-gradient(90deg, rgba(255, 157, 46, 0.08), transparent 60%),
+    #15082b;
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(255, 157, 46, 0.32);
+}
+.streak-box.is-cold {
+  border-color: var(--ink-3);
+  background:
+    linear-gradient(90deg, rgba(150, 120, 200, 0.06), transparent 60%),
+    #0d0220;
+  box-shadow: none;
+  opacity: 0.85;
+}
+.streak-flame {
+  font-size: 36px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(255, 157, 46, 0.7));
+}
+.streak-box.is-cold .streak-flame {
+  filter: none;
+  opacity: 0.5;
+}
+.streak-box.is-active .streak-flame {
+  animation: flame-flicker 1.4s ease-in-out infinite alternate;
+}
+@keyframes flame-flicker {
+  0%   { transform: scale(1)    rotate(-1deg); filter: drop-shadow(0 0 6px rgba(255, 157, 46, 0.7)); }
+  100% { transform: scale(1.08) rotate(1deg);  filter: drop-shadow(0 0 14px rgba(255, 157, 46, 1)); }
+}
+.streak-label {
+  font-family: var(--ff-pixel);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.streak-value {
+  font-family: var(--ff-pixel);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--neon-yw);
+  text-shadow: 0 0 6px rgba(255, 240, 77, 0.55);
+}
+.streak-value b {
+  color: var(--neon-am);
+  text-shadow: 0 0 8px rgba(255, 157, 46, 0.7);
+}
+.streak-box.is-cold .streak-value {
+  color: var(--ink-1);
+  text-shadow: none;
+}
+.streak-box.is-cold .streak-value b {
+  color: var(--ink-2);
+  text-shadow: none;
+}
+.streak-tag {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--neon-li);
+  margin-top: 4px;
+  text-shadow: 0 0 3px rgba(182, 255, 90, 0.5);
+}
+.streak-box.is-cold .streak-tag {
+  color: var(--ink-3);
+  text-shadow: none;
+}
+.streak-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.streak-karma {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--neon-mg);
+  text-shadow: 0 0 4px rgba(255, 43, 214, 0.5);
+}
+.streak-karma b {
+  color: var(--neon-yw);
+  text-shadow: 0 0 4px rgba(255, 240, 77, 0.55);
+}
+
+/* --- Trivia banner (home + board) --- */
+.trivia-banner {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 2px solid var(--neon-mg);
+  background:
+    linear-gradient(90deg, rgba(255, 43, 214, 0.18), transparent 70%),
+    repeating-linear-gradient(45deg, rgba(255, 43, 214, 0.08) 0 10px, transparent 10px 20px),
+    #15082b;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 0 14px rgba(255, 43, 214, 0.35);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+.trivia-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 43, 214, 0.08), transparent);
+  animation: trivia-shimmer 2.6s linear infinite;
+  pointer-events: none;
+}
+@keyframes trivia-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.trivia-banner:hover {
+  transform: translateX(2px);
+  box-shadow: 0 0 18px rgba(255, 43, 214, 0.55);
+}
+.trivia-banner-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+  font-family: var(--ff-pixel);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+.trivia-flag {
+  color: var(--neon-yw);
+  text-shadow: 0 0 6px rgba(255, 240, 77, 0.6);
+}
+.trivia-date {
+  color: var(--neon-cy);
+  text-shadow: 0 0 4px rgba(0, 246, 255, 0.5);
+}
+.trivia-cta {
+  margin-left: auto;
+  color: var(--neon-li);
+  text-shadow: 0 0 4px rgba(182, 255, 90, 0.55);
+}
+.trivia-q {
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  color: var(--ink-0);
+}
+.trivia-banner-board .trivia-q {
+  margin-top: 6px;
+}
+
+/* --- Trivia thread header (above the panel) --- */
+.trivia-thread-head {
+  text-align: center;
+}
+.trivia-thread-flag {
+  font-family: var(--ff-pixel);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--neon-yw);
+  text-shadow: 0 0 6px rgba(255, 240, 77, 0.6);
+  margin-bottom: 6px;
+}
+.trivia-thread-q {
+  font-family: var(--ff-marker);
+  font-size: 18px;
+  color: var(--neon-cy);
+  text-shadow: 0 0 4px rgba(0, 246, 255, 0.5);
+  margin-bottom: 4px;
+}
+.trivia-thread-meta {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+/* --- Trivia post UI --- */
+.post.is-trivia {
+  border-color: var(--neon-mg);
+  box-shadow: 0 0 10px rgba(255, 43, 214, 0.3);
+  position: relative;
+}
+.post.is-trivia::before {
+  content: "★ DAILY TRIVIA";
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  background: var(--bg-0);
+  padding: 0 8px;
+  font-family: var(--ff-pixel);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--neon-yw);
+  text-shadow: 0 0 4px rgba(255, 240, 77, 0.6);
+  z-index: 1;
+}
+.post.is-correct {
+  border-color: var(--neon-li);
+  box-shadow: 0 0 12px rgba(182, 255, 90, 0.4);
+}
+.trivia-reveal-bar {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: rgba(255, 43, 214, 0.05);
+  border: 1px dashed rgba(255, 43, 214, 0.4);
+  border-radius: 2px;
+}
+.trivia-reveal-btn {
+  font-family: var(--ff-pixel);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--neon-yw);
+  background: linear-gradient(180deg, #4a1d8a, #1a0840);
+  border: 1px solid var(--neon-yw);
+  padding: 8px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-shadow: 0 0 4px rgba(255, 240, 77, 0.55);
+  box-shadow: 0 0 6px rgba(255, 240, 77, 0.35);
+}
+.trivia-reveal-btn:hover {
+  color: #07021a;
+  background: var(--neon-yw);
+}
+.trivia-reveal-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.trivia-meta {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+}
+.trivia-reveal {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background:
+    repeating-linear-gradient(45deg, rgba(182, 255, 90, 0.05) 0 8px, transparent 8px 16px),
+    rgba(182, 255, 90, 0.08);
+  border: 1px solid var(--neon-li);
+  border-radius: 2px;
+  font-family: var(--ff-mono);
+  color: var(--neon-li);
+  text-shadow: 0 0 3px rgba(182, 255, 90, 0.5);
+}
+.trivia-reveal[hidden] { display: none; }
+.trivia-answer-label {
+  font-family: var(--ff-pixel);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--neon-yw);
+  display: block;
+  margin-bottom: 4px;
+}
+.trivia-answer-text {
+  font-size: 16px;
+}
+.trivia-correct-tag {
+  font-family: var(--ff-pixel);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--neon-li);
+  background: rgba(182, 255, 90, 0.18);
+  border: 1px solid var(--neon-li);
+  padding: 2px 6px;
+  border-radius: 1px;
+  text-shadow: 0 0 4px rgba(182, 255, 90, 0.55);
+}
+.trivia-mark-btn {
+  font-family: var(--ff-pixel);
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  color: var(--neon-yw);
+  background: rgba(255, 240, 77, 0.12);
+  border: 1px solid rgba(255, 240, 77, 0.5);
+  padding: 2px 6px;
+  text-decoration: none;
+  border-radius: 1px;
+}
+.trivia-mark-btn:hover {
+  color: #07021a;
+  background: var(--neon-yw);
+}
+
+/* --- Like button (per post) --- */
+.like-btn {
+  font-family: var(--ff-pixel);
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: var(--neon-cy);
+  background: rgba(0, 246, 255, 0.12);
+  border: 1px solid rgba(0, 246, 255, 0.4);
+  padding: 2px 7px;
+  text-decoration: none;
+  border-radius: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 38px;
+  justify-content: center;
+}
+.like-btn b {
+  color: inherit;
+  font-weight: 700;
+}
+.like-btn:hover {
+  color: var(--neon-yw);
+  border-color: var(--neon-yw);
+  background: rgba(255, 240, 77, 0.12);
+}
+.like-btn.is-liked {
+  color: var(--neon-yw);
+  background: rgba(255, 240, 77, 0.2);
+  border-color: var(--neon-yw);
+  text-shadow: 0 0 4px rgba(255, 240, 77, 0.55);
+  box-shadow: 0 0 6px rgba(255, 240, 77, 0.4);
+}
+.like-btn.is-liked b { color: var(--neon-am); }
+
+/* --- Karma badge next to handle --- */
+.pa-karma {
+  display: inline-block;
+  font-family: var(--ff-pixel);
+  font-size: 8px;
+  color: var(--neon-yw);
+  background: rgba(255, 240, 77, 0.1);
+  border: 1px solid rgba(255, 240, 77, 0.4);
+  padding: 1px 5px;
+  border-radius: 1px;
+  margin-left: 4px;
+  text-shadow: 0 0 3px rgba(255, 240, 77, 0.45);
+  vertical-align: middle;
+}
+
+/* --- Achievements grid --- */
+.ach-block {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(0, 246, 255, 0.35);
+}
+.ach-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ach-title {
+  font-family: var(--ff-pixel);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--neon-cy);
+  text-shadow: 0 0 4px rgba(0, 246, 255, 0.5);
+}
+.ach-count {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--neon-yw);
+  text-shadow: 0 0 4px rgba(255, 240, 77, 0.45);
+}
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ach-grid.compact {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.ach-badge {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  place-items: center;
+  gap: 2px;
+  padding: 10px 4px 8px;
+  border: 1px solid var(--ink-3);
+  background: #0d0220;
+  border-radius: 2px;
+  text-align: center;
+  font-family: var(--ff-mono);
+  position: relative;
+  transition: transform 0.1s ease;
+}
+.ach-badge:hover { transform: translateY(-2px); }
+.ach-badge.is-on {
+  background:
+    linear-gradient(180deg, rgba(255, 240, 77, 0.06), transparent 60%),
+    #15082b;
+  box-shadow: 0 0 8px rgba(255, 240, 77, 0.18);
+}
+.ach-badge.is-on::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0.5;
+  animation: ach-shine 3s ease-in-out infinite;
+}
+@keyframes ach-shine {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 0.7; }
+}
+.ach-glyph {
+  font-family: var(--ff-pixel);
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.ach-status {
+  font-family: var(--ff-pixel);
+  font-size: 9px;
+  line-height: 1;
+}
+.ach-label {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  color: var(--ink-1);
+  word-break: break-word;
+}
+.ach-badge.ach-cy.is-on { color: var(--neon-cy); border-color: var(--neon-cy); box-shadow: 0 0 6px rgba(0, 246, 255, 0.35); }
+.ach-badge.ach-cy.is-on .ach-glyph { text-shadow: 0 0 6px rgba(0, 246, 255, 0.7); }
+.ach-badge.ach-mg.is-on { color: var(--neon-mg); border-color: var(--neon-mg); box-shadow: 0 0 6px rgba(255, 43, 214, 0.35); }
+.ach-badge.ach-mg.is-on .ach-glyph { text-shadow: 0 0 6px rgba(255, 43, 214, 0.7); }
+.ach-badge.ach-am.is-on { color: var(--neon-am); border-color: var(--neon-am); box-shadow: 0 0 6px rgba(255, 157, 46, 0.35); }
+.ach-badge.ach-am.is-on .ach-glyph { text-shadow: 0 0 6px rgba(255, 157, 46, 0.7); }
+.ach-badge.ach-yw.is-on { color: var(--neon-yw); border-color: var(--neon-yw); box-shadow: 0 0 6px rgba(255, 240, 77, 0.35); }
+.ach-badge.ach-yw.is-on .ach-glyph { text-shadow: 0 0 6px rgba(255, 240, 77, 0.7); }
+.ach-badge.ach-li.is-on { color: var(--neon-li); border-color: var(--neon-li); box-shadow: 0 0 6px rgba(182, 255, 90, 0.35); }
+.ach-badge.ach-li.is-on .ach-glyph { text-shadow: 0 0 6px rgba(182, 255, 90, 0.7); }
+.ach-badge.ach-ro.is-on { color: var(--neon-ro); border-color: var(--neon-ro); box-shadow: 0 0 6px rgba(255, 102, 179, 0.35); }
+.ach-badge.ach-ro.is-on .ach-glyph { text-shadow: 0 0 6px rgba(255, 102, 179, 0.7); }
+.ach-badge.is-off {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+.ach-badge.is-off .ach-status { color: var(--neon-rd); }
+.ach-badge.is-on .ach-status { color: var(--neon-li); }
+
+/* --- Profile customization card --- */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  margin: 14px 0 6px;
+}
+.profile-stat {
+  text-align: center;
+  padding: 10px 6px;
+  border: 1px solid var(--neon-cy);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(0, 246, 255, 0.05), transparent 80%), #0d0220;
+}
+.profile-stat .ps-label {
+  font-family: var(--ff-pixel);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.profile-stat .ps-value {
+  font-family: var(--ff-pixel);
+  font-size: 14px;
+  color: var(--neon-yw);
+  text-shadow: 0 0 4px rgba(255, 240, 77, 0.55);
+}
+.profile-stat .ps-value.karma-val {
+  color: var(--neon-mg);
+  text-shadow: 0 0 4px rgba(255, 43, 214, 0.55);
+}
+.profile-card {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--ink-1);
+  padding: 10px 14px;
+  border: 1px solid var(--neon-yw);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 240, 77, 0.04) 0 10px, transparent 10px 20px),
+    #0d0220;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+.profile-row {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 240, 77, 0.2);
+}
+.profile-row:last-of-type { border-bottom: none; }
+.profile-row .pr-key {
+  flex: 0 0 130px;
+  color: var(--neon-yw);
+  text-shadow: 0 0 3px rgba(255, 240, 77, 0.4);
+  font-family: var(--ff-pixel);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+.profile-row .pr-val {
+  flex: 1;
+  word-break: break-word;
+}
+.profile-actions-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+.profile-hint {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+/* --- Trivia flag on board card --- */
+.board-trivia-flag {
+  display: inline-block;
+  font-family: var(--ff-pixel);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  color: var(--neon-yw);
+  background: rgba(255, 240, 77, 0.12);
+  border: 1px solid rgba(255, 240, 77, 0.4);
+  padding: 1px 5px;
+  margin-left: 6px;
+  border-radius: 1px;
+  vertical-align: middle;
+  text-shadow: 0 0 3px rgba(255, 240, 77, 0.5);
+}
