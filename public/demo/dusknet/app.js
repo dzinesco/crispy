@@ -10,6 +10,12 @@
   // CONSTANTS
   // ============================================================
   const STORAGE_KEY = 'dusknet.bbs.v1';
+  const STREAK_KEY = 'dusknet.streak.v1';
+  const PROFILE_KEY = 'dusknet.profile.v1';
+  const ACHIEVEMENTS_KEY = 'dusknet.achievements.v1';
+  const LIKED_KEY = 'dusknet.liked.v1';
+  const TRIVIA_KEY = 'dusknet.trivia.v1';
+  const SEEN_THREADS_KEY = 'dusknet.seen.v1';
   const VERSION = '1.97';
   const BBS_NAME = 'DUSKNET BBS';
   const BBS_TAGLINE = 'A 90s Bulletin Board System';
@@ -19,12 +25,61 @@
     'ctrl-alt-del',
     'omega_red',
   ]);
-  const SEEN_THREADS_KEY = 'dusknet.seen.v1';
   const ONLINE_USERS = [
     'cyberangel', 'xX_Ph4nt0m_Xx', 'COOLGUY97', 'Lisa_M',
     'SKATER_BOY', 'RAMROD', 'DaKoDeMaN', 'NeoTerra',
     'ctrl-alt-del', 'omega_red', '~angeldust~',
     'CyberPunkPrincess', 'buddyHolly1997'
+  ];
+
+  // ============================================================
+  // DAILY TRIVIA — question bank (date-stable seed)
+  // ============================================================
+  const TRIVIA_QUESTIONS = [
+    { q: 'What year was the first BBS created?',
+      a: '1978' },
+    { q: 'What does "BBS" stand for?',
+      a: 'Bulletin Board System' },
+    { q: 'Who is credited with creating the first BBS (CBBS)?',
+      a: 'Ward Christensen' },
+    { q: 'What baud rate did the original CBBS use?',
+      a: '300 baud' },
+    { q: 'In what year did Tim Berners-Lee propose the World Wide Web?',
+      a: '1989' },
+    { q: 'What was the name of the first graphical web browser?',
+      a: 'Mosaic' },
+    { q: 'What does "HTTP" stand for?',
+      a: 'HyperText Transfer Protocol' },
+    { q: 'What is the maximum realistic speed of a 56k modem?',
+      a: '46kbps' },
+    { q: 'What does "FTP" stand for?',
+      a: 'File Transfer Protocol' },
+    { q: 'What does "ASCII" stand for?',
+      a: 'American Standard Code for Information Interchange' },
+    { q: 'What does "GIF" stand for?',
+      a: 'Graphics Interchange Format' },
+    { q: 'What year did AOL launch AIM (AOL Instant Messenger)?',
+      a: '1997' },
+    { q: 'In what year was the first email sent?',
+      a: '1971' },
+    { q: 'What does "MIDI" stand for?',
+      a: 'Musical Instrument Digital Interface' },
+  ];
+
+  // Achievement definitions
+  const ACHIEVEMENT_DEFS = [
+    { id: 'first_post',  label: 'First Post',     glyph: '✎', color: 'cy',
+      hint: 'make your first post' },
+    { id: 'lurker',      label: 'Lurker No More', glyph: '◉', color: 'mg',
+      hint: 'post a reply in any thread' },
+    { id: 'streak7',     label: 'Streak: 7 Days', glyph: '🔥', color: 'am',
+      hint: 'post 7 days in a row' },
+    { id: 'popular',     label: 'Popular',         glyph: '★', color: 'yw',
+      hint: 'one of your posts gets 10+ likes' },
+    { id: 'veteran',     label: 'BBS Veteran',     glyph: '◆', color: 'li',
+      hint: 'make 50+ posts total' },
+    { id: 'trivia',      label: 'Trivia Master',   glyph: '? ', color: 'ro',
+      hint: 'be marked as the correct trivia answer' },
   ];
 
   // ============================================================
@@ -331,7 +386,15 @@
     rate: { postTimestamps: [], handleTimestamps: [] },
     boards: [],             // [{ id, name, glyph, color, blurb }]
     threads: {},            // threadId -> { id, boardId, subject, author, createdAt, isSticky, isLocked, views, postIds[] }
-    posts: {},              // postId -> { id, threadId, author, body, createdAt }
+    posts: {},              // postId -> { id, threadId, author, body, createdAt, likes, likedBy, ... }
+    // New fields — all persisted via localStorage
+    streak: { count: 0, lastDate: null },
+    profile: { bio: '', favoriteMp3: '', hometown: '', modem: '' },
+    achievements: {},
+    likedPosts: {},
+    triviaDate: null,       // YYYY-MM-DD of current daily trivia thread
+    triviaQuestion: '',
+    triviaAnswer: '',
   };
 
   function saveState() {
@@ -343,9 +406,24 @@
         threads: state.threads,
         posts: state.posts,
         rate: state.rate,
+        profile: state.profile,
+        achievements: state.achievements,
+        likedPosts: state.likedPosts,
+        triviaDate: state.triviaDate,
+        triviaQuestion: state.triviaQuestion,
+        triviaAnswer: state.triviaAnswer,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
       localStorage.setItem(SEEN_THREADS_KEY, JSON.stringify(state.seenPosts));
+      localStorage.setItem(STREAK_KEY, JSON.stringify(state.streak));
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(state.profile));
+      localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(state.achievements));
+      localStorage.setItem(LIKED_KEY, JSON.stringify(state.likedPosts));
+      localStorage.setItem(TRIVIA_KEY, JSON.stringify({
+        date: state.triviaDate,
+        question: state.triviaQuestion,
+        answer: state.triviaAnswer,
+      }));
     } catch (_) {}
   }
   function loadState() {
@@ -361,10 +439,42 @@
         threads: data.threads,
         posts: data.posts,
         rate: data.rate || { postTimestamps: [], handleTimestamps: [] },
+        profile: data.profile || { bio: '', favoriteMp3: '', hometown: '', modem: '' },
+        achievements: data.achievements || {},
+        likedPosts: data.likedPosts || {},
+        triviaDate: data.triviaDate || null,
+        triviaQuestion: data.triviaQuestion || '',
+        triviaAnswer: data.triviaAnswer || '',
       });
       try {
         const seen = JSON.parse(localStorage.getItem(SEEN_THREADS_KEY) || '[]');
         if (Array.isArray(seen)) state.seenPosts = seen;
+      } catch (_) {}
+      // Per-handle stores (preferred; if missing, fall back to in-snap)
+      try {
+        const streak = JSON.parse(localStorage.getItem(STREAK_KEY) || 'null');
+        if (streak) state.streak = streak;
+        else state.streak = { count: 0, lastDate: null };
+      } catch (_) { state.streak = state.streak || { count: 0, lastDate: null }; }
+      try {
+        const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+        if (prof) state.profile = prof;
+      } catch (_) {}
+      try {
+        const ach = JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || 'null');
+        if (ach) state.achievements = ach;
+      } catch (_) {}
+      try {
+        const lk = JSON.parse(localStorage.getItem(LIKED_KEY) || 'null');
+        if (lk) state.likedPosts = lk;
+      } catch (_) {}
+      try {
+        const tr = JSON.parse(localStorage.getItem(TRIVIA_KEY) || 'null');
+        if (tr && tr.date) {
+          state.triviaDate = tr.date;
+          state.triviaQuestion = tr.question || state.triviaQuestion;
+          state.triviaAnswer = tr.answer || state.triviaAnswer;
+        }
       } catch (_) {}
       return true;
     } catch (_) { return false; }
@@ -721,6 +831,12 @@
     state.hitCount = 9901 + Math.floor(Math.random() * 8000);
     state.seenPosts = [];
     state.handle = opts.keepHandle ? state.handle : null;
+    state.likedPosts = {};
+    state.achievements = {};
+    state.streak = { count: 0, lastDate: null };
+    state.profile = { bio: '', favoriteMp3: '', hometown: '', modem: '' };
+    normalizeState();
+    ensureDailyTriviaThread();
     saveState();
   }
 
@@ -777,6 +893,242 @@
   function isPostNew(postId) { return !state.seenPosts.includes(postId); }
   function threadHasNew(threadId) {
     return state.threads[threadId].postIds.some(id => isPostNew(id));
+  }
+
+  // ============================================================
+  // ADDICTIVE FIXES — streak, karma/likes, profile, achievements,
+  // daily trivia
+  // ============================================================
+  const MONTH_ABBR = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+  function dateKey(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function dateKeyFromMs(ms) {
+    return dateKey(new Date(ms));
+  }
+  function todayLabel() {
+    const d = new Date();
+    return MONTH_ABBR[d.getMonth()] + ' ' + d.getDate();
+  }
+  function yesterdayKey() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return dateKey(d);
+  }
+  function prettyDateLabel(key) {
+    // "YYYY-M-D" -> "OCT 14"
+    if (!key) return '';
+    const parts = key.split('-');
+    if (parts.length !== 3) return key;
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    if (m < 0 || m > 11) return key;
+    return MONTH_ABBR[m] + ' ' + d;
+  }
+
+  function normalizeState() {
+    state.streak = state.streak || { count: 0, lastDate: null };
+    state.profile = Object.assign({ bio: '', favoriteMp3: '', hometown: '', modem: '' },
+      state.profile || {});
+    state.achievements = state.achievements || {};
+    state.likedPosts = state.likedPosts || {};
+    Object.values(state.posts).forEach(p => {
+      if (typeof p.likes !== 'number') p.likes = 0;
+      if (!Array.isArray(p.likedBy)) p.likedBy = [];
+    });
+  }
+
+  // ---- streak ----
+  function bumpStreakIfNewDay() {
+    const today = dateKey();
+    if (state.streak.lastDate === today) return false; // already counted
+    const yest = yesterdayKey();
+    if (state.streak.lastDate === yest) {
+      state.streak.count = (state.streak.count || 0) + 1;
+    } else {
+      state.streak.count = 1; // start / reset
+    }
+    state.streak.lastDate = today;
+    saveState();
+    return true;
+  }
+  function streakCount() { return state.streak && state.streak.count || 0; }
+  function streakActive() { return state.streak && state.streak.lastDate === dateKey(); }
+
+  // ---- karma / likes ----
+  function karmaForHandle(h) {
+    if (!h) return 0;
+    let total = 0;
+    Object.values(state.posts).forEach(p => {
+      if (p.author === h) total += (p.likes || 0);
+    });
+    return total;
+  }
+  function totalKarma() {
+    return karmaForHandle(state.handle);
+  }
+  function currentUserLiked(postId) {
+    if (!state.handle) return false;
+    return !!(state.likedPosts && state.likedPosts[postId]);
+  }
+  function toggleLike(postId) {
+    const p = state.posts[postId];
+    if (!p) return false;
+    if (!state.handle) {
+      openHandleModal();
+      return false;
+    }
+    p.likedBy = p.likedBy || [];
+    p.likes = p.likes || 0;
+    state.likedPosts = state.likedPosts || {};
+    const idx = p.likedBy.indexOf(state.handle);
+    if (idx >= 0) {
+      p.likedBy.splice(idx, 1);
+      p.likes = Math.max(0, p.likes - 1);
+      delete state.likedPosts[postId];
+    } else {
+      p.likedBy.push(state.handle);
+      p.likes += 1;
+      state.likedPosts[postId] = true;
+    }
+    saveState();
+    evaluateAchievements();
+    return true;
+  }
+
+  // ---- profile ----
+  function isProfileEmpty() {
+    const p = state.profile || {};
+    return !p.bio && !p.favoriteMp3 && !p.hometown && !p.modem;
+  }
+  function saveProfile(p) {
+    state.profile = {
+      bio: (p.bio || '').toString().slice(0, 240),
+      favoriteMp3: (p.favoriteMp3 || '').toString().slice(0, 80),
+      hometown: (p.hometown || '').toString().slice(0, 60),
+      modem: (p.modem || '').toString().slice(0, 40),
+    };
+    saveState();
+  }
+
+  // ---- achievements ----
+  function hasAchievement(id) { return !!(state.achievements && state.achievements[id]); }
+  function awardAchievement(id) {
+    if (!state.achievements[id]) {
+      state.achievements[id] = true;
+      saveState();
+      return true; // newly awarded
+    }
+    return false;
+  }
+  function evaluateAchievements() {
+    if (!state.handle) return;
+    const newOnes = [];
+    const myPostCount = Object.values(state.posts).filter(p => p.author === state.handle).length;
+    if (myPostCount >= 1 && awardAchievement('first_post')) newOnes.push('first_post');
+    if (myPostCount >= 50 && awardAchievement('veteran')) newOnes.push('veteran');
+    // Lurker: at least one reply (post that is not the first in its thread)
+    const myReplies = Object.values(state.posts).filter(p => {
+      if (p.author !== state.handle) return false;
+      const t = state.threads[p.threadId];
+      return t && t.postIds[0] !== p.id;
+    });
+    if (myReplies.length >= 1 && awardAchievement('lurker')) newOnes.push('lurker');
+    // Popular: any of my posts has 10+ likes
+    const hasPopular = Object.values(state.posts).some(p =>
+      p.author === state.handle && (p.likes || 0) >= 10);
+    if (hasPopular && awardAchievement('popular')) newOnes.push('popular');
+    // Streak 7
+    if (streakCount() >= 7 && awardAchievement('streak7')) newOnes.push('streak7');
+    return newOnes;
+  }
+
+  // ---- daily trivia ----
+  function pickTriviaForDate(d) {
+    const key = dateKey(d);
+    // deterministic index based on date
+    const h = intFromHash(key, 0);
+    return TRIVIA_QUESTIONS[h % TRIVIA_QUESTIONS.length];
+  }
+  function ensureDailyTriviaThread() {
+    const today = dateKey();
+    const threadId = 'daily-trivia-' + today;
+    if (state.threads[threadId]) {
+      // already exists — just make sure answer is on the first post
+      const t = state.threads[threadId];
+      const firstId = t.postIds[0];
+      if (firstId && state.posts[firstId]) {
+        state.posts[firstId].triviaAnswer = state.triviaAnswer;
+        state.posts[firstId].isTrivia = true;
+        state.posts[firstId].triviaDate = today;
+      }
+      return threadId;
+    }
+    // pick today's question (re-pick even if we have state.triviaDate saved — verify)
+    const q = pickTriviaForDate(new Date());
+    state.triviaDate = today;
+    state.triviaQuestion = q.q;
+    state.triviaAnswer = q.a;
+    const now = Date.now();
+    const t = {
+      id: threadId,
+      boardId: 'ot',
+      subject: '★ DAILY TRIVIA · ' + todayLabel() + ' · ' + q.q,
+      author: 'cyberangel',
+      createdAt: now,
+      isSticky: true,
+      isLocked: false,
+      views: 1,
+      postIds: [],
+    };
+    const firstPid = threadId + '-q';
+    t.postIds.push(firstPid);
+    state.threads[threadId] = t;
+    state.posts[firstPid] = {
+      id: firstPid,
+      threadId,
+      author: 'cyberangel',
+      createdAt: now,
+      body: '★ DAILY TRIVIA · ' + todayLabel() + '\n\n[B]' + q.q + '[/B]\n\npost your guess as a reply. mods (any caller, for the demo) can mark a reply as the correct answer — the guesser gets the [B]Trivia Master[/B] badge.\n\nclick [I]REVEAL ANSWER[/I] to see it.',
+      triviaAnswer: q.a,
+      isTrivia: true,
+      triviaDate: today,
+    };
+    saveState();
+    return threadId;
+  }
+  function triviaFirstPostId(threadId) {
+    const t = state.threads[threadId];
+    return t && t.postIds[0];
+  }
+  function isDailyTriviaThread(threadId) {
+    return typeof threadId === 'string' && threadId.indexOf('daily-trivia-') === 0;
+  }
+  function markTriviaAnswerCorrect(postId) {
+    const p = state.posts[postId];
+    if (!p) return;
+    p.isCorrectTrivia = true;
+    // award the achievement to the post's author
+    const oldHandle = state.handle;
+    if (p.author) {
+      const wasAchievement = state.achievements && state.achievements.trivia;
+      // Temporarily switch handle context to award the achievement to the right user
+      // We do this by directly toggling the achievement on state.achievements, persisting,
+      // and noting it for toast feedback.
+      if (!wasAchievement) {
+        state.achievements = state.achievements || {};
+        state.achievements.trivia = true;
+        // tag the author so we can toast/notify
+        state.achievements._trivia_awarded_to = p.author;
+      }
+    }
+    saveState();
+  }
+  function postIsCorrectAnswer(postId) {
+    const p = state.posts[postId];
+    return !!(p && p.isCorrectTrivia);
   }
 
   // ============================================================
@@ -869,11 +1221,13 @@
       const tcount = threadCountForBoard(b.id);
       const pcount = postCountForBoard(b.id);
       const latest = latestThreadInBoard(b.id);
+      const triviaBadge = b.id === 'ot' && state.triviaDate
+        ? `<span class="board-trivia-flag" title="Daily Trivia">★ TRIVIA TODAY</span>` : '';
       return `
         <a href="#/board/${b.id}" class="board-card">
           <div class="board-icon">${b.glyph}</div>
           <div class="board-info">
-            <h3>${b.name}</h3>
+            <h3>${b.name}${triviaBadge}</h3>
             <p>${b.blurb}</p>
           </div>
           <div class="board-meta">
@@ -886,6 +1240,22 @@
     }).join('');
 
     const topThreadsHtml = topThreads.map(t => renderThreadRow(t)).join('');
+
+    // Streak + achievements — only meaningful for signed-in users
+    const streakHtml = state.handle ? renderStreakBox() : '';
+    const achievementsHtml = state.handle ? renderAchievementsGrid(true) : '';
+
+    // Trivia banner (if today's trivia thread is in top threads, link to it)
+    const triviaId = 'daily-trivia-' + dateKey();
+    const triviaThread = state.threads[triviaId];
+    const triviaBanner = triviaThread ? `
+      <a href="#/thread/${triviaId}" class="trivia-banner">
+        <span class="trivia-flag">★ DAILY TRIVIA</span>
+        <span class="trivia-date">${todayLabel()}</span>
+        <span class="trivia-q">${escapeHtml(state.triviaQuestion || triviaThread.subject)}</span>
+        <span class="trivia-cta">▶ ANSWER</span>
+      </a>
+    ` : '';
 
     return `
       <section class="panel magenta">
@@ -905,6 +1275,10 @@
           <pre class="ascii-rule" style="color: var(--neon-cy); text-shadow: 0 0 4px var(--neon-cy); margin: 18px auto 0; text-align: center;">[ ${onlineCount} CALLERS ONLINE · UP 24/7 · NETIQUETTE ENFORCED ]</pre>
         </div>
       </section>
+
+      ${triviaBanner}
+
+      ${streakHtml}
 
       <div class="home-cols">
         <section class="panel">
@@ -939,6 +1313,8 @@
             <span class="blink" style="color: var(--neon-mg)">■</span>
             Pro tip: hit <kbd style="background: var(--neon-cy); color: #07021a; padding: 1px 5px; border-radius: 2px; font-family: var(--ff-mono);">Sign In</kbd> at the top to claim your handle and post as yourself.
           </p>
+
+          ${achievementsHtml}
         </aside>
       </div>
 
@@ -946,6 +1322,52 @@
         <h2 class="panel-title">▤ ALL BOARDS</h2>
         ${boardListHtml}
       </section>
+    `;
+  }
+
+  function renderStreakBox() {
+    const c = streakCount();
+    const active = streakActive();
+    const flame = c >= 1 ? '🔥' : '·';
+    const klass = active ? 'streak-box is-active' : 'streak-box is-cold';
+    const tag = active ? 'ACTIVE TODAY' : 'POST TO RESTART';
+    return `
+      <div class="${klass}">
+        <div class="streak-flame">${flame}</div>
+        <div class="streak-meta">
+          <div class="streak-label">DAILY CALLER STREAK</div>
+          <div class="streak-value">STREAK: <b>${c}</b> ${plural(c, 'DAY', 'DAYS')}</div>
+          <div class="streak-tag">${tag}</div>
+        </div>
+        <div class="streak-aside">
+          <div class="streak-karma">KARMA: <b>${totalKarma()}</b></div>
+          <a href="#/profile" class="btn sm magenta">▶ PROFILE</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderAchievementsGrid(compact) {
+    const unlocked = ACHIEVEMENT_DEFS.filter(d => hasAchievement(d.id)).length;
+    const total = ACHIEVEMENT_DEFS.length;
+    const cells = ACHIEVEMENT_DEFS.map(d => {
+      const on = hasAchievement(d.id);
+      return `
+        <div class="ach-badge ach-${d.color} ${on ? 'is-on' : 'is-off'}" title="${escapeHtml(d.hint)}">
+          <div class="ach-glyph">${escapeHtml(d.glyph)}</div>
+          <div class="ach-status">${on ? '✓' : '✗'}</div>
+          <div class="ach-label">${escapeHtml(d.label)}</div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="ach-block">
+        <div class="ach-head">
+          <span class="ach-title">★ ACHIEVEMENTS</span>
+          <span class="ach-count">${unlocked}/${total}</span>
+        </div>
+        <div class="ach-grid ${compact ? 'compact' : ''}">${cells}</div>
+      </div>
     `;
   }
 
@@ -1039,12 +1461,32 @@
 
     const rows = allThreads.map(t => renderThreadRow(t)).join('');
 
+    // Daily Trivia banner on OFF-TOPIC
+    let triviaHtml = '';
+    if (boardId === 'ot') {
+      const triviaId = 'daily-trivia-' + dateKey();
+      const triviaT = state.threads[triviaId];
+      if (triviaT) {
+        triviaHtml = `
+          <a class="trivia-banner trivia-banner-board" href="#/thread/${triviaId}">
+            <div class="trivia-banner-row">
+              <span class="trivia-flag">★ DAILY TRIVIA</span>
+              <span class="trivia-date">${todayLabel()}</span>
+              <span class="trivia-cta">▶ TAKE YOUR GUESS</span>
+            </div>
+            <div class="trivia-q">${escapeHtml(state.triviaQuestion || '')}</div>
+          </a>
+        `;
+      }
+    }
+
     return `
       <div class="breadcrumbs">
         <a href="#/">Home</a> <span class="sep">›</span>
         <a href="#/boards">Boards</a> <span class="sep">›</span>
         <span class="here">${board.name}</span>
       </div>
+      ${triviaHtml}
       <section class="panel">
         <h2 class="panel-title">▤ ${board.name}</h2>
         <p style="font-family: var(--ff-mono); color: var(--ink-1); font-size: 14px;">${board.blurb}</p>
@@ -1078,6 +1520,18 @@
 
     const postHtml = t.postIds.map((pid, i) => renderPost(pid, i + 1)).join('');
 
+    // Trivia thread — special header / sub-banner
+    let triviaHeader = '';
+    if (isDailyTriviaThread(threadId)) {
+      triviaHeader = `
+        <section class="panel magenta trivia-thread-head">
+          <div class="trivia-thread-flag">★ DAILY TRIVIA · ${prettyDateLabel(state.triviaDate)}</div>
+          <div class="trivia-thread-q">${escapeHtml(state.triviaQuestion || '')}</div>
+          <div class="trivia-thread-meta">post a guess below · any caller (it's a demo) can <b>★ MARK CORRECT</b> on a reply</div>
+        </section>
+      `;
+    }
+
     return `
       <div class="breadcrumbs">
         <a href="#/">Home</a> <span class="sep">›</span>
@@ -1085,6 +1539,8 @@
         <a href="#/board/${board.id}">${board.name}</a> <span class="sep">›</span>
         <span class="here">${escapeHtml(t.subject).slice(0, 40)}${t.subject.length > 40 ? '…' : ''}</span>
       </div>
+
+      ${triviaHeader}
 
       <section class="panel">
         <div class="thread-head">
@@ -1115,15 +1571,47 @@
     const count = postCountForHandle(author);
     const joined = joinedAtForHandle(author);
     const sig = authorSigFor(author);
+    const karma = karmaForHandle(author);
     const altColor = (n % 3 === 0) ? 'magenta' : (n % 3 === 1 ? '' : 'lime');
 
+    const liked = currentUserLiked(postId);
+    const likeCount = p.likes || 0;
+    const likeBtn = `<a href="#" class="like-btn ${liked ? 'is-liked' : ''}" data-like="${postId}" title="${liked ? 'Unlike' : 'Like'}">▲ <b>${likeCount}</b></a>`;
+    const isCorrect = !!p.isCorrectTrivia;
+    const correctTag = isCorrect
+      ? `<span class="trivia-correct-tag">✓ CORRECT ANSWER</span>` : '';
+
+    // Trivia special UI on the first post of a daily-trivia thread
+    let triviaUi = '';
+    if (p.isTrivia) {
+      const ans = p.triviaAnswer || state.triviaAnswer || '';
+      triviaUi = `
+        <div class="trivia-reveal-bar">
+          <button type="button" class="trivia-reveal-btn" data-reveal-answer="${postId}">▶ REVEAL ANSWER</button>
+          <span class="trivia-meta">post your guess as a reply · any caller can mark a reply as the correct answer</span>
+        </div>
+        <div class="trivia-reveal" data-trivia-reveal="${postId}" hidden>
+          <span class="trivia-answer-label">ANSWER:</span>
+          <span class="trivia-answer-text">${escapeHtml(ans)}</span>
+        </div>
+      `;
+    }
+
+    // For non-trivia replies in a daily-trivia thread, show MARK CORRECT
+    const threadId = p.threadId;
+    let markCorrect = '';
+    if (isDailyTriviaThread(threadId) && n > 1 && !isCorrect) {
+      markCorrect = `<a href="#" class="trivia-mark-btn" data-mark-correct="${postId}">★ MARK CORRECT</a>`;
+    }
+
     return `
-      <article class="post ${altColor}" id="${postId}">
+      <article class="post ${altColor} ${p.isTrivia ? 'is-trivia' : ''} ${isCorrect ? 'is-correct' : ''}" id="${postId}">
         <aside class="post-author">
-          <div class="pa-handle">${escapeHtml(author)}</div>
+          <div class="pa-handle">${escapeHtml(author)}${karma > 0 ? ` <span class="pa-karma" title="Total karma">★ ${karma}</span>` : ''}</div>
           ${staff ? '<span class="pa-role">★ MOD</span>' : ''}
           <div class="pa-stat">
             Posts: <b>${count}</b><br>
+            Karma: <b>${karma}</b><br>
             Joined: ${joined}<br>
           </div>
         </aside>
@@ -1134,9 +1622,13 @@
             <span class="post-actions">
               <a href="#/compose?threadId=${posts_thread(p)}${p.id ? '&quotePostId=' + postId : ''}" data-quote="${postId}">QUOTE</a>
               <a href="#" data-post-author="${escapeHtml(author)}">PROFILE</a>
+              ${likeBtn}
+              ${markCorrect}
+              ${correctTag}
             </span>
           </div>
           ${parseBB(p.body)}
+          ${triviaUi}
           ${sig ? `<div class="sig">${escapeHtml(sig)}</div>` : ''}
         </div>
       </article>
@@ -1303,20 +1795,30 @@
     if (!v.ok) return;
     // Dwell timer: too-fast check is inside verifyCaptcha via openedAt
 
+    // Bump daily streak (only counts once per calendar day)
+    const streakBumped = bumpStreakIfNewDay();
+
     if (replyThreadId) {
       const t = state.threads[replyThreadId];
       if (t.isLocked) { toast('That thread is locked.'); return; }
       const id = makeId();
       state.posts[id] = {
         id, threadId: t.id, author: state.handle,
-        createdAt: Date.now(), body,
+        createdAt: Date.now(), body, likes: 0, likedBy: [],
       };
       t.postIds.push(id);
       rateLimitStamp('post');
       saveState();
       _activeCaptcha = null;
       _captchaFails = 0;
-      toast('Posted! routing to thread…');
+      // Check achievements
+      const newAch = evaluateAchievements() || [];
+      const achMsg = newAch.length ? ' · achievement unlocked: ' + newAch.map(id => {
+        const d = ACHIEVEMENT_DEFS.find(x => x.id === id);
+        return d ? d.label : id;
+      }).join(', ') : '';
+      const streakMsg = streakBumped ? ' · streak: ' + streakCount() : '';
+      toast('Posted!' + streakMsg + achMsg);
       navigate('#/thread/' + t.id);
     } else {
       if (!subject) { toast('Subject required for new threads.'); return; }
@@ -1332,13 +1834,19 @@
       state.threads[id] = t;
       state.posts[pid] = {
         id: pid, threadId: id, author: state.handle,
-        createdAt: Date.now(), body,
+        createdAt: Date.now(), body, likes: 0, likedBy: [],
       };
       rateLimitStamp('post');
       saveState();
       _activeCaptcha = null;
       _captchaFails = 0;
-      toast('Posted! routing to thread…');
+      const newAch = evaluateAchievements() || [];
+      const achMsg = newAch.length ? ' · achievement unlocked: ' + newAch.map(id => {
+        const d = ACHIEVEMENT_DEFS.find(x => x.id === id);
+        return d ? d.label : id;
+      }).join(', ') : '';
+      const streakMsg = streakBumped ? ' · streak: ' + streakCount() : '';
+      toast('Posted!' + streakMsg + achMsg);
       navigate('#/thread/' + id);
     }
   }
@@ -1355,12 +1863,18 @@
     const posts = Object.values(state.posts).filter(p => p.author === state.handle);
     const threads = Object.values(state.threads).filter(t => t.author === state.handle);
     const staff = isStaffHandle(state.handle);
+    const karma = totalKarma();
+    const likedByMe = Object.keys(state.likedPosts || {}).length;
+    const profile = state.profile || {};
+    const sc = streakCount();
+    const sa = streakActive();
 
     return `
       <div class="breadcrumbs">
         <a href="#/">Home</a> <span class="sep">›</span>
         <span class="here">Your Profile</span>
       </div>
+
       <section class="panel magenta">
         <h2 class="panel-title">▶ YOUR PROFILE</h2>
         <p style="font-family: var(--ff-mono); color: var(--ink-1); font-size: 14px;">
@@ -1373,13 +1887,56 @@
             <div class="user-role-tag">${staff ? 'STAFF' : 'MEMBER'}</div>
           </div>
         </div>
-        <ul style="font-family: var(--ff-mono); font-size: 13px; color: var(--ink-1); padding-left: 18px;">
-          <li><b style="color: var(--neon-cy)">${posts.length}</b> ${plural(posts.length, 'post')}</li>
-          <li><b style="color: var(--neon-cy)">${threads.length}</b> ${threads.length === 1 ? 'thread' : 'threads'} started</li>
-          <li>${staff ? 'Moderator — extra permissions active.' : 'Member — flag violations to post author.'}</li>
-        </ul>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="ps-label">POSTS</div>
+            <div class="ps-value">${posts.length}</div>
+          </div>
+          <div class="profile-stat">
+            <div class="ps-label">THREADS</div>
+            <div class="ps-value">${threads.length}</div>
+          </div>
+          <div class="profile-stat">
+            <div class="ps-label">KARMA</div>
+            <div class="ps-value karma-val">★ ${karma}</div>
+          </div>
+          <div class="profile-stat">
+            <div class="ps-label">STREAK</div>
+            <div class="ps-value">${sa ? '🔥' : '·'} ${sc} ${plural(sc, 'day', 'days')}</div>
+          </div>
+          <div class="profile-stat">
+            <div class="ps-label">LIKED</div>
+            <div class="ps-value">▲ ${likedByMe}</div>
+          </div>
+        </div>
 
-        <h3 style="font-family: var(--ff-pixel); font-size: 11px; color: var(--neon-mg); text-shadow: 0 0 4px rgba(255, 43, 214, 0.55); margin: 18px 0 8px;">CHANGE HANDLE</h3>
+        <h3 style="font-family: var(--ff-pixel); font-size: 11px; color: var(--neon-yw); text-shadow: 0 0 4px rgba(255, 240, 77, 0.55); margin: 18px 0 8px;">★ ABOUT YOU</h3>
+        <div class="profile-card">
+          <div class="profile-row">
+            <span class="pr-key">Bio:</span>
+            <span class="pr-val">${profile.bio ? escapeHtml(profile.bio) : '<i style="color: var(--ink-3)">— not set —</i>'}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-key">Favorite MP3:</span>
+            <span class="pr-val">${profile.favoriteMp3 ? '♫ ' + escapeHtml(profile.favoriteMp3) : '<i style="color: var(--ink-3)">— not set —</i>'}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-key">Hometown:</span>
+            <span class="pr-val">${profile.hometown ? escapeHtml(profile.hometown) : '<i style="color: var(--ink-3)">— not set —</i>'}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-key">Modem Speed:</span>
+            <span class="pr-val">${profile.modem ? '◉ ' + escapeHtml(profile.modem) : '<i style="color: var(--ink-3)">— not set —</i>'}</span>
+          </div>
+          <div class="profile-actions-row">
+            <button type="button" class="btn sm" id="edit-profile-btn">✎ EDIT PROFILE</button>
+            <span class="profile-hint">Set bio, favorite mp3, hometown, modem speed</span>
+          </div>
+        </div>
+
+        ${renderAchievementsGrid(false)}
+
+        <h3 style="font-family: var(--ff-pixel); font-size: 11px; color: var(--neon-mg); text-shadow: 0 0 4px rgba(255, 43, 214, 0.55); margin: 22px 0 8px;">CHANGE HANDLE</h3>
         <form id="handle-change-form" class="compose-form" style="max-width: 420px;">
           <label>
             <span class="lbl">NEW HANDLE</span>
@@ -1608,12 +2165,66 @@
       }
       const v = handleCaptchaSubmit(form, 'handle');
       if (!v.ok) return;
+      const wasNew = !state.handle;
       setHandle(h);
       rateLimitStamp('handle');
       _activeCaptcha = null;
       _captchaFails = 0;
       closeModal();
       toast('Welcome, ' + h + '.');
+      renderApp();
+      // First-time sign-in: prompt for profile customization
+      if (wasNew && isProfileEmpty()) {
+        setTimeout(() => openProfileCustomizationModal(true), 280);
+      }
+    });
+  }
+
+  function openProfileCustomizationModal(isFirstTime) {
+    const p = state.profile || {};
+    const title = isFirstTime
+      ? '★ WELCOME — SET UP YOUR PROFILE'
+      : '★ EDIT PROFILE';
+    openModal(title, `
+      <p style="color: var(--ink-1); font-family: var(--ff-mono); font-size: 12px;">
+        ${isFirstTime ? 'One quick setup before you post — tell us about yourself. You can edit this anytime from your profile.' : 'Update your profile details.'}
+      </p>
+      <form id="profile-custom-form" class="compose-form" style="margin-top: 8px;">
+        <label>
+          <span class="lbl">BIO</span>
+          <input type="text" name="bio" maxlength="240" value="${escapeHtml(p.bio || '')}" placeholder="e.g. dial-up survivor · 14.4k · into remix culture" />
+        </label>
+        <label>
+          <span class="lbl">FAVORITE MP3</span>
+          <input type="text" name="favoriteMp3" maxlength="80" value="${escapeHtml(p.favoriteMp3 || '')}" placeholder="e.g. The Prodigy — Firestarter" />
+        </label>
+        <label>
+          <span class="lbl">HOMETOWN</span>
+          <input type="text" name="hometown" maxlength="60" value="${escapeHtml(p.hometown || '')}" placeholder="e.g. Detroit, MI" />
+        </label>
+        <label>
+          <span class="lbl">MODEM SPEED</span>
+          <input type="text" name="modem" maxlength="40" value="${escapeHtml(p.modem || '')}" placeholder="e.g. 33.6k · v.90 · 56k lie" />
+        </label>
+        <div class="modal-actions">
+          <button type="submit" class="btn">▶ ${isFirstTime ? 'SAVE & ENTER' : 'SAVE'}</button>
+          ${isFirstTime ? '<button type="button" class="btn danger sm" data-modal-close>SKIP FOR NOW</button>' : '<button type="button" class="btn danger sm" data-modal-close>CANCEL</button>'}
+        </div>
+      </form>
+    `);
+    const form = document.getElementById('profile-custom-form');
+    if (!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      saveProfile({
+        bio: fd.get('bio'),
+        favoriteMp3: fd.get('favoriteMp3'),
+        hometown: fd.get('hometown'),
+        modem: fd.get('modem'),
+      });
+      closeModal();
+      toast('Profile saved.');
       renderApp();
     });
   }
@@ -1692,6 +2303,77 @@
     const profile = e.target.closest('[data-post-author]');
     if (profile) { e.preventDefault(); toast('No profile viewer in 1996. Handle: ' + profile.dataset.postAuthor); return; }
 
+    // Like button
+    const likeBtn = e.target.closest('[data-like]');
+    if (likeBtn) {
+      e.preventDefault();
+      const pid = likeBtn.dataset.like;
+      const ok = toggleLike(pid);
+      if (ok) {
+        // Re-render the post in-place by finding the article and re-rendering it
+        const article = document.getElementById(pid);
+        if (article) {
+          const t = state.threads[state.posts[pid].threadId];
+          const idx = t ? t.postIds.indexOf(pid) : 0;
+          const tmp = document.createElement('div');
+          tmp.innerHTML = renderPost(pid, idx + 1);
+          const newArt = tmp.firstElementChild;
+          if (newArt) article.replaceWith(newArt);
+        }
+        // Update other UI (stats, home, profile)
+        renderStats();
+      }
+      return;
+    }
+
+    // Reveal trivia answer
+    const revealBtn = e.target.closest('[data-reveal-answer]');
+    if (revealBtn) {
+      e.preventDefault();
+      const pid = revealBtn.dataset.revealAnswer;
+      const target = document.querySelector('[data-trivia-reveal="' + pid + '"]');
+      if (target) {
+        target.hidden = false;
+        revealBtn.disabled = true;
+        revealBtn.textContent = '✓ ANSWER REVEALED';
+      }
+      return;
+    }
+
+    // Mark trivia reply as correct
+    const markBtn = e.target.closest('[data-mark-correct]');
+    if (markBtn) {
+      e.preventDefault();
+      const pid = markBtn.dataset.markCorrect;
+      markTriviaAnswerCorrect(pid);
+      // Find thread and re-render
+      const post = state.posts[pid];
+      if (post) {
+        const t = state.threads[post.threadId];
+        if (t) {
+          // toast feedback
+          const author = post.author;
+          const you = state.handle;
+          if (author === you) {
+            toast('★ Marked as correct — you earned Trivia Master!');
+          } else {
+            toast('★ Marked ' + author + ' as the trivia winner.');
+          }
+          // re-render full thread
+          renderApp();
+        }
+      }
+      return;
+    }
+
+    // Edit profile button
+    const editProf = e.target.closest('#edit-profile-btn');
+    if (editProf) {
+      e.preventDefault();
+      openProfileCustomizationModal(false);
+      return;
+    }
+
     const reset = e.target.closest('#reset-bbs-btn');
     if (reset) {
       if (confirm('Wipe the seed and start fresh? Posts and threads will be lost.')) {
@@ -1705,6 +2387,7 @@
     const signOut = e.target.closest('#sign-out-btn');
     if (signOut) {
       state.handle = null;
+      state.likedPosts = {};
       saveState();
       renderApp();
       toast('Signed out.');
@@ -1758,6 +2441,8 @@
   function init() {
     const had = loadState();
     if (!had) { reseed(); saveState(); }
+    normalizeState();
+    ensureDailyTriviaThread();
     incrementHit();
     document.body.addEventListener('click', onClick);
     window.addEventListener('hashchange', onHashChange);

@@ -6,7 +6,7 @@
  * Architecture:
  *   - Single `app` IIFE owns everything
  *   - FSM phase: BOOT, MENU, LESSONS, LESSON, PRACTICE, TESTS, TEST,
- *                RESULTS, REPORTS, OPTIONS, GAME, CERT
+ *                DAILY, RESULTS, REPORTS, OPTIONS, GAME, CERT
  *   - Each phase has enter()/exit()/tick() functions
  *   - Shared typing input feeds WPM/accuracy/error tracking
  *   - localStorage saves settings + history + per-key error counters
@@ -14,7 +14,7 @@
  * Sections:
  *   Constants · State · Audio · Persistence · Helpers ·
  *   Boot · Menu · Lessons · Lesson · Practice · Tests ·
- *   Test · Results · Reports · Game · Options · Cert ·
+ *   Test · Daily · Results · Reports · Game · Options · Cert ·
  *   Input · Keyboard · Modern HUD · Init
  * ===================================================================== */
 
@@ -25,7 +25,7 @@
   // CONSTANTS
   // =====================================================================
 
-  const SCHEMA_VERSION = 1;
+  const SCHEMA_VERSION = 2;
   const SAVE_KEY = "mavisbeacon.save.v1";
 
   // Status bar messages per phase
@@ -37,6 +37,7 @@
     PRACTICE: "FREE PRACTICE",
     TESTS:    "TIMED TESTS",
     TEST:     "TEST IN PROGRESS",
+    DAILY:    "DAILY CHALLENGE",
     RESULTS:  "TEST RESULTS",
     REPORTS:  "PROGRESS REPORTS",
     GAME:     "KEY-BOARD HERO",
@@ -77,6 +78,38 @@
     { min: 0,  grade: "F",  msg: "Don't give up. Start with the lessons." },
   ];
 
+  // Short daily-challenge sentences. The same sentence is shown to everyone
+  // on a given calendar day (date-seeded), so leaderboards would be fair.
+  const DAILY_TEXTS = [
+    "Mavis says: type one sentence a day and your speed will grow like a sunflower in July.",
+    "Every key you press is a small promise to your future self. Keep typing, keep learning.",
+    "The hum of a CRT monitor is the soundtrack of progress. Make each keystroke count today.",
+    "Sphinx of black quartz, judge my vow. Five words, twenty-nine letters, all the power.",
+    "Patience, posture, and practice — those are the three P's of becoming a typing master.",
+  ];
+
+  // Game tuning (combo, waves, boss, power-ups)
+  const COMBO_TIMEOUT_MS = 1500;
+  const COMBO_MAX = 8;
+  const COMBO_TIER_FLASH = new Set([2, 3, 5, COMBO_MAX]);
+  const GAME_DURATION_MS = 60_000;
+  const GAME_FALL_INTERVAL_START = 1100;     // ms between new letters at start
+  const GAME_FALL_INTERVAL_END = 700;        // ms between new letters at end
+  const GAME_LETTER_SPEED = 0.06;            // px/ms base fall speed
+  const GAME_WAVE_DURATION_MS = 6_000;       // each numbered wave is ~6s
+  const GAME_BOSS_EVERY_WAVES = 2;           // boss every 2 named waves (~12s)
+  const GAME_BOSS_FONT = 56;
+  const GAME_BOSS_COLOR = "#ff4040";         // red
+  const GAME_BOSS_VALUE_MULT = 5;
+  const POWERUP_DROP_CHANCE = 0.05;
+  const POWERUP_TYPES = {
+    S: { id: "slow", label: "SLOW",   durationMs: 5000, speedMult: 0.5 },
+    B: { id: "bomb", label: "BOMB",   durationMs: 0,    speedMult: 1,   bomb: true },
+    X: { id: "x2",   label: "2X POINTS", durationMs: 5000, speedMult: 1, mult: 2 },
+  };
+  // Letters used for normal falling letters (subset of the keyboard)
+  const GAME_LETTERS = "asdfjkl;qwertyuiopzxcvbnm";
+
   // =====================================================================
   // STATE
   // =====================================================================
@@ -91,10 +124,13 @@
 
   const stats = {
     completedLessons: [],   // array of lesson indices
-    history: [],            // [{when, kind, wpm, acc, errors, durationSec}]
+    history: [],            // [{when, kind, wpm, acc, errors, durationSec, score?}]
     keyErrors: {},          // { "j": 12, "f": 4, ... }
     bestWpm: 0,
     bestAcc: 0,
+    streak: 0,              // consecutive active days
+    lastActiveDate: "",     // "YYYY-MM-DD"
+    dailyBest: {},          // { "YYYY-MM-DD": { wpm, acc, errors, chars, durationSec } }
   };
 
   // Transient runtime state
@@ -107,7 +143,7 @@
     flashTimer: 0,
   };
 
-  // Active session state for typing screens (lesson / practice / test)
+  // Active session state for typing screens (lesson / practice / test / daily)
   const session = {
     target: "",          // text to type
     typed: "",           // what the user has typed so far
@@ -121,6 +157,8 @@
     testDurationMs: 60_000,
     testTimeLeftMs: 60_000,
     paused: false,
+    // Daily challenge state
+    daily: null,
     // Game state
     game: null,          // initialized by game phase
   };
@@ -168,6 +206,30 @@
     click()  { this.beep(880, 35); },
     good()   { this.beep(1200, 60); },
     bad()    { this.beep(160, 120, "sawtooth", 0.1); },
+    combo(tier) {
+      // Higher pitch + double-note for higher combos
+      const base = 880 + (tier - 1) * 110;
+      this.beep(base, 70, "square", 0.05);
+      setTimeout(() => this.beep(base * 1.5, 80, "square", 0.05), 60);
+    },
+    boss() {
+      this.beep(110, 220, "sawtooth", 0.12);
+      setTimeout(() => this.beep(82, 260, "sawtooth", 0.12), 220);
+    },
+    powerup() {
+      this.beep(523, 60);
+      setTimeout(() => this.beep(784, 60), 60);
+      setTimeout(() => this.beep(1046, 100), 120);
+    },
+    bomb() {
+      this.beep(220, 120, "sawtooth", 0.12);
+      setTimeout(() => this.beep(110, 220, "sawtooth", 0.12), 100);
+    },
+    wave(n) {
+      this.beep(660, 80);
+      setTimeout(() => this.beep(880, 80), 80);
+      setTimeout(() => this.beep(990, 120), 160);
+    },
     success() {
       this.beep(660, 80);
       setTimeout(() => this.beep(880, 80), 80);
@@ -195,6 +257,9 @@
         keyErrors: { ...stats.keyErrors },
         bestWpm: stats.bestWpm,
         bestAcc: stats.bestAcc,
+        streak: stats.streak || 0,
+        lastActiveDate: stats.lastActiveDate || "",
+        dailyBest: { ...(stats.dailyBest || {}) },
       },
     };
   }
@@ -214,9 +279,12 @@
       const snap = JSON.parse(raw);
       if (!snap || typeof snap !== "object") return null;
       if (snap.schema !== SCHEMA_VERSION) {
-        // Best-effort migration. v1 has all we need.
+        // Best-effort migration. Carry over what we can from older schemas.
         if (!snap.settings) snap.settings = {};
         if (!snap.stats) snap.stats = {};
+        if (typeof snap.stats.streak !== "number") snap.stats.streak = 0;
+        if (typeof snap.stats.lastActiveDate !== "string") snap.stats.lastActiveDate = "";
+        if (!snap.stats.dailyBest || typeof snap.stats.dailyBest !== "object") snap.stats.dailyBest = {};
         snap.schema = SCHEMA_VERSION;
       }
       return snap;
@@ -229,6 +297,9 @@
     stats.keyErrors = {};
     stats.bestWpm = 0;
     stats.bestAcc = 0;
+    stats.streak = 0;
+    stats.lastActiveDate = "";
+    stats.dailyBest = {};
     save();
   }
 
@@ -469,9 +540,48 @@
     setSceneVisible("menu");
     setStatus(STATUS.MENU);
     $("status-left").textContent = "READY";
+    renderMenuBanner();
   }
 
   function exitMenu() {}
+
+  function renderMenuBanner() {
+    // Streak — show even if 0 so users see the metric and understand it.
+    const streak = Math.max(0, stats.streak || 0);
+    const banner = $("streak-banner");
+    const flame = $("streak-flame");
+    const text = $("streak-text");
+    if (!banner) return;
+    if (streak <= 0) {
+      banner.classList.add("zero");
+      banner.classList.remove("active");
+      flame.textContent = "·";
+      text.textContent = "STREAK: — DAYS";
+    } else {
+      banner.classList.remove("zero");
+      if (streak >= 7) banner.classList.add("active");
+      else banner.classList.remove("active");
+      flame.textContent = flameIcon(streak);
+      text.textContent = `STREAK: ${streak} ${streak === 1 ? "DAY" : "DAYS"}`;
+    }
+    // Daily challenge yesterday — show last day's WPM if any.
+    const yKey = yesterdayKey();
+    const yesterday = stats.dailyBest && stats.dailyBest[yKey];
+    const yEl = $("daily-yesterday-menu");
+    if (yEl) {
+      const todayBest = stats.dailyBest && stats.dailyBest[todayKey()];
+      if (todayBest) {
+        yEl.textContent = `TODAY: ${todayBest.wpm} WPM · YESTERDAY: ${yesterday ? yesterday.wpm + " WPM" : "—"}`;
+        yEl.classList.add("has-data");
+      } else if (yesterday) {
+        yEl.textContent = `YESTERDAY: ${yesterday.wpm} WPM`;
+        yEl.classList.add("has-data");
+      } else {
+        yEl.textContent = "";
+        yEl.classList.remove("has-data");
+      }
+    }
+  }
 
   // =====================================================================
   // LESSONS OVERVIEW
@@ -606,6 +716,65 @@
       .replace(/>/g, "&gt;");
   }
 
+  // "YYYY-MM-DD" key in local time. We use this for streak & daily tracking
+  // so a calendar day boundary is the user's actual midnight, not UTC.
+  function todayKey(d = new Date()) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function yesterdayKey(d = new Date()) {
+    const y = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+    return todayKey(y);
+  }
+
+  function daysBetween(aKey, bKey) {
+    if (!aKey || !bKey) return Infinity;
+    const a = new Date(aKey + "T00:00:00");
+    const b = new Date(bKey + "T00:00:00");
+    return Math.round((b - a) / 86_400_000);
+  }
+
+  // Tiny string-hash seeded RNG. Deterministic per day so everyone gets the
+  // same sentence, but the sentence rotates tomorrow.
+  function seededPick(arr, key) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < key.length; i++) {
+      h ^= key.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return arr[h % arr.length];
+  }
+
+  // Mark that the user did something today: lesson / test / game counts.
+  // First call of the day, or any call after a skipped day, recalculates
+  // the streak based on `daysBetween`. Idempotent within the same calendar day.
+  function registerActivity() {
+    const today = todayKey();
+    const last = stats.lastActiveDate || "";
+    if (last === today) return; // already counted today
+    if (!last) {
+      stats.streak = 1;
+    } else {
+      const gap = daysBetween(last, today);
+      if (gap === 1) stats.streak = (stats.streak || 0) + 1;
+      else stats.streak = 1; // first time, or streak broken
+    }
+    stats.lastActiveDate = today;
+    save();
+  }
+
+  // Render an ASCII flame. The taller the flame, the hotter the streak.
+  function flameIcon(streak) {
+    if (!streak || streak <= 0) return "·";
+    if (streak >= 30) return "🔥";
+    if (streak >= 14) return "▲▲";
+    if (streak >= 7)  return "▲";
+    return "˄";
+  }
+
   function updateLessonStats() {
     const typed = session.typed.length;
     $("stat-wpm").textContent = wpmOf(typed, session.elapsedMs);
@@ -627,6 +796,7 @@
     clearInterval(session.timerHandle);
     const reward = wpmReward(session.typed.length, session.errors, session.elapsedMs);
     const idx = session.lessonIdx;
+    registerActivity();
     if (reward.passed && !stats.completedLessons.includes(idx)) {
       stats.completedLessons.push(idx);
       save();
@@ -825,6 +995,7 @@
     });
     if (wpm > stats.bestWpm) stats.bestWpm = wpm;
     if (acc > stats.bestAcc) stats.bestAcc = acc;
+    registerActivity();
     save();
     ui._lastResult = { wpm, acc, errors: session.errors, kind: session.testKind, timedOut };
     enterResults();
@@ -832,6 +1003,169 @@
 
   function exitTest() {
     clearInterval(session.timerHandle);
+  }
+
+  // =====================================================================
+  // DAILY CHALLENGE — same sentence for everyone, date-seeded
+  // =====================================================================
+  const DAILY_DURATION_MS = 60_000;
+
+  function pickDailyText() {
+    return seededPick(DAILY_TEXTS, todayKey());
+  }
+
+  function enterDaily() {
+    ui.phase = "DAILY";
+    setSceneVisible("daily");
+    setStatus(STATUS.DAILY);
+    audio.resume();
+    session.daily = {
+      target: pickDailyText(),
+      typed: "",
+      errors: 0,
+      startTime: 0,
+      elapsedMs: 0,
+      durationMs: DAILY_DURATION_MS,
+      timeLeftMs: DAILY_DURATION_MS,
+      completed: false,
+      key: todayKey(),
+    };
+    $("daily-meta").textContent = `SAME SENTENCE FOR EVERYONE TODAY · ${session.daily.key}`;
+    renderDailyText();
+    updateDailyStats();
+    renderDailyBest();
+    $("daily-finish").classList.add("hidden");
+    $("daily-finish").textContent = "";
+    $("status-left").textContent = "TYPE TO START";
+  }
+
+  function exitDaily() {
+    clearInterval(session.timerHandle);
+    session.daily = null;
+  }
+
+  function renderDailyText() {
+    if (!session.daily) return;
+    const target = session.daily.target;
+    const typed = session.daily.typed;
+    const html = [];
+    for (let i = 0; i < target.length; i++) {
+      const expected = target[i];
+      const got = typed[i];
+      const cls = ["ch"];
+      if (got === undefined) cls.push("next");
+      else cls.push(got === expected ? "ok" : "bad");
+      const ch = got === undefined ? expected : got;
+      const display = ch === " " ? "⎵" : ch;
+      html.push(`<span class="${cls.join(" ")}">${escapeHtml(display)}</span>`);
+    }
+    $("daily-prompt").innerHTML = html.join("");
+  }
+
+  function updateDailyStats() {
+    if (!session.daily) return;
+    const typed = session.daily.typed.length;
+    $("daily-wpm").textContent = wpmOf(typed, session.daily.elapsedMs);
+    $("daily-acc").textContent = `${accOf(typed, session.daily.errors)}%`;
+    $("daily-err").textContent = session.daily.errors;
+    $("daily-chars").textContent = typed;
+  }
+
+  function renderDailyBest() {
+    if (!session.daily) return;
+    const best = stats.dailyBest && stats.dailyBest[session.daily.key];
+    const el = $("daily-best");
+    if (best) {
+      el.textContent = `YOUR BEST TODAY: ${best.wpm} WPM · ${best.acc}% ACC`;
+    } else {
+      el.textContent = "YOUR BEST TODAY: —";
+    }
+  }
+
+  function tickDaily() {
+    if (!session.daily || !session.daily.startTime || session.daily.completed) return;
+    session.daily.elapsedMs = performance.now() - session.daily.startTime;
+    session.daily.timeLeftMs = Math.max(0, session.daily.durationMs - session.daily.elapsedMs);
+    const tEl = $("daily-timer");
+    tEl.textContent = fmtClock(session.daily.timeLeftMs);
+    if (session.daily.timeLeftMs < 10_000) tEl.classList.add("urgent");
+    else tEl.classList.remove("urgent");
+    updateDailyStats();
+    if (session.daily.timeLeftMs <= 0) {
+      completeDaily(true);
+    }
+  }
+
+  function completeDaily(timedOut) {
+    if (!session.daily) return;
+    session.daily.completed = true;
+    clearInterval(session.timerHandle);
+    const typed = session.daily.typed.length;
+    const wpm = wpmOf(typed, session.daily.elapsedMs);
+    const acc = accOf(typed, session.daily.errors);
+    const key = session.daily.key;
+    const prev = stats.dailyBest && stats.dailyBest[key];
+    const isNewBest = !prev || wpm > prev.wpm;
+    stats.dailyBest = stats.dailyBest || {};
+    if (isNewBest) {
+      stats.dailyBest[key] = {
+        wpm, acc,
+        errors: session.daily.errors,
+        chars: typed,
+        durationSec: Math.round(session.daily.elapsedMs / 1000),
+        when: Date.now(),
+      };
+    }
+    stats.history.push({
+      when: Date.now(),
+      kind: "daily",
+      wpm, acc, errors: session.daily.errors,
+      durationSec: Math.round(session.daily.elapsedMs / 1000),
+    });
+    registerActivity();
+    if (wpm > stats.bestWpm) stats.bestWpm = wpm;
+    if (acc > stats.bestAcc) stats.bestAcc = acc;
+    save();
+    const fEl = $("daily-finish");
+    if (fEl) {
+      fEl.classList.remove("hidden");
+      fEl.textContent = (timedOut ? "TIME UP — " : "DONE! ") +
+        `${wpm} WPM · ${acc}% ACC · ${session.daily.errors} ERR` +
+        (isNewBest ? " ★ NEW BEST" : "");
+    }
+    renderDailyBest();
+  }
+
+  function startDailyTimerIfNeeded() {
+    if (session.daily.startTime) return;
+    session.daily.startTime = performance.now();
+    session.timerHandle = setInterval(tickDaily, 100);
+  }
+
+  function handleDailyChar(ch) {
+    if (!session.daily || session.daily.completed) return false;
+    if (ch === "\n") return false;
+    if (ch.length !== 1) return false;
+    startDailyTimerIfNeeded();
+    const i = session.daily.typed.length;
+    const expected = session.daily.target[i];
+    if (expected === undefined) {
+      completeDaily(false);
+      return true;
+    }
+    const ok = ch === expected;
+    session.daily.typed += ch;
+    flashKey(ch, ok);
+    if (!ok) {
+      session.daily.errors++;
+      stats.keyErrors[expected] = (stats.keyErrors[expected] || 0) + 1;
+    }
+    renderDailyText();
+    updateDailyStats();
+    if (session.daily.typed.length >= session.daily.target.length) {
+      completeDaily(false);
+    }
+    return true;
   }
 
   // =====================================================================
@@ -1003,46 +1337,114 @@
 
   // =====================================================================
   // GAME — Key-Board Hero (falling letters)
+  //
+  // Mechanics:
+  //   - Combo: kills within COMBO_TIMEOUT_MS (1.5s) bump a 1→2→3→…→8 tier.
+  //            Score per kill = base_points × tier. Tier 2, 3, 5, 8 trigger
+  //            a screen flash + shake.
+  //   - Waves: spawn interval accelerates from 1100ms to 700ms over the
+  //            60s round, in 10 waves.
+  //   - Boss: every 10th wave a single huge red letter spawns. Hitting it
+  //            is worth 5× base × combo; missing costs 2 lives.
+  //   - Power-ups: 5% of killed letters drop a "SLOW", "BOMB", or "2X"
+  //            letter. Typing it activates the effect.
   // =====================================================================
-
-  const GAME_LETTERS = "asdfjkl;qwertyuiopzxcvbnm";
-  const GAME_DURATION_MS = 60_000;
-  const GAME_FALL_INTERVAL = 1100; // ms between new letters
-  const GAME_LETTER_SPEED = 0.06; // px/ms
 
   function enterGame() {
     ui.phase = "GAME";
     setSceneVisible("game");
     setStatus(STATUS.GAME);
+    const now = performance.now();
+    // Cancel any prior RAF loop before replacing session.game
+    if (session.game && session.game._raf) {
+      cancelAnimationFrame(session.game._raf);
+    }
     session.game = {
       letters: [],
+      powerups: [],          // active power-up letters the player must type
+      effects: {             // active global effects
+        slowUntil: 0,        // timestamp
+        x2Until: 0,          // timestamp
+      },
       score: 0,
       lives: 3,
-      lastSpawn: 0,
-      lastFrame: performance.now(),
-      endAt: performance.now() + GAME_DURATION_MS,
+      lastSpawn: now,
+      lastFrame: now,
+      startTime: now,
+      endAt: now + GAME_DURATION_MS,
       running: true,
       nextLetterId: 0,
+      combo: 1,              // current combo tier (1..COMBO_MAX)
+      lastKillAt: 0,         // performance.now() of most recent kill
+      wave: 1,               // 1..10
+      waveStartAt: now,      // start time of the current wave
+      waveSpawned: 0,
+      _raf: 0,               // requestAnimationFrame handle
     };
     $("game-overlay").classList.add("hidden");
     $("game-score").textContent = "0";
     $("game-lives").textContent = "♥♥♥";
     $("game-time").textContent = "60";
+    $("game-wave").textContent = "1";
+    const cEl = $("game-combo"); cEl.textContent = "x1"; cEl.classList.remove("active","max");
+    const pEl = $("game-powerup"); pEl.classList.add("hidden"); pEl.textContent = "";
+    const bEl = $("wave-banner"); bEl.classList.remove("show","boss");
+    document.querySelector(".screen")?.classList.remove("screen-shake");
+    showWaveBanner(1, /*boss*/ false);
     gameLoop();
   }
 
   function exitGame() {
+    if (session.game && session.game._raf) {
+      cancelAnimationFrame(session.game._raf);
+    }
     session.game = null;
+    document.querySelector(".screen")?.classList.remove("screen-shake");
+    const pEl = $("game-powerup"); if (pEl) pEl.classList.add("hidden");
+    const bEl = $("wave-banner"); if (bEl) bEl.classList.remove("show","boss");
   }
 
-  function spawnLetter() {
-    const g = session.game;
+  // The spawn interval eases from start to end as the round progresses.
+  function currentSpawnInterval(g, now) {
+    const elapsed = Math.min(1, Math.max(0, (now - g.startTime) / GAME_DURATION_MS));
+    return GAME_FALL_INTERVAL_START +
+      (GAME_FALL_INTERVAL_END - GAME_FALL_INTERVAL_START) * elapsed;
+  }
+
+  function spawnLetter(g, now) {
     const ch = GAME_LETTERS[Math.floor(Math.random() * GAME_LETTERS.length)];
     g.letters.push({
       id: ++g.nextLetterId,
       ch,
       x: 30 + Math.random() * 600,
       y: 0,
+      boss: false,
+    });
+  }
+
+  // Boss letters are spawned mid-wave: 1 huge red letter per 10th wave
+  function spawnBoss(g) {
+    const ch = GAME_LETTERS[Math.floor(Math.random() * GAME_LETTERS.length)];
+    g.letters.push({
+      id: ++g.nextLetterId,
+      ch,
+      x: 30 + Math.random() * 600,
+      y: 0,
+      boss: true,
+    });
+  }
+
+  function spawnPowerup(g) {
+    // Pick one of three types with roughly equal odds
+    const types = Object.keys(POWERUP_TYPES); // S, B, X
+    const ch = types[Math.floor(Math.random() * types.length)];
+    g.powerups.push({
+      id: ++g.nextLetterId,
+      ch,
+      x: 30 + Math.random() * 600,
+      y: 0,
+      type: POWERUP_TYPES[ch],
+      bob: 0,
     });
   }
 
@@ -1052,29 +1454,80 @@
     const dt = now - g.lastFrame;
     g.lastFrame = now;
 
-    // Spawn
-    if (now - g.lastSpawn > GAME_FALL_INTERVAL) {
-      spawnLetter();
+    // Combo timeout: reset combo if no kill happened recently
+    if (g.combo > 1 && now - g.lastKillAt > COMBO_TIMEOUT_MS) {
+      g.combo = 1;
+      updateGameHUD();
+    }
+    // Check for power-up expiry
+    if (g.effects.slowUntil && now > g.effects.slowUntil) g.effects.slowUntil = 0;
+    if (g.effects.x2Until && now > g.effects.x2Until) g.effects.x2Until = 0;
+
+    const slowActive = g.effects.slowUntil > now;
+    const speedMult = slowActive ? 0.5 : 1;
+    updatePowerupHUD(g, now);
+
+    // Wave management
+    const waveElapsed = now - g.waveStartAt;
+    if (waveElapsed > GAME_WAVE_DURATION_MS && g.wave < 10) {
+      const next = g.wave + 1;
+      const bossNext = (next % GAME_BOSS_EVERY_WAVES === 0);
+      g.wave = next;
+      g.waveStartAt = now;
+      g.waveSpawned = 0;
+      showWaveBanner(next, bossNext);
+      if (bossNext) {
+        // Spawn boss letter right at the start of its wave
+        spawnBoss(g);
+      }
+      updateGameHUD();
+    }
+
+    // Spawn cadence
+    if (now - g.lastSpawn > currentSpawnInterval(g, now)) {
+      spawnLetter(g, now);
+      g.waveSpawned++;
       g.lastSpawn = now;
     }
 
-    // Move letters
+    // Move letters (apply slow multiplier)
     for (const L of g.letters) {
-      L.y += GAME_LETTER_SPEED * dt;
+      L.y += GAME_LETTER_SPEED * speedMult * dt;
+    }
+    for (const P of g.powerups) {
+      P.y += GAME_LETTER_SPEED * 0.7 * speedMult * dt;
+      P.bob = (P.bob || 0) + dt;
     }
 
-    // Letters past the bottom = lost life
+    // Letters past the bottom: lose a life (boss = 2 lives)
+    let touchGround = false;
+    let bottomLives = 0;
     const remaining = [];
     for (const L of g.letters) {
       if (L.y > 260) {
-        g.lives = Math.max(0, g.lives - 1);
-        updateGameHUD();
-        audio.bad();
+        bottomLives += L.boss ? 2 : 1;
+        touchGround = true;
       } else {
         remaining.push(L);
       }
     }
     g.letters = remaining;
+    const remainingPower = [];
+    for (const P of g.powerups) {
+      if (P.y > 260) {
+        // missed power-up is harmless
+      } else {
+        remainingPower.push(P);
+      }
+    }
+    g.powerups = remainingPower;
+
+    if (touchGround) {
+      g.lives = Math.max(0, g.lives - bottomLives);
+      audio.bad();
+      // Wave resets naturally on time; boss impact may also reset combo
+      updateGameHUD();
+    }
 
     // Timer
     const left = Math.max(0, g.endAt - now);
@@ -1085,13 +1538,13 @@
     }
 
     drawGame();
-    requestAnimationFrame(gameFrame);
+    g._raf = requestAnimationFrame(gameFrame);
   }
 
   function gameLoop() {
     if (!session.game) return;
     session.game.lastFrame = performance.now();
-    requestAnimationFrame(gameFrame);
+    session.game._raf = requestAnimationFrame(gameFrame);
   }
 
   function drawGame() {
@@ -1112,41 +1565,179 @@
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Letters
-    ctx.font = "bold 28px 'Press Start 2P', monospace";
+    const gNow = performance.now();
+    const slowActive = g.effects.slowUntil > gNow;
+    const x2Active = g.effects.x2Until > gNow;
+
+    // Falling letters
     ctx.textAlign = "center";
     for (const L of g.letters) {
-      ctx.fillStyle = "#00ffff";
-      ctx.fillRect(L.x - 14, L.y - 2, 28, 2); // top stripe
-      ctx.fillStyle = "#ffff00";
-      ctx.fillText(L.ch.toUpperCase(), L.x, L.y + 10);
+      if (L.boss) {
+        ctx.font = `bold ${GAME_BOSS_FONT}px 'Press Start 2P', monospace`;
+        ctx.fillStyle = GAME_BOSS_COLOR;
+        ctx.fillText(L.ch.toUpperCase(), L.x, L.y + 18);
+        // little tag
+        ctx.font = "bold 9px 'Press Start 2P', monospace";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText("BOSS", L.x, L.y - 30);
+      } else {
+        ctx.font = "bold 28px 'Press Start 2P', monospace";
+        ctx.fillStyle = slowActive ? "#00ffff" : "#ffff00";
+        ctx.fillRect(L.x - 14, L.y - 2, 28, 2);
+        ctx.fillText(L.ch.toUpperCase(), L.x, L.y + 10);
+      }
+    }
+
+    // Power-up floating letters
+    for (const P of g.powerups) {
+      const bob = Math.sin((P.bob || 0) * 0.005) * 2;
+      const colors = { S: "#ff80ff", B: "#ff8000", X: "#80ff80" };
+      ctx.font = "bold 22px 'Press Start 2P', monospace";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText("•", P.x, P.y - 12 + bob);
+      ctx.fillStyle = colors[P.ch] || "#ffff00";
+      ctx.fillText(P.ch.toUpperCase(), P.x, P.y + 8 + bob);
     }
   }
 
   function updateGameHUD() {
     const g = session.game;
+    if (!g) return;
     $("game-score").textContent = g.score;
     $("game-lives").textContent = "♥".repeat(Math.max(0, g.lives)) || "—";
+    $("game-wave").textContent = String(g.wave);
+    const cEl = $("game-combo");
+    cEl.textContent = g.combo >= COMBO_MAX ? `x${g.combo} COMBO!` : `x${g.combo}`;
+    cEl.classList.toggle("active", g.combo >= 2);
+    cEl.classList.toggle("max", g.combo >= COMBO_MAX);
+  }
+
+  function updatePowerupHUD(g, now) {
+    const pEl = $("game-powerup");
+    const slowLeft = Math.max(0, g.effects.slowUntil - now);
+    const x2Left   = Math.max(0, g.effects.x2Until - now);
+    if (slowLeft > 0) {
+      pEl.textContent = `SLOW ACTIVE ${Math.ceil(slowLeft / 1000)}s`;
+      pEl.classList.remove("hidden");
+    } else if (x2Left > 0) {
+      pEl.textContent = `2X ACTIVE ${Math.ceil(x2Left / 1000)}s`;
+      pEl.classList.remove("hidden");
+    } else if (g.powerups.length > 0) {
+      const next = g.powerups[0];
+      pEl.textContent = `${next.type.label} READY`;
+      pEl.classList.remove("hidden");
+    } else {
+      pEl.classList.add("hidden");
+      pEl.textContent = "";
+    }
+  }
+
+  function showWaveBanner(n, boss) {
+    const el = $("wave-banner");
+    if (!el) return;
+    el.textContent = boss ? `BOSS WAVE ${n}` : `WAVE ${n}`;
+    el.classList.toggle("boss", !!boss);
+    el.classList.remove("show");
+    // force reflow to restart animation
+    void el.offsetWidth;
+    el.classList.add("show");
+    setTimeout(() => el.classList.remove("show"), 1500);
+  }
+
+  function flashComboTier() {
+    const screen = document.querySelector(".screen");
+    if (screen) {
+      screen.classList.remove("screen-shake");
+      void screen.offsetWidth;
+      screen.classList.add("screen-shake");
+    }
+    const f = $("combo-flash");
+    if (!f) return;
+    f.classList.remove("show");
+    void f.offsetWidth;
+    f.classList.add("show");
   }
 
   function hitLetter(ch) {
     const g = session.game;
     if (!g || !g.running) return;
-    let hitOne = false;
-    g.letters = g.letters.filter((L) => {
-      if (!hitOne && L.ch === ch) {
-        // Award more points for lower (closer to bottom)
-        const points = Math.max(1, Math.round((L.y / 260) * 5));
-        g.score += points;
-        hitOne = true;
-        audio.good();
-        updateGameHUD();
-        return false;
-      }
-      return true;
+    const lower = ch.toLowerCase();
+
+    // Power-up activation takes priority (you type "S"/"B"/"X" to use them)
+    const puIdx = g.powerups.findIndex((P) => {
+      const pc = (P.ch || "").toLowerCase();
+      return pc === lower;
     });
-    if (!hitOne) {
+    if (puIdx >= 0) {
+      const P = g.powerups[puIdx];
+      g.powerups.splice(puIdx, 1);
+      activatePowerup(g, P);
+      updateGameHUD();
+      return;
+    }
+
+    // Otherwise: hit the lowest matching letter (closest to bottom)
+    let target = null;
+    for (const L of g.letters) {
+      if (L.ch === lower || L.ch === ch) {
+        if (!target || L.y > target.y) target = L;
+      }
+    }
+    if (!target) {
       audio.click();
+      return;
+    }
+    g.letters = g.letters.filter((L) => L !== target);
+    awardKill(g, target);
+    updateGameHUD();
+  }
+
+  function awardKill(g, L) {
+    const now = performance.now();
+    // Combo update
+    if (now - g.lastKillAt <= COMBO_TIMEOUT_MS && g.combo < COMBO_MAX) {
+      g.combo++;
+    } else if (now - g.lastKillAt > COMBO_TIMEOUT_MS) {
+      g.combo = 1;
+    }
+    g.lastKillAt = now;
+
+    const basePoints = L.boss ? GAME_BOSS_VALUE_MULT : Math.max(1, Math.round((L.y / 260) * 5));
+    let points = basePoints * g.combo;
+    if (g.effects.x2Until > now) points *= 2;
+    g.score += points;
+
+    audio.good();
+    if (COMBO_TIER_FLASH.has(g.combo)) {
+      audio.combo(g.combo);
+      flashComboTier();
+    }
+    if (L.boss) audio.boss();
+
+    // Power-up drop — 5% chance
+    if (Math.random() < POWERUP_DROP_CHANCE) {
+      spawnPowerup(g);
+    }
+  }
+
+  function activatePowerup(g, P) {
+    const now = performance.now();
+    const def = P.type;
+    if (def.id === "slow") {
+      g.effects.slowUntil = now + def.durationMs;
+      audio.powerup();
+    } else if (def.id === "bomb") {
+      // Award 30 bonus per cleared letter
+      const cleared = g.letters.length + g.powerups.length;
+      g.score += cleared * 30;
+      g.letters = [];
+      g.powerups = [];
+      audio.bomb();
+      audio.powerup();
+      flashComboTier();
+    } else if (def.id === "x2") {
+      g.effects.x2Until = now + def.durationMs;
+      audio.powerup();
     }
   }
 
@@ -1167,6 +1758,7 @@
       durationSec: Math.round((Date.now() - (g.endAt - GAME_DURATION_MS)) / 1000),
       score: g.score,
     });
+    registerActivity();
     save();
   }
 
@@ -1178,7 +1770,7 @@
     g.lastFrame = performance.now();
     g.lastSpawn = g.lastFrame;
     g.endAt = g.lastFrame + GAME_DURATION_MS;
-    requestAnimationFrame(gameFrame);
+    g._raf = requestAnimationFrame(gameFrame);
   }
 
   // =====================================================================
@@ -1295,11 +1887,12 @@
   }
 
   function handleTypingKey(ch) {
-    // Universal character-by-character input handler for lesson/practice/test.
+    // Universal character-by-character input handler for lesson/practice/test/daily.
     audio.resume();
     if (ui.phase === "LESSON") return handleLessonChar(ch);
     if (ui.phase === "PRACTICE") return handlePracticeChar(ch);
     if (ui.phase === "TEST") return handleTestChar(ch);
+    if (ui.phase === "DAILY") return handleDailyChar(ch);
     if (ui.phase === "GAME") return hitLetter(ch);
     return false;
   }
@@ -1402,10 +1995,10 @@
 
     if (ui.phase === "MENU") {
       if (e.key === "Escape") return;
-      if (e.key >= "1" && e.key <= "6") {
+      if (e.key >= "1" && e.key <= "7") {
         e.preventDefault();
         audio.click();
-        const actions = ["lessons", "practice", "tests", "reports", "game", "options"];
+        const actions = ["lessons", "practice", "tests", "daily", "reports", "game", "options"];
         const idx = parseInt(e.key, 10) - 1;
         handleMenuAction(actions[idx]);
         return;
@@ -1499,6 +2092,26 @@
       return;
     }
 
+    if (ui.phase === "DAILY") {
+      if (e.key === "Escape") { e.preventDefault(); enterMenu(); return; }
+      if (e.key === "Enter" && session.daily && session.daily.completed) {
+        e.preventDefault();
+        enterDaily();
+        return;
+      }
+      if (e.key === "Backspace") {
+        e.preventDefault();
+        if (session.daily && session.daily.typed.length > 0 && !session.daily.completed) {
+          session.daily.typed = session.daily.typed.slice(0, -1);
+          renderDailyText();
+          updateDailyStats();
+        }
+        return;
+      }
+      if (handleTypingKey(e.key)) { e.preventDefault(); }
+      return;
+    }
+
     if (ui.phase === "REPORTS") {
       if (e.key === "Escape") { e.preventDefault(); enterMenu(); return; }
       if (e.key === "r" || e.key === "R") {
@@ -1574,6 +2187,7 @@
       case "lessons": enterLessons(); break;
       case "practice": enterPractice(); break;
       case "tests": enterTests(); break;
+      case "daily": enterDaily(); break;
       case "reports": enterReports(); break;
       case "game": enterGame(); break;
       case "options": enterOptions(); break;

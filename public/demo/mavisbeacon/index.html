@@ -94,6 +94,10 @@
 
           <!-- =========================== MAIN MENU =========================== -->
           <section class="scene scene-menu hidden" data-phase="menu">
+            <div class="streak-banner" id="streak-banner">
+              <span class="streak-flame" id="streak-flame">▲</span>
+              <span id="streak-text">STREAK: — DAYS</span>
+            </div>
             <div class="menu-header">
               <div class="menu-title">Mavis Beacon — Main Menu</div>
               <div class="menu-subtitle">Where would you like to start today?</div>
@@ -120,22 +124,30 @@
                   <div class="menu-desc">Timed 1, 3, or 5 minute tests</div>
                 </div>
               </button>
-              <button class="menu-item" data-action="reports" data-hotkey="4">
+              <button class="menu-item" data-action="daily" data-hotkey="4">
                 <div class="menu-num">4</div>
+                <div class="menu-text">
+                  <div class="menu-label">Daily Challenge</div>
+                  <div class="menu-desc">Same sentence for everyone today</div>
+                  <div class="daily-yesterday" id="daily-yesterday-menu"></div>
+                </div>
+              </button>
+              <button class="menu-item" data-action="reports" data-hotkey="5">
+                <div class="menu-num">5</div>
                 <div class="menu-text">
                   <div class="menu-label">Reports</div>
                   <div class="menu-desc">Your progress and certificates</div>
                 </div>
               </button>
-              <button class="menu-item" data-action="game" data-hotkey="5">
-                <div class="menu-num">5</div>
+              <button class="menu-item" data-action="game" data-hotkey="6">
+                <div class="menu-num">6</div>
                 <div class="menu-text">
                   <div class="menu-label">Game</div>
                   <div class="menu-desc">Key-Board Hero — falling letters</div>
                 </div>
               </button>
-              <button class="menu-item" data-action="options" data-hotkey="6">
-                <div class="menu-num">6</div>
+              <button class="menu-item" data-action="options" data-hotkey="7">
+                <div class="menu-num">7</div>
                 <div class="menu-text">
                   <div class="menu-label">Options</div>
                   <div class="menu-desc">Sound, palette, goals</div>
@@ -143,7 +155,7 @@
               </button>
             </div>
             <div class="menu-hint">
-              <span class="kbd">1-6</span> select &nbsp;·&nbsp;
+              <span class="kbd">1-7</span> select &nbsp;·&nbsp;
               <span class="kbd">ESC</span> back &nbsp;·&nbsp;
               <span class="kbd">F10</span> menu
             </div>
@@ -237,6 +249,27 @@
           </section>
 
           <!-- =========================== RESULTS =========================== -->
+          <section class="scene scene-daily hidden" data-phase="daily">
+            <div class="daily-header">
+              <span class="daily-title">═══ Daily Challenge ═══</span>
+              <span class="daily-timer" id="daily-timer">1:00</span>
+            </div>
+            <div class="daily-meta" id="daily-meta">Loading today's sentence…</div>
+            <div class="daily-prompt" id="daily-prompt"></div>
+            <div class="daily-stats">
+              <div class="stat"><span class="stat-label">WPM</span><span class="stat-val" id="daily-wpm">0</span></div>
+              <div class="stat"><span class="stat-label">ACC</span><span class="stat-val" id="daily-acc">100%</span></div>
+              <div class="stat"><span class="stat-label">ERR</span><span class="stat-val" id="daily-err">0</span></div>
+              <div class="stat"><span class="stat-label">CHARS</span><span class="stat-val" id="daily-chars">0</span></div>
+            </div>
+            <div class="daily-best" id="daily-best">YOUR BEST TODAY: —</div>
+            <div class="daily-finish hidden" id="daily-finish"></div>
+            <div class="panel-footer">
+              <span class="kbd">ESC</span> menu &nbsp;·&nbsp;
+              <span class="kbd">ENTER</span> new same sentence (after done)
+            </div>
+          </section>
+
           <section class="scene scene-results hidden" data-phase="results">
             <div class="results-card">
               <div class="results-title" id="results-title">═══ Test Results ═══</div>
@@ -303,11 +336,16 @@
           <section class="scene scene-game hidden" data-phase="game">
             <div class="game-header">
               <span class="game-title">Key-Board Hero</span>
+              <span class="game-wave">Wave <b id="game-wave">1</b></span>
+              <span class="game-combo" id="game-combo">x1</span>
+              <span class="game-powerup hidden" id="game-powerup">SLOW ACTIVE 5s</span>
               <span class="game-score">Score: <b id="game-score">0</b></span>
               <span class="game-lives">Lives: <b id="game-lives">♥♥♥</b></span>
               <span class="game-time">Time: <b id="game-time">60</b>s</span>
             </div>
             <canvas id="game-canvas" width="700" height="280"></canvas>
+            <div class="combo-flash" id="combo-flash"></div>
+            <div class="wave-banner" id="wave-banner">WAVE 2</div>
             <div class="game-overlay hidden" id="game-overlay">
               <div class="game-overlay-title" id="game-overlay-title">Game Over</div>
               <div class="game-overlay-score">Score: <span id="game-overlay-score">0</span></div>
@@ -315,7 +353,8 @@
               <button class="retro-btn" data-action="game-menu">Main menu</button>
             </div>
             <div class="game-footer">
-              <span class="kbd">A-Z</span> shoot falling letters &nbsp;·&nbsp;
+              <span class="kbd">A-Z</span> shoot &nbsp;·&nbsp;
+              <span class="kbd">S/B/X</span> power-ups &nbsp;·&nbsp;
               <span class="kbd">P</span> pause &nbsp;·&nbsp;
               <span class="kbd">ESC</span> quit
             </div>
