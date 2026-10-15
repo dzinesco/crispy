@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/demo/oregontrail/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="The Oregon Trail — browser recreation of the 1985 MECC classic, Apple II SE style."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Crect x='2' y='2' width='12' height='8' fill='%23000' stroke='%2333ff66' stroke-width='.5'/%3E%3Crect x='3' y='3' width='10' height='1' fill='%2333ff66'/%3E%3Crect x='3' y='5' width='10' height='1' fill='%2333ff66' opacity='.7'/%3E%3Crect x='3' y='7' width='10' height='1' fill='%2333ff66' opacity='.5'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/demo/_shared/geocities.css" />
+    <style>/* Crispy Goat: starfield frame around the stage only */
+      body.gc-starfield .stage { background: transparent; }
+    </style>
+    <title>The Oregon Trail</title>
+  </head>
+  <body class="gc-starfield">
+    <!-- ============================================================
+         DARK ROOM — the Apple II SE sits on a desk in a dim room
+         ============================================================ -->
+    <div class="room">
+      <div class="desk-shadow"></div>
+
+      <!-- ============================================================
+           APPLE II SE HARDWARE — off-white plastic case
+           ============================================================ -->
+      <div class="apple" id="apple">
+        <!-- Top: ventilation slats -->
+        <div class="case-top">
+          <div class="vent-slats" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <!-- CRT bezel + screen -->
+        <div class="bezel">
+          <div class="bezel-inner">
+            <div class="screen" id="screen" data-cols="40" aria-live="polite">
+              <!-- Scanline overlay -->
+              <div class="scanlines" aria-hidden="true"></div>
+              <!-- Vignette overlay -->
+              <div class="vignette" aria-hidden="true"></div>
+              <!-- Glass reflection -->
+              <div class="reflection" aria-hidden="true"></div>
+
+              <!-- Text stage (40 or 80 col) -->
+              <pre class="screen-text" id="screen-text" aria-hidden="true"></pre>
+
+              <!-- Canvas for high-res landmark scenes and hunting mini-game -->
+              <canvas
+                id="hires-canvas"
+                width="280"
+                height="192"
+                aria-hidden="true"
+              ></canvas>
+
+              <!-- Blinking caret -->
+              <span class="caret" id="caret" aria-hidden="true">&#9608;</span>
+
+              <!-- Persistent HUD strip at top of screen (date, miles, etc.) -->
+              <div class="hud" id="hud" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apple rainbow stripe + branding + power LED -->
+        <div class="case-bottom">
+          <svg
+            class="rainbow"
+            viewBox="0 0 140 14"
+            preserveAspectRatio="xMidYMid meet"
+            aria-label="Apple rainbow stripe"
+          >
+            <rect x="0"  y="2" width="14" height="10" fill="#5faf5f" />
+            <rect x="14" y="2" width="14" height="10" fill="#d0d040" />
+            <rect x="28" y="2" width="14" height="10" fill="#e87a3c" />
+            <rect x="42" y="2" width="14" height="10" fill="#d03a3a" />
+            <rect x="56" y="2" width="14" height="10" fill="#a83a8a" />
+            <rect x="70" y="2" width="14" height="10" fill="#5a6acc" />
+          </svg>
+          <div class="brand">apple ][</div>
+          <div class="power-led" id="power-led" title="Power"></div>
+        </div>
+      </div>
+
+      <!-- Soft floor shadow under the case -->
+      <div class="floor-shadow" aria-hidden="true"></div>
+    </div>
+
+    <!-- ============================================================
+         KEYBOARD LEGEND — pinned below the monitor
+         ============================================================ -->
+    <div class="legend" id="legend" role="region" aria-label="Keyboard controls">
+      <span class="legend-title">KEYS</span>
+      <span class="legend-keys" id="legend-keys"></span>
+      <button
+        class="legend-mute"
+        id="mute-toggle"
+        title="Mute sound (M)"
+        type="button"
+      >SOUND: ON</button>
+    </div>
+
+    <!-- ============================================================
+         SOFT-KEY ROW for small viewports (mobile fallback)
+         ============================================================ -->
+    <div class="softkeys" id="softkeys" aria-hidden="true"></div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

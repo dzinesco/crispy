@@ -1,0 +1,644 @@
+/* =====================================================================
+   THE OREGON TRAIL — browser recreation, Apple II SE aesthetic
+   styles.css is split into three sections:
+     1. Page / dark room
+     2. Apple II SE case (frame, bezel, branding)
+     3. CRT screen (text, scanlines, phosphor colors)
+     4. Legend and soft-keys
+   ===================================================================== */
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: "VT323", "Courier New", monospace;
+  background: #050505;
+  color: #cfeecf;
+  overflow: hidden;
+}
+
+/* =====================================================================
+   1. PAGE — dark room
+   ===================================================================== */
+
+.room {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Faint warm gradient suggesting a desk lamp */
+  background:
+    radial-gradient(
+      ellipse at 50% 35%,
+      rgba(40, 36, 30, 0.7) 0%,
+      rgba(10, 10, 10, 0.95) 70%
+    ),
+    #050505;
+}
+
+/* =====================================================================
+   2. APPLE II SE CASE — off-white plastic
+   ===================================================================== */
+
+.apple {
+  position: relative;
+  width: min(96vw, 880px);
+  aspect-ratio: 880 / 660;
+  display: flex;
+  flex-direction: column;
+  /* Warm beige plastic with a faint warm highlight from above */
+  background:
+    linear-gradient(180deg, #f1ece0 0%, #e6e0d1 55%, #d9d2c1 100%);
+  border-radius: 18px 18px 22px 22px;
+  box-shadow:
+    0 0 0 2px #b9b1a0,
+    0 30px 60px rgba(0, 0, 0, 0.85),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+  padding: 22px 28px 18px;
+}
+
+/* Top ventilation slats */
+.case-top {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vent-slats {
+  display: flex;
+  gap: 4px;
+  width: 60%;
+  height: 14px;
+  align-items: center;
+}
+
+.vent-slats span {
+  display: block;
+  flex: 1;
+  height: 2px;
+  background: #aaa294;
+  border-radius: 1px;
+}
+
+/* CRT bezel — the dark recess around the screen */
+.bezel {
+  flex: 1;
+  background: #2a2620;
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.7),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05);
+}
+
+.bezel-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050505;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Bottom case strip with rainbow, logo, and power LED */
+.case-bottom {
+  position: relative;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.rainbow {
+  width: 140px;
+  height: 14px;
+  opacity: 0.55;
+  filter: saturate(0.7);
+}
+
+.brand {
+  font-family: "VT323", monospace;
+  font-size: 22px;
+  color: #6a6356;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+}
+
+.power-led {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3a2a;
+  box-shadow: 0 0 6px rgba(255, 80, 60, 0.9);
+  animation: led-pulse 4s ease-in-out infinite;
+}
+
+@keyframes led-pulse {
+  0%,
+  92% {
+    opacity: 1;
+    box-shadow: 0 0 6px rgba(255, 80, 60, 0.9);
+  }
+  95% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 6px rgba(255, 80, 60, 0.9);
+  }
+}
+
+.floor-shadow {
+  position: absolute;
+  bottom: -22px;
+  left: 5%;
+  right: 5%;
+  height: 18px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
+  filter: blur(8px);
+}
+
+/* =====================================================================
+   3. CRT SCREEN
+   ===================================================================== */
+
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050a05;
+  overflow: hidden;
+  font-family: "VT323", "Courier New", monospace;
+  font-size: clamp(14px, 2.6vw, 24px);
+  line-height: 1.05;
+  color: var(--phosphor, #33ff66);
+  text-shadow:
+    0 0 1px var(--phosphor-glow, #33ff66),
+    0 0 6px var(--phosphor-glow, #33ff66);
+}
+
+/* Default phosphor colors */
+body[data-phosphor="green"] {
+  --phosphor: #33ff66;
+  --phosphor-dim: #1c5c2a;
+  --phosphor-glow: #33ff66;
+  --phosphor-bright: #cfffd0;
+  --phosphor-bg: #050a05;
+  --inverse-bg: #33ff66;
+  --inverse-fg: #050a05;
+
+  /* Accent colors — Mac 5400c / Oregon Trail 5th-edition-Mac feel.
+     Slightly dimmer than full saturation so the phosphor stays primary. */
+  --accent-danger: #ff5c4a;  /* CRT red — illness, hostile events, death */
+  --accent-water: #5cb8ff;   /* soft blue — rivers, lakes, weather */
+  --accent-money: #ffd84a;   /* gold — money, score, ranks */
+  --accent-warm: #ff9d3a;    /* hot orange — heat, fire, summer */
+  --accent-cold: #80f0d6;    /* cyan — cold, snow, ice */
+  --accent-wagon: #c98a4d;   /* tan/brown — wagon, oxen, trail UI */
+  --accent-fruit: #b6ff5c;   /* lime — food, fruit, positive supply */
+  --accent-meta: #8a8a8a;    /* neutral grey — flavor text */
+}
+
+body[data-phosphor="amber"] {
+  --phosphor: #ffb84a;
+  --phosphor-dim: #6a4a14;
+  --phosphor-glow: #ffb84a;
+  --phosphor-bright: #fff0c8;
+  --phosphor-bg: #150a02;
+  --inverse-bg: #ffb84a;
+  --inverse-fg: #150a02;
+
+  /* Same accent hues in amber mode — the Mac 5400c era showed color
+     even on amber CRTs in the cross-platform releases. */
+  --accent-danger: #ff5c4a;
+  --accent-water: #5cb8ff;
+  --accent-money: #ffd84a;
+  --accent-warm: #ff9d3a;
+  --accent-cold: #80f0d6;
+  --accent-wagon: #c98a4d;
+  --accent-fruit: #b6ff5c;
+  --accent-meta: #8a8a8a;
+}
+
+/* High-contrast mode — brighter phosphor, deeper blacks, harder scanlines.
+   Triggered by data-hc="1" on the body. */
+body[data-hc="1"] {
+  --phosphor-bg: #000;
+  --phosphor: #ffffff;
+  --phosphor-bright: #ffffff;
+  --phosphor-glow: #ffffff;
+  --accent-danger: #ff5544;
+  --accent-water: #66ccff;
+  --accent-money: #ffe066;
+  --accent-warm: #ffa64a;
+  --accent-cold: #88ffea;
+  --accent-wagon: #ffcc88;
+  --accent-fruit: #c4ff66;
+  --accent-meta: #cccccc;
+}
+body[data-hc="1"] .scanlines {
+  opacity: 0.85;
+}
+body[data-hc="1"] .vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+}
+
+/* Scanlines */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 5;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Glass reflection — top-left highlight */
+.reflection {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    transparent 35%,
+    transparent 70%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 7;
+}
+
+/* Text stage — Apple II text mode rendered as a <pre> */
+.screen-text {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 14px 18px;
+  white-space: pre;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--phosphor);
+  text-shadow:
+    0 0 1px var(--phosphor-glow),
+    0 0 4px var(--phosphor-glow);
+  letter-spacing: 0;
+}
+
+.screen[data-cols="40"] .screen-text {
+  font-size: clamp(18px, 3.4vw, 28px);
+}
+
+.screen[data-cols="80"] .screen-text {
+  font-size: clamp(10px, 1.9vw, 16px);
+}
+
+/* Inverse video — selection highlight on Apple II */
+.inverse {
+  background: var(--inverse-bg);
+  color: var(--inverse-fg);
+  text-shadow: none;
+}
+
+/* Bright text — title or focus */
+.bright {
+  color: var(--phosphor-bright);
+  text-shadow:
+    0 0 1px var(--phosphor-bright),
+    0 0 8px var(--phosphor-glow);
+}
+
+/* Dim text — flavor / secondary info */
+.dim {
+  color: var(--phosphor-dim);
+  text-shadow: 0 0 3px var(--phosphor-dim);
+}
+
+/* Accent colors — Mac 5400c / Oregon Trail 5th-edition-Mac feel.
+   Each class keeps a small CRT glow matching its hue. */
+.danger {
+  color: var(--accent-danger);
+  text-shadow:
+    0 0 1px var(--accent-danger),
+    0 0 4px var(--accent-danger);
+}
+
+.water {
+  color: var(--accent-water);
+  text-shadow:
+    0 0 1px var(--accent-water),
+    0 0 4px var(--accent-water);
+}
+
+.money {
+  color: var(--accent-money);
+  text-shadow:
+    0 0 1px var(--accent-money),
+    0 0 4px var(--accent-money);
+}
+
+.warm {
+  color: var(--accent-warm);
+  text-shadow:
+    0 0 1px var(--accent-warm),
+    0 0 4px var(--accent-warm);
+}
+
+.cold {
+  color: var(--accent-cold);
+  text-shadow:
+    0 0 1px var(--accent-cold),
+    0 0 4px var(--accent-cold);
+}
+
+.wagon {
+  color: var(--accent-wagon);
+  text-shadow:
+    0 0 1px var(--accent-wagon),
+    0 0 4px var(--accent-wagon);
+}
+
+.fruit {
+  color: var(--accent-fruit);
+  text-shadow:
+    0 0 1px var(--accent-fruit),
+    0 0 4px var(--accent-fruit);
+}
+
+.meta {
+  color: var(--accent-meta);
+  text-shadow: none;
+}
+
+/* High-resolution canvas (for landmark scenes & hunting) */
+#hires-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  display: none; /* shown only when active */
+}
+
+.screen.hires-active #hires-canvas {
+  display: block;
+}
+
+.screen.hires-active .screen-text {
+  display: none;
+}
+
+/* Blinking caret */
+.caret {
+  display: inline-block;
+  color: var(--phosphor);
+  animation: blink 1s steps(2) infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* HUD strip (top of screen) */
+.hud {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  right: 12px;
+  z-index: 4;
+  font-size: 0.55em;
+  color: var(--phosphor);
+  text-shadow: 0 0 3px var(--phosphor-glow);
+  display: flex;
+  justify-content: space-between;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+.hud.hidden {
+  display: none;
+}
+
+/* Screen horizontal jitter (occasional) */
+.screen.jitter {
+  animation: jitter 0.18s steps(4) 1;
+}
+
+@keyframes jitter {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-1px, 1px);
+  }
+  50% {
+    transform: translate(1px, -1px);
+  }
+  75% {
+    transform: translate(-1px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Loading flicker during Disk II seek */
+.screen.loading-flicker {
+  animation: loading-flicker 0.18s steps(2) infinite;
+}
+
+@keyframes loading-flicker {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+/* =====================================================================
+   4. KEYBOARD LEGEND
+   ===================================================================== */
+
+.legend {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--phosphor-dim);
+  border-radius: 6px;
+  color: var(--phosphor);
+  font-size: 14px;
+  font-family: inherit;
+  text-shadow: 0 0 3px var(--phosphor-glow);
+  z-index: 10;
+  max-width: 94vw;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-title {
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding-right: 6px;
+  border-right: 1px solid var(--phosphor-dim);
+}
+
+.legend-keys {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.legend-keys kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  margin-right: 4px;
+  background: var(--phosphor);
+  color: #050a05;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-shadow: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.legend-keys .key-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-mute {
+  font-family: inherit;
+  font-size: 12px;
+  background: transparent;
+  color: var(--phosphor);
+  border: 1px solid var(--phosphor-dim);
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 3px var(--phosphor-glow);
+}
+
+.legend-mute:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Soft-keys (mobile fallback) */
+.softkeys {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.85);
+  border-top: 1px solid var(--phosphor-dim);
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.softkeys button {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--phosphor);
+  border: 1px solid var(--phosphor-dim);
+  border-radius: 4px;
+  text-shadow: 0 0 3px var(--phosphor-glow);
+  min-width: 56px;
+}
+
+.softkeys button:active {
+  background: var(--inverse-bg);
+  color: var(--inverse-fg);
+  text-shadow: none;
+}
+
+/* Mobile breakpoint — show soft-keys */
+@media (max-width: 720px) {
+  .softkeys {
+    display: flex;
+  }
+  .legend {
+    bottom: 60px;
+  }
+}
+
+/* Smaller desktop screens */
+@media (max-width: 980px) {
+  .apple {
+    width: 96vw;
+  }
+}

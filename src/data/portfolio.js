@@ -13,6 +13,17 @@
 // bg          frame around the shot and the demo margin. See BACKDROPS.
 export const projects = [
   {
+    slug: 'oregontrail',
+    title: 'The Oregon Trail',
+    description: 'The 1985 wagon-trail classic in plain JavaScript. Outfit your party, ford rivers, hunt, trade at forts and try to reach the Willamette Valley before dysentery does.',
+    tags: ['Retro', 'Browser', 'Game'],
+    image: '/images/portfolio/oregontrail.png',
+    imageAlt: 'The Oregon Trail running in a green-on-black CRT terminal style on a starfield',
+    demoHref: '/demo/oregontrail/',
+    shippedAt: '2026-10-14',
+    bg: 'starfield',
+  },
+  {
     slug: 'dusknet',
     title: 'DuskNet BBS',
     description: 'A late-90s bulletin board in plain JavaScript. Five boards, 25+ seeded threads, BBCode, quote-to-reply, sticky and locked threads, and an LED hit counter. Pick a handle and post.',
